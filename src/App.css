@@ -1,3 +1,17 @@
+@font-face {
+	font-family: 'Bellota-LightItalic';
+	src: local('Bellota-LightItalic'), url(./fonts/Bellota-LightItalic.ttf) format('truetype');
+}
+
+@font-face {
+	font-family: 'Bellota-BoldItalic';
+	src: local('Bellota-BoldItalic'), url(./fonts/Bellota-BoldItalic.ttf) format('truetype');
+}
+
+body {
+  line-height: 17px;
+}
+
 .App {
   text-align: center;
 }

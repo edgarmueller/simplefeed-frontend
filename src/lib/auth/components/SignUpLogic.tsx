@@ -1,0 +1,105 @@
+import React, { useEffect, useState } from "react";
+
+export interface SignUpProps {
+  isPasswordConfirmEnabled?: boolean;
+  register: (
+    email: string,
+    username: string,
+    password: string
+  ) => Promise<void>;
+	children: (api: Api) => React.ReactNode;
+}
+
+type Api = {
+	canSubmit: boolean | undefined;
+	handleSubmit: (event: React.FormEvent) => Promise<void>;
+	errors: string[];
+	isSubmitted: boolean;
+	handleUsernameUpdated: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	handleEmailUpdated: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	handlePasswordUpdated: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	handlePasswordConfirmUpdated: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const formatError = (error: string) => {
+  return error.replace("user.", "");
+};
+
+export function SignUpLogic({
+  isPasswordConfirmEnabled = true,
+	register,
+	children
+}: SignUpProps) {
+  const [signUpInfo, setSignUpInfo] = useState({
+    email: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [canSubmit, setCanSubmit] = useState<boolean>();
+  const [errors, setErrors] = useState<string[]>([]);
+  const [isSubmitted, setSubmitted] = useState<boolean>(false);
+
+  useEffect(() => {
+    const { email, username, password, confirmPassword } = signUpInfo;
+    setCanSubmit(
+      email !== "" &&
+        username !== "" &&
+        password !== "" &&
+        (isPasswordConfirmEnabled ? password === confirmPassword : true)
+    );
+  }, [signUpInfo, isPasswordConfirmEnabled]);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    // Prevent page reload
+    event.preventDefault();
+    const { email, username, password } = signUpInfo;
+    try {
+      await register(email, username, password);
+      setSubmitted(true);
+      setErrors([]);
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrors(error.message.split(",").map(formatError));
+      }
+    }
+  };
+
+	const handleUsernameUpdated = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setSignUpInfo({
+			...signUpInfo,
+			username: event.target.value
+		})
+	}
+	const handleEmailUpdated = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setSignUpInfo({
+			...signUpInfo,
+			email: event.target.value
+		})
+	}
+	const handlePasswordUpdated = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setSignUpInfo({
+			...signUpInfo,
+			password: event.target.value
+		})
+	}
+	const handlePasswordConfirmUpdated = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setSignUpInfo({
+			...signUpInfo,
+			confirmPassword: event.target.value
+		})
+	}
+
+	const getApi = () => ({
+		canSubmit,
+		handleSubmit,
+		errors,
+		isSubmitted,
+		handleUsernameUpdated,
+		handleEmailUpdated,
+		handlePasswordUpdated,
+		handlePasswordConfirmUpdated,
+	})
+
+	return <>{children(getApi())}</>
+}

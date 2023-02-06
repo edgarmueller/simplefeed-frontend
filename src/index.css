@@ -1,13 +1,35 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@font-face {
+	font-family: 'Bellota-LightItalic';
+	/*src: url("../fonts/Bellota-LightItalic.otf");*/
+}
+@font-face {
+	font-family: 'Bellota-BoldItalic';
+	/*src: url("../fonts/Bellota-BoldItalic.otf");*/
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+	line-height: 17px;
 }
+
+.top_bar {
+	width: 100%;
+	min-width: 1050px;
+	height: 40px;
+	background-color: #20aae5;
+	border-bottom: 5px solid #1894ca;
+	margin: 0 0 10px 0;
+	display: inline-flex;
+}
+
+.logo a {
+	font-family: 'Bellota-BoldItalic', sans-serif;
+	margin-left: 10px;
+	font-size: 30;
+	position: relative;
+	top: 9px;
+	text-shadow: #73b6e2 0.5px 0.5px; 
+	color: #1086ba;
+}
+
+a:hover {
+	text-decoration: none;}
