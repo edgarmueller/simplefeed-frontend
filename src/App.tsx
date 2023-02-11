@@ -1,20 +1,25 @@
-import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useState } from "react";
+import { fetchProfile } from "./api/profile";
 import "./App.css";
-import "./register-style.css";
+import { Layout } from "./components/Layout";
+import { useAuth } from "./lib/auth/hooks/useAuth";
 
 function App() {
+  const { user, logout } = useAuth();
+  const [bio, setBio] = useState();
+
   return (
-    <>
-      <div className="wrapper">
-        <div className="login_box">
-          <div className="login_header">
-            <h1>Swirlfeed</h1>
-            Login or sign up below
-          </div>
-        </div>
-      </div>
-    </>
+    <Layout>
+      Hi {user?.username}!
+      {bio ? <p>{bio}</p> : <p>no bio</p>}
+      <button onClick={logout}>
+        Logout
+      </button>
+      <button onClick={() => fetchProfile(user?.username!).then(p => setBio(p.bio))}>
+        fetch bio
+      </button>
+    </Layout>
   );
 }
 

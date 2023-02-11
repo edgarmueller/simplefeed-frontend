@@ -1,24 +1,5 @@
-@font-face {
-	font-family: 'Bellota-LightItalic';
-	/*src: url("../fonts/Bellota-LightItalic.otf");*/
-}
-@font-face {
-	font-family: 'Bellota-BoldItalic';
-	/*src: url("../fonts/Bellota-BoldItalic.otf");*/
-}
-
 body {
 	line-height: 17px;
-}
-
-.top_bar {
-	width: 100%;
-	min-width: 1050px;
-	height: 40px;
-	background-color: #20aae5;
-	border-bottom: 5px solid #1894ca;
-	margin: 0 0 10px 0;
-	display: inline-flex;
 }
 
 .logo a {
@@ -31,5 +12,10 @@ body {
 	color: #1086ba;
 }
 
+a {
+	text-decoration: none;
+}
+
 a:hover {
-	text-decoration: none;}
+	text-decoration: none;
+}

@@ -1,5 +1,7 @@
+import { Link } from "react-router-dom";
 import { register } from "../lib/auth/api/auth";
 import { SignUpLogic } from "../lib/auth/components/SignUpLogic";
+import "./SignUp.css"
 
 export const SignUp = () => {
   return (
@@ -53,11 +55,15 @@ export const SignUp = () => {
               {errors.map((error) => (
                 <p key={error}>{error}</p>
               ))}
-              {isSubmitted && <p>Sign up successful!</p>}
+              {isSubmitted && <>
+                <p>Sign up successful!</p>
+                <Link to="/sign-in" className="sign-up">Login here!</Link>
+                </>
+              }
               <br/>
-              <button type="submit" disabled={!canSubmit}>
-                Sign In
-              </button>
+              <input type="submit" disabled={!canSubmit} value="Sign Up"/>
+              <br/>
+              <Link to="/sign-in" className="sign-up">Already have an account? Sign in here!</Link>
             </form>
           </div>
         </div>

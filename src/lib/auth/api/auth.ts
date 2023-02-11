@@ -73,9 +73,11 @@ export async function login(email: string, password: string) {
 	const { user } = await response.json();
   saveAccessToken(user.token)
   saveRefreshToken(user.refreshToken)
+	return user;
 }
 
 export function logout() {
+  deleteFromStorage('user')
   deleteFromStorage('token')
   deleteFromStorage('refreshToken')
 }

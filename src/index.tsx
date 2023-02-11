@@ -1,17 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import { SignIn } from './components/SignIn';
 import { SignUp } from './components/SignUp';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.css';
+import App from './App';
+import { NoMatch } from './NoMatch';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { AuthOutlet } from './lib/auth/components/AuthOutlet';
 
-
-const router = createBrowserRouter([
-  { path: "/sign-up", element: <SignUp /> },
-  { path: "/sign-in", element: <SignIn /> },
-]);
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route element={<AuthOutlet />}>
+      <Route path='/home' element={<ProtectedRoute><App/></ProtectedRoute>} />
+      <Route path="/sign-up" element={<SignUp />} />
+      <Route path='/sign-in' element={<SignIn />} />
+      <Route path="*" element={<NoMatch /> } />
+    </Route>
+  )
+)
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
