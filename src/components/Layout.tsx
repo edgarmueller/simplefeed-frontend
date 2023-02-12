@@ -1,12 +1,9 @@
 import './Layout.css'
+import { NavBar } from './NavBar'
 
 export const Layout = ({ children }: any) => (
 	<>
-	<div className="top_bar">
-		<div className="logo">
-			<a href="/">Swirlfeed</a>
-		</div>
-	</div>
+	<NavBar />
 	{children}
 	</>
 )
