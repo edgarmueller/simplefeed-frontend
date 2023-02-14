@@ -4,8 +4,13 @@ export interface SignUpProps {
   isPasswordConfirmEnabled?: boolean;
   register: (
     email: string,
-    username: string,
-    password: string
+    password: string,
+		userProfile: {
+			username: string,
+			firstName: string,
+			lastName: string,
+			imageUrl: string,
+		}
   ) => Promise<void>;
 	children: (api: Api) => React.ReactNode;
 }
@@ -15,7 +20,7 @@ type Api = {
 	handleSubmit: (event: React.FormEvent) => Promise<void>;
 	errors: string[];
 	isSubmitted: boolean;
-	handleUsernameUpdated: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	handleSignUpInfoUpdated: (fieldName: string) => (event: React.ChangeEvent<HTMLInputElement>) => void;
 	handleEmailUpdated: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	handlePasswordUpdated: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	handlePasswordConfirmUpdated: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -32,7 +37,10 @@ export function SignUpLogic({
 }: SignUpProps) {
   const [signUpInfo, setSignUpInfo] = useState({
     email: "",
-    username: "",
+		username: "",
+		firstName: "",
+		lastName: "",
+		imageUrl: "",
     password: "",
     confirmPassword: "",
   });
@@ -41,10 +49,9 @@ export function SignUpLogic({
   const [isSubmitted, setSubmitted] = useState<boolean>(false);
 
   useEffect(() => {
-    const { email, username, password, confirmPassword } = signUpInfo;
+    const { email, password, confirmPassword } = signUpInfo;
     setCanSubmit(
       email !== "" &&
-        username !== "" &&
         password !== "" &&
         (isPasswordConfirmEnabled ? password === confirmPassword : true)
     );
@@ -53,9 +60,9 @@ export function SignUpLogic({
   const handleSubmit = async (event: React.FormEvent) => {
     // Prevent page reload
     event.preventDefault();
-    const { email, username, password } = signUpInfo;
+    const { email, password, username, firstName, lastName, imageUrl } = signUpInfo;
     try {
-      await register(email, username, password);
+      await register(email, password, { username, firstName, lastName, imageUrl });
       setSubmitted(true);
       setErrors([]);
     } catch (error) {
@@ -65,10 +72,10 @@ export function SignUpLogic({
     }
   };
 
-	const handleUsernameUpdated = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleSignUpInfoUpdated = (fieldName: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
 		setSignUpInfo({
 			...signUpInfo,
-			username: event.target.value
+			[fieldName]: event.target.value
 		})
 	}
 	const handleEmailUpdated = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,7 +102,7 @@ export function SignUpLogic({
 		handleSubmit,
 		errors,
 		isSubmitted,
-		handleUsernameUpdated,
+		handleSignUpInfoUpdated,
 		handleEmailUpdated,
 		handlePasswordUpdated,
 		handlePasswordConfirmUpdated,

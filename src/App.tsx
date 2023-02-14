@@ -1,24 +1,22 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useState } from "react";
-import { fetchProfile } from "./api/profile";
+import { Col, Container, Row } from "react-bootstrap";
 import "./App.css";
 import { Layout } from "./components/Layout";
-import { useAuth } from "./lib/auth/hooks/useAuth";
+import { UserDetail } from "./components/UserDetail";
 
 function App() {
-  const { user, logout } = useAuth();
-  const [bio, setBio] = useState();
-
   return (
     <Layout>
-      Hi {user?.username}!
-      {bio ? <p>{bio}</p> : <p>no bio</p>}
-      <button onClick={logout}>
-        Logout
-      </button>
-      <button onClick={() => fetchProfile(user?.username!).then(p => setBio(p.bio))}>
-        fetch bio
-      </button>
+      <Container fluid>
+        <Row>
+          <Col sm={4} className="column">
+            <UserDetail />
+          </Col>
+          <Col sm={{ offset: 1 }} className="column">
+            newsfeed
+          </Col>
+        </Row>
+      </Container>
     </Layout>
   );
 }

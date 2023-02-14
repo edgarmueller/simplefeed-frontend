@@ -1,9 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { register } from "../lib/auth/api/auth";
 import { SignUpLogic } from "../lib/auth/components/SignUpLogic";
+import { useAuth } from "../lib/auth/hooks/useAuth";
 import "./SignUp.css"
 
 export const SignUp = () => {
+  const { user } = useAuth()
+  if (user) return <Navigate to="/" />
   return (
     <SignUpLogic register={register}>
       {({
@@ -12,7 +15,7 @@ export const SignUp = () => {
         errors,
         isSubmitted,
         handleEmailUpdated,
-        handleUsernameUpdated,
+        handleSignUpInfoUpdated,
         handlePasswordUpdated,
         handlePasswordConfirmUpdated,
       }) => (
@@ -34,11 +37,34 @@ export const SignUp = () => {
               <input
                 id="username"
                 type="text"
-                placeholder="Username "
-                onChange={handleUsernameUpdated}
+                placeholder="Username"
+                onChange={handleSignUpInfoUpdated('username')}
                 required
               />
               <br />
+              <input
+                id="firstName"
+                type="text"
+                placeholder="First name"
+                onChange={handleSignUpInfoUpdated('firstName')}
+                required
+              />
+              <br />
+              <input
+                id="lastName"
+                type="text"
+                placeholder="Last name"
+                onChange={handleSignUpInfoUpdated('lastName')}
+                required
+              />
+              <br />
+              <input
+                id="imageUrl"
+                type="text"
+                placeholder="Image "
+                onChange={handleSignUpInfoUpdated('imageUrl')}
+                required
+              />
               <input
                 id="password"
                 type="password"

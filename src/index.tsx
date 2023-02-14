@@ -10,6 +10,7 @@ import App from './App';
 import { NoMatch } from './NoMatch';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthOutlet } from './lib/auth/components/AuthOutlet';
+import { ThemeProvider } from 'react-bootstrap';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,7 +28,12 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <ThemeProvider
+      breakpoints={['xxxl', 'xxl', 'xl', 'lg', 'md', 'sm', 'xs', 'xxs']}
+      minBreakpoint="xxs"
+    >
+      <RouterProvider router={router} />
+    </ThemeProvider>
   </React.StrictMode>
 );
 

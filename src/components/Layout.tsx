@@ -3,7 +3,9 @@ import { NavBar } from './NavBar'
 
 export const Layout = ({ children }: any) => (
 	<>
-	<NavBar />
-	{children}
+		<NavBar />
+		<div className='wrapper'>
+			{children}
+		</div>
 	</>
 )
