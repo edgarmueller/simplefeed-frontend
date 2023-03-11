@@ -1,0 +1,30 @@
+.post_form {
+	display: flex;
+}
+
+.post_form textarea {
+	width: 80%;
+	height: 60px;
+	border-radius: 3px;
+	margin-right: 5px;
+	border: 1px solid #d3d3dd;
+	padding: 5px;
+}
+
+.post_form input[type="submit"] {
+	width: 15%;
+	height: 60px;
+	border: none;
+	border-radius: 3px;
+	background-color: #3498db;
+	color: #fff;
+	font-weight: bold;
+	text-shadow: #73b6e2 0.5px 0.5px; 
+	font-size: 90%;
+	outline: 0;
+	margin: 0;
+}
+
+.post_form input[type="submit"]:active {
+	padding: 5px 4px 4px 5px;
+}

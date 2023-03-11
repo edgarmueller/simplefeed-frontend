@@ -1,0 +1,10 @@
+.status_post {
+	width: 96%;
+	padding: 0px 5px;
+	min-height: 75px;
+}
+
+.profile_pic {
+	float: left;
+	margin-right: 7px;
+}

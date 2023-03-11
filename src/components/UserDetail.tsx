@@ -4,6 +4,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { fetchProfile } from "../api/profile"
 import { Profile } from "../domain.interface"
 import { useAuth } from "../lib/auth/hooks/useAuth"
+import "./UserDetail.css"
 
 export const UserDetail = () => {
 	const [isLoading, setIsLoading] = useState(false)
@@ -34,10 +35,12 @@ export const UserDetail = () => {
 	return (
 		<>
 			<div className="user_details">
-				<Avatar name={user?.username} size="50" round={true} src={profile?.imageUrl} />
-				{profile?.firstName} {profile?.lastName}
-				<br />
-				Likes: {profile?.nrOfLikes}
+				<Avatar name={user?.username} size="100" round={true} src={profile?.imageUrl} />
+				<div className="user_details_stats">
+					{profile?.firstName} {profile?.lastName} <br />
+					Posts: {profile?.nrOfPosts} <br />
+					Likes: {profile?.nrOfLikes}
+				</div>
 			</div>
 		</>
 	)
