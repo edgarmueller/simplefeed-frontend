@@ -1,3 +1,4 @@
+// import './wdyr';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
@@ -11,11 +12,13 @@ import { NoMatch } from './NoMatch';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthOutlet } from './lib/auth/components/AuthOutlet';
 import { ThemeProvider } from 'react-bootstrap';
+import { loader as userLoader, UserProfile } from './components/UserProfile';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthOutlet />}>
       <Route path='/home' element={<ProtectedRoute><App/></ProtectedRoute>} />
+      <Route path='/:username' element={<ProtectedRoute><UserProfile/></ProtectedRoute>} loader={userLoader}/>
       <Route path="/sign-up" element={<SignUp />} />
       <Route path='/sign-in' element={<SignIn />} />
       <Route path="*" element={<NoMatch /> } />
