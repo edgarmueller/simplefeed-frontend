@@ -10,7 +10,7 @@ export const SubmitForm = () => {
 	};
   return (
     <>
-      <form className="post_form" method="post" onSubmit={handleSubmit}>
+      <form className="post_form" onSubmit={handleSubmit}>
         <textarea
           value={text}
           name="postContent"

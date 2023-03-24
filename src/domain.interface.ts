@@ -36,3 +36,10 @@ export interface Pagination<T> {
 		totalItems: number
 	}
 }
+
+export interface Comment {
+	id: string;
+	content: string;	
+	createdAt: string;
+	author: string;
+}
