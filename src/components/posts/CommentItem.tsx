@@ -1,111 +1,78 @@
-import { useCallback, useEffect, useState } from "react";
-import { fetchComments, fetchReplies } from "../../api/posts";
-import { Comment as CommentEntity } from "../../domain.interface";
-import { CommentForm } from "./CommentForm";
-import { Button, Flex, Text, Avatar } from '@chakra-ui/react';
+import { Avatar, Box, Button, Flex, Stack, Text } from "@chakra-ui/react";
+import { useEffect, useMemo, useState } from "react";
+import { CommentNode } from "../../api/posts";
 
 export interface CommentItemProps {
   postId: string;
-  comment: CommentEntity;
-  lazy: boolean;
+  comment: CommentNode;
   path?: string;
   level?: number;
+  fetchMore?: (page: number, commentId: string) => void;
 }
 
 export const CommentItem = ({
   postId,
   comment,
-  lazy,
   path,
+  fetchMore,
   level = 0,
 }: CommentItemProps) => {
+  const [page, setPage] = useState(0)
   const [showReplyForm, setShowReplyForm] = useState(false);
-  const [showReplies, setShowReplies] = useState(false);
-  const [comments, setComments] = useState<CommentEntity[]>([]);
-  const fetchCommentList = useCallback(() => {
-    if (comment.id) {
-      fetchReplies(postId, comment.id).then((cs) => setComments(cs));
-    } else {
-      fetchComments(postId).then((cs) => setComments(cs));
-    }
-  }, [comment.id, postId]);
   useEffect(() => {
-    if (!showReplies) {
-      return;
+    if (page > 0) {
+      fetchMore && fetchMore(page, comment.comment.id)
     }
-    fetchCommentList();
-  }, [showReplies, fetchCommentList]);
-
-  const indentStyle = { pl: `${(level + 1) * 4}`, borderLeft: "1px solid gray" };
-  //return (
-  //  <div>
-  //    {comment.content}
-  //    <CommentThread comments={comments} postId={postId} lazy path={path} />
-  //    <button onClick={() => setShouldFetch(true)}>Show Replies</button>
-  //    <button onClick={() => setShowReply(!showReply)}>Reply</button>
-  //    {showReply ? (
-  //      <CommentForm
-  //        postId={postId}
-  //        onSubmit={() => {
-  //          console.log("refetch");
-  //          fetchCommentList();
-  //        }}
-  //			path={path}
-  //      />
-  //    ) : null}
-  //  </div>
-  //);
+  }, [page, fetchMore, comment.comment.id])
+ 
+  // recursively render children nodes
+  const childNodes = useMemo(() => {
+    if (comment.children.length > 0) {
+      return comment.children.map((reply) => (
+        <CommentItem
+          postId={postId}
+          comment={reply}
+          path={path} // `${path}/${comment.id}`}
+          fetchMore={fetchMore}
+        />
+      ))
+    } else {
+      return null;
+    }
+  }, [fetchMore, comment.children, path, postId]);
 
   return (
-    <Flex alignItems="flex-start" p="2" borderBottom="1px solid gray" {...indentStyle}>
-      <Avatar name={comment.author} src="https://bit.ly/broken-link" mr="2" />
+    <Box
+      p="2"
+      marginLeft={(level + 1) * 4}
+      borderLeftWidth="2px"
+      borderLeftStyle="solid"
+      borderLeftColor="gray.300"
+    >
+      <Avatar name={comment.comment.author} src="https://bit.ly/broken-link" mr="2" />
       <Flex direction="column" w="100%">
         <Text fontWeight="bold" fontSize="sm">
-          {comment.author}
+          {comment.comment.author}
         </Text>
-        <Text>{comment.content}</Text>
-        {comments.length > 0 && (
-          <>
-            {showReplies &&
-              comments.map((comment, index) => (
-                <CommentItem
-                  postId={postId}
-                  key={index}
-                  comment={comment}
-                  lazy
-                  level={level + 1}
-                />
-              ))}
-          </>
-        )}
-        <Button
-          onClick={() => setShowReplyForm(!showReplyForm)}
-          mt="2"
-          size="xs"
-          variant="link"
-        >
-          {showReplyForm ? "Hide" : "Reply"}
-        </Button>
-        <Button
-          onClick={() => setShowReplies(!showReplies)}
-          mt="2"
-          mb="1"
-          size="xs"
-          variant="outline"
-        >
-          {showReplies ? "Hide replies" : "Show replies"}
-        </Button>
-        {showReplyForm && (
-          <CommentForm
-            postId={postId}
-            onSubmit={() => {
-              console.log("refetch");
-              fetchCommentList();
-            }}
-            path={path}
-          />
-        )}
+        <Text>{comment.comment.content}</Text>
+        {childNodes}
+        <Stack direction="row" spacing={4} align="center">
+          <Button
+            onClick={() => setShowReplyForm(!showReplyForm)}
+            size="xs"
+            variant="link"
+          >
+            {showReplyForm ? "Hide" : "Reply"}
+          </Button>
+          <Button
+            onClick={() => setPage(page + 1)}
+            size="xs"
+            variant="link"
+          >
+            load more replies
+          </Button>
+        </Stack>
       </Flex>
-    </Flex>
+    </Box>
   );
 };

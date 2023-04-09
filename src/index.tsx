@@ -11,8 +11,8 @@ import App from './App';
 import { NoMatch } from './NoMatch';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthOutlet } from './lib/auth/components/AuthOutlet';
-import { ThemeProvider } from 'react-bootstrap';
 import { loader as userLoader, UserProfile } from './components/UserProfile';
+import { ChakraProvider } from '@chakra-ui/react';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -31,12 +31,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <ThemeProvider
-      breakpoints={['xxxl', 'xxl', 'xl', 'lg', 'md', 'sm', 'xs', 'xxs']}
-      minBreakpoint="xxs"
-    >
+    <ChakraProvider>
       <RouterProvider router={router} />
-    </ThemeProvider>
+    </ChakraProvider>
   </React.StrictMode>
 );
 

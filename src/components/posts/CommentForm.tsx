@@ -1,30 +1,34 @@
-import { useState } from 'react';
-import { postComment } from '../../api/posts';
+import {
+  Button, Stack,
+  Textarea
+} from "@chakra-ui/react";
+import { useState } from "react";
+import { postComment } from "../../api/posts";
 
 export interface CommentProps {
-	postId: string;
-	onSubmit: () => void;
-	path?: string
+  postId: string;
+  path?: string;
 }
 
-export const CommentForm = ({ postId, onSubmit, path }: CommentProps) => {
-	const [comment, setComment] = useState('');
-	const handleSubmit = (event: any) => {
+export const CommentForm = ({ postId, path }: CommentProps) => {
+  const [comment, setComment] = useState("");
+  const handleSubmit = (event: any) => {
     event.preventDefault();
-		postComment(postId, comment, path).then(() => {
-			setComment("")
-			onSubmit()
-		})
-	};
-	return (
-		<form className='post_comment' onSubmit={handleSubmit}>
-			<textarea 
-				className="comment" 
-				placeholder="Write a comment..." 
+    postComment(postId, comment, path).then(() => {
+      setComment("");
+    });
+  };
+  return (
+    <Stack direction="row" spacing={4}>
+			<Textarea
+				className="comment"
+				placeholder="Write a comment..."
 				onChange={(e) => setComment(e.target.value)}
 				value={comment}
-				/>
-			<button type="submit">Comment</button>
-		</form>
-	)
+			/>
+			<Button type="submit" onClick={handleSubmit}>
+				Comment
+			</Button>
+    </Stack>
+  );
 };

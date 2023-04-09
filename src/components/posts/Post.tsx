@@ -1,24 +1,41 @@
+import { Box, Button } from "@chakra-ui/react";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
-import { useEffect, useState } from "react";
+import { uniqBy } from "lodash";
+import { useCallback, useEffect, useState } from "react";
 import Avatar from "react-avatar";
-import { fetchComments } from "../../api/posts";
+import { buildCommentTree, CommentNode, fetchComments } from "../../api/posts";
 import { Post as PostEntity, Comment } from "../../domain.interface";
-import { CommentThread } from "./CommentThread";
+import { CommentItem } from "./CommentItem";
 
 TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo("en-US");
 
 export const Post = ({ post }: { post: PostEntity }) => {
-	const [showComments, setShowComments] = useState(false)
-	const [comments, setComments] = useState<Comment[]>([])
+  const [page, setPage] = useState(1);
+  const [comments, setComments] = useState<Comment[]>();
+  const [commentTree, setCommentTree] = useState<CommentNode[]>();
+  const fetchMore = useCallback((p: number, commentId = post.id) => {
+    fetchComments(post.id, p, commentId).then((fetchedComments) => {
+      setComments((prevComments) => {
+        const allComments = uniqBy(
+          [...(prevComments || []), ...fetchedComments],
+          "id"
+        );
+        return allComments;
+      });
+    });
+  }, [post.id]);
   useEffect(() => {
-    if (showComments) {
-      fetchComments(post.id).then((cs) => setComments(cs));
-    }
-  }, [showComments, post.id]);
+    fetchMore(page);
+  }, [page, fetchMore]);
+  useEffect(() => {
+    setCommentTree(buildCommentTree(comments || []));
+  }, [comments]);
+  useEffect(() => {
+  }, [commentTree]);
   return (
-    <div key={post.id} className="status_post">
+    <Box key={post.id} bg="gray.100" p={3} borderRadius="md" marginBottom={3}>
       <div className="profile_pic">
         <Avatar
           size="50"
@@ -44,13 +61,19 @@ export const Post = ({ post }: { post: PostEntity }) => {
       <div className="post_content">
         <p>{post.body}</p>
       </div>
-      <div  onClick={() => setShowComments(!showComments)}>{showComments ? "Hide" : "Show"} comments</div>
-      {showComments && (
-        <>
-          <CommentThread postId={post.id} comments={comments} lazy />
-        </>
-      )}
-      <hr />
-    </div>
+      <Button size="xs" variant="link" onClick={() => setPage(page + 1)}>
+        load more
+      </Button>
+      <Box bg="white" p={3} borderRadius="md">
+        {commentTree?.map((comment) => (
+          <CommentItem
+            postId={post.id}
+            key={comment.comment.id}
+            comment={comment}
+            fetchMore={fetchMore}
+          />
+        ))}
+      </Box>
+    </Box>
   );
 };

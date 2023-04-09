@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { fetchPosts } from "../../api/posts";
 import { Post as PostEntity } from "../../domain.interface";
 import "./PostList.css";
@@ -16,6 +16,7 @@ export const PostList = () => {
       setHasMore(page.meta.totalPages !== pageNumber)//page.meta.currentPage)
     });
   }, [pageNumber])
+  const memoedPosts = useMemo(() => posts.map((post) => (<Post key={post.id} post={post} />)), [posts])
   return (
     <InfiniteScroll
       dataLength={posts.length}
@@ -28,11 +29,7 @@ export const PostList = () => {
         </p>
       }
     >
-      {posts.map((post) => {
-        return (
-          <Post post={post} />
-        );
-      })}
+      {memoedPosts}
     </InfiniteScroll>
   );
 };
