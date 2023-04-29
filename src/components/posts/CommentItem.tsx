@@ -1,78 +1,133 @@
 import { Avatar, Box, Button, Flex, Stack, Text } from "@chakra-ui/react";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { CommentNode } from "../../api/posts";
+import { Comment, Pagination } from "../../domain.interface";
+import { CommentForm } from "./CommentForm";
+import { formatTimeAgo } from "../../lib/time-ago";
 
 export interface CommentItemProps {
   postId: string;
-  comment: CommentNode;
+  commentNode: CommentNode;
   path?: string;
   level?: number;
-  fetchMore?: (page: number, commentId: string) => void;
+  initialPage?: number;
+  fetchReplies?: (
+    page: number,
+    commentId: string
+  ) => Promise<Pagination<Comment>>;
+  onReply?: (comment: Comment) => void;
 }
 
-export const CommentItem = ({
-  postId,
-  comment,
-  path,
-  fetchMore,
-  level = 0,
-}: CommentItemProps) => {
-  const [page, setPage] = useState(0)
-  const [showReplyForm, setShowReplyForm] = useState(false);
-  useEffect(() => {
-    if (page > 0) {
-      fetchMore && fetchMore(page, comment.comment.id)
-    }
-  }, [page, fetchMore, comment.comment.id])
- 
-  // recursively render children nodes
-  const childNodes = useMemo(() => {
-    if (comment.children.length > 0) {
-      return comment.children.map((reply) => (
-        <CommentItem
-          postId={postId}
-          comment={reply}
-          path={path} // `${path}/${comment.id}`}
-          fetchMore={fetchMore}
-        />
-      ))
-    } else {
-      return null;
-    }
-  }, [fetchMore, comment.children, path, postId]);
+const CommentItem = memo(
+  ({
+    postId,
+    commentNode,
+    path,
+    fetchReplies,
+    onReply,
+    level = 0,
+    initialPage = 0,
+  }: CommentItemProps) => {
+    const [page, setPage] = useState(initialPage);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+    const [showReplyForm, setShowReplyForm] = useState(false);
+    const commentPath = `${path ? `${path}/` : ""}${commentNode.comment.id}`;
+    useEffect(() => {
+      if (page > 0) {
+        fetchReplies &&
+          fetchReplies(page, commentNode.comment.id).then(
+            (resp: Pagination<Comment>) => {
+              setTotalPages(resp.meta.totalPages)
+              setTotalItems(resp.meta.totalItems)
+            }
+          );
+      }
+    }, [page, fetchReplies, commentNode.comment.id]);
+    // recursively render children nodes
 
-  return (
-    <Box
-      p="2"
-      marginLeft={(level + 1) * 4}
-      borderLeftWidth="2px"
-      borderLeftStyle="solid"
-      borderLeftColor="gray.300"
-    >
-      <Avatar name={comment.comment.author} src="https://bit.ly/broken-link" mr="2" />
-      <Flex direction="column" w="100%">
-        <Text fontWeight="bold" fontSize="sm">
-          {comment.comment.author}
-        </Text>
-        <Text>{comment.comment.content}</Text>
-        {childNodes}
-        <Stack direction="row" spacing={4} align="center">
-          <Button
-            onClick={() => setShowReplyForm(!showReplyForm)}
+    return (
+      <Box
+        padding={1}
+        marginLeft={(level + 1) * 2}
+        borderLeftWidth="2px"
+        borderLeftStyle="solid"
+        borderLeftColor="gray.300"
+      >
+        <Stack direction="row" spacing={2}>
+          <Avatar
             size="xs"
-            variant="link"
-          >
-            {showReplyForm ? "Hide" : "Reply"}
-          </Button>
-          <Button
-            onClick={() => setPage(page + 1)}
-            size="xs"
-            variant="link"
-          >
-            load more replies
-          </Button>
+            name={commentNode.comment.author}
+            src="https://bit.ly/broken-link"
+          />
+          <Text fontWeight="bold" fontSize="sm" marginBottom={2}>
+            {commentNode.comment.author}
+          </Text>
+          <Text fontSize="sm">
+            {formatTimeAgo(commentNode.comment.createdAt)}
+          </Text>
         </Stack>
-      </Flex>
-    </Box>
-  );
-};
+        <Flex direction="column" w="100%">
+          <Text fontSize="sm" marginBottom={0} paddingTop={1}>
+            {commentNode.comment.content}
+          </Text>
+          {commentNode.children.map((reply) => (
+            <CommentItem
+              key={reply.comment.id}
+              postId={postId}
+              commentNode={reply}
+              path={commentPath}
+              fetchReplies={fetchReplies}
+              onReply={onReply}
+            />
+          ))}
+          <Stack direction="row" spacing={4} align="center">
+            <Button
+              onClick={() => setShowReplyForm(!showReplyForm)}
+              size="xs"
+              variant="link"
+            >
+              {showReplyForm ? "Hide" : "Reply"}
+            </Button>
+            {showReplyForm ? (
+              <CommentForm
+                postId={postId}
+                path={commentPath}
+                onSubmit={(postedComment: any) => {
+                  onReply &&
+                    onReply({
+                      ...postedComment,
+                      author: postedComment.author.profile.username,
+                      postId,
+                    });
+                  setShowReplyForm(false);
+                }}
+              />
+            ) : null}
+            {page < totalPages ? (
+              <Button
+                onClick={() => setPage(page + 1)}
+                size="xs"
+                variant="link"
+              >
+                Load more replies
+                {/*totalItems > 0 ? `Show ${totalItems - page * 3} more replies` : 'Load more replies'*/}
+              </Button>
+            ) : (
+              <Button
+                onClick={() => fetchReplies && fetchReplies(page, commentNode.comment.id)}
+                size="xs"
+                variant="link"
+              >
+                Refetch
+              </Button>
+            )}
+          </Stack>
+        </Flex>
+      </Box>
+    );
+  }
+);
+CommentItem.whyDidYouRender = true;
+CommentItem.displayName = "CommentItem";
+export { CommentItem };

@@ -39,7 +39,7 @@ export async function postComment(
       ...createHeaders(),
     },
     method: "POST",
-    body: JSON.stringify({ content, path }),
+    body: JSON.stringify({ content, path: `${postId}/${path}` }),
   });
   return res.body;
 }
@@ -66,7 +66,6 @@ export function buildCommentTree(comments: Comment[]): CommentNode[] {
     if (path.length > 1) {
       const parentId = path[path.length - 1];
       const parent = commentMap.get(parentId);
-      console.log({ parentId, parent });
       if (parent) {
         parent.children.push(commentMap.get(comment.id)!);
       }
@@ -84,7 +83,7 @@ export async function fetchComments(
   postId: string,
   page = 1,
   commentId = postId
-): Promise<Comment[]> {
+): Promise<Pagination<Comment>> {
   // TODO: hard coded limit
   const url = commentId
     ? `${API_URL}/posts/${postId}/comments/${commentId}?page=${page}&limit=3`
@@ -94,5 +93,5 @@ export async function fetchComments(
       ...createHeaders(),
     },
   });
-  return res.body.items;
+  return res.body;
 }

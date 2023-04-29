@@ -4,17 +4,20 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { postComment } from "../../api/posts";
+import { Comment } from "../../domain.interface";
 
 export interface CommentProps {
   postId: string;
   path?: string;
+  onSubmit?: (postedComment: Comment) => void;
 }
 
-export const CommentForm = ({ postId, path }: CommentProps) => {
+export const CommentForm = ({ postId, path, onSubmit }: CommentProps) => {
   const [comment, setComment] = useState("");
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    postComment(postId, comment, path).then(() => {
+    postComment(postId, comment, path).then(postedComment => {
+      onSubmit && onSubmit(postedComment);
       setComment("");
     });
   };
