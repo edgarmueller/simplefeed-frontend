@@ -35,7 +35,7 @@ export const UserDetail = () => {
 	return (
 		<>
 			<div className="user_details">
-				<Avatar name={user?.username} size="100" round={true} src={profile?.imageUrl} />
+				{/*<Avatar name={user?.username} size="100" round={true} src={profile?.imageUrl} />*/}
 				<div className="user_details_stats">
 					{profile?.firstName} {profile?.lastName} <br />
 					Posts: {profile?.nrOfPosts} <br />
