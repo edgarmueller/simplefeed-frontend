@@ -1,6 +1,6 @@
+import { Button, Stack, Textarea } from '@chakra-ui/react';
 import { useState } from 'react';
 import { submitPost } from '../api/posts';
-import './SubmitForm.css'
 
 export const SubmitForm = () => {
   const [text, setPostContent] = useState('');
@@ -9,18 +9,15 @@ export const SubmitForm = () => {
     submitPost(text)
 	};
   return (
-    <>
-      <form className="post_form" onSubmit={handleSubmit}>
-        <textarea
-          value={text}
-          name="postContent"
-          id="post_text"
-          placeholder="What's on your mind?"
-          onChange={(e) => setPostContent(e.target.value)}
-        />
-        <input type="submit" name="post" id="post_button" value="Post" />
-        <hr />
-      </form>
-    </>
+    <Stack direction="row" marginBottom={4}>
+      <Textarea
+        value={text}
+        name="postContent"
+        id="post_text"
+        placeholder="What's on your mind?"
+        onChange={(e) => setPostContent(e.target.value)}
+      />
+      <Button onClick={handleSubmit} colorScheme='blue' id="post_button">Post</Button>
+    </Stack>
   );
 };
