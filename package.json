@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.18",
     "@chakra-ui/react": "^2.5.5",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
@@ -28,6 +29,7 @@
     "react-avatar": "^5.0.3",
     "react-bootstrap": "^2.7.0",
     "react-dom": "^18.2.0",
+    "react-icons": "^4.8.0",
     "react-infinite-scroll-component": "^6.1.0",
     "react-router-dom": "^6.6.2",
     "react-scripts": "5.0.1",

@@ -1,48 +1,44 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHome,
-  faEnvelope,
-  faCog,
-  faBell,
-  faUsers,
-  faDoorOpen,
-} from "@fortawesome/free-solid-svg-icons";
+import { Flex, Box, Text } from "@chakra-ui/react";
+import { Link, Icon } from "@chakra-ui/react";
+import { FiBell, FiHome, FiLogOut, FiUsers } from "react-icons/fi";
+import { FaEnvelope } from "react-icons/fa";
+import { BiCog } from "react-icons/bi";
 
-import "./NavBar.css";
-import { useAuth } from "../lib/auth/hooks/useAuth";
-
-export const NavBar = () => {
-  const { user, logout } = useAuth();
+export function NavBar() {
   return (
-    <>
-      <div className="top_bar">
-        <div className="logo">
-          <a href="/">Swirlfeed</a>
-        </div>
-        <nav>
-          <a href="/me" aria-label="home">
-            {user?.username}
-          </a>
-          <a href="/home" aria-label="home">
-            <FontAwesomeIcon icon={faHome} />
-          </a>
-          <a href="/messages" aria-label="messages">
-            <FontAwesomeIcon icon={faEnvelope} />
-          </a>
-          <a href="/notifications" aria-label="notififcations">
-            <FontAwesomeIcon icon={faBell} />
-          </a>
-          <a href="/users" aria-label="users">
-            <FontAwesomeIcon icon={faUsers} />
-          </a>
-          <a href="/settings" aria-label="settings">
-            <FontAwesomeIcon icon={faCog} />
-          </a>
-          <a role="button" href="#" onClick={logout} aria-label="logout">
-            <FontAwesomeIcon icon={faDoorOpen} />
-          </a>
-        </nav>
-      </div>
-    </>
+    <Flex
+      bg="blue.500"
+      color="white"
+      px={4}
+      py={2}
+      direction="row"
+      align="center"
+    >
+      <Box>
+        <Text fontWeight="bold" marginBottom={0}>
+          SWIRLFEED
+        </Text>
+      </Box>
+      <Box ml="auto" display="flex" alignItems="center">
+        <Link mr={4}>
+          <Icon as={FiHome} />
+        </Link>
+        <Link mr={4}>
+          <Icon as={FaEnvelope} />
+        </Link>
+        <Link mr={4}>
+          <Icon as={FiBell} />
+        </Link>
+        <Link mr={4}>
+          <Icon as={FiUsers} />
+        </Link>
+        <Link mr={4}>
+          <Icon as={BiCog} />
+        </Link>
+        <Link mr={4}>
+          <Icon as={FiLogOut} />
+        </Link>
+      </Box>
+    </Flex>
   );
-};
+}
