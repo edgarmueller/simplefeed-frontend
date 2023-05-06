@@ -16,6 +16,7 @@ export interface CommentItemProps {
     commentId: string
   ) => Promise<Pagination<Comment>>;
   onReply?: (comment: Comment) => void;
+  onRepliesFetched?: (page: Pagination<Comment>) => void;
 }
 
 const CommentItem = memo(
@@ -25,6 +26,7 @@ const CommentItem = memo(
     path,
     fetchReplies,
     onReply,
+    onRepliesFetched,
     level = 0,
     initialPage = 0,
   }: CommentItemProps) => {
@@ -33,13 +35,17 @@ const CommentItem = memo(
     const [totalItems, setTotalItems] = useState(0);
     const [showReplyForm, setShowReplyForm] = useState(false);
     const commentPath = `${path ? `${path}/` : ""}${commentNode.comment.id}`;
+    const onRepliesFetchedDefault = (page: Pagination<Comment>) => {
+      setTotalItems(totalItems => totalItems - page.items.length)
+    };
     useEffect(() => {
       if (page > 0) {
         fetchReplies &&
           fetchReplies(page, commentNode.comment.id).then(
             (resp: Pagination<Comment>) => {
-              setTotalPages(resp.meta.totalPages)
-              setTotalItems(resp.meta.totalItems)
+              setTotalPages(resp.meta.totalPages);
+              setTotalItems(resp.meta.totalItems);
+              onRepliesFetched ? onRepliesFetched(resp) : onRepliesFetchedDefault(resp);
             }
           );
       }
@@ -79,6 +85,7 @@ const CommentItem = memo(
               path={commentPath}
               fetchReplies={fetchReplies}
               onReply={onReply}
+              onRepliesFetched={onRepliesFetched || onRepliesFetchedDefault}
             />
           ))}
           <Stack direction="row" spacing={4} align="center">
@@ -110,8 +117,8 @@ const CommentItem = memo(
                 size="xs"
                 variant="link"
               >
-                Load more replies
-                {/*totalItems > 0 ? `Show ${totalItems - page * 3} more replies` : 'Load more replies'*/}
+                {/* TODO: hard coded pag limit */}
+                {totalItems > 0 ? `Show ${totalItems - page * 3} more replies` : 'Load more replies'}
               </Button>
             ) : (
               <Button

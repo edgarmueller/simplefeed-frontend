@@ -1,7 +1,16 @@
-import { Avatar, Box, Stack, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Button,
+  Collapse,
+  Stack,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
 import isEqual from "lodash/isEqual";
 import { uniqBy } from "lodash";
 import { memo, useCallback, useEffect, useState } from "react";
+import { BsArrowDownCircle, BsArrowUpCircle } from "react-icons/bs";
 import { buildCommentTree, CommentNode, fetchComments } from "../../api/posts";
 import { Post as PostEntity, Comment } from "../../domain.interface";
 import { CommentItem } from "./CommentItem";
@@ -10,6 +19,7 @@ import { formatTimeAgo } from "../../lib/time-ago";
 const Post = memo(({ post }: { post: PostEntity }) => {
   const [comments, setComments] = useState<Comment[]>();
   const [rootComments, setRootComments] = useState<CommentNode[]>([]);
+  const { isOpen, onToggle } = useDisclosure();
   const fetchReplies = useCallback(
     (p: number = 1, commentId = post.id) => {
       return fetchComments(post.id, p, commentId).then(
@@ -29,7 +39,9 @@ const Post = memo(({ post }: { post: PostEntity }) => {
     },
     [post.id]
   );
-  useEffect(() => { fetchReplies(); }, [fetchReplies]);
+  useEffect(() => {
+    fetchReplies();
+  }, [fetchReplies]);
   useEffect(() => {
     const newTree = buildCommentTree(comments || []);
     if (!isEqual(newTree, rootComments)) {
@@ -63,25 +75,49 @@ const Post = memo(({ post }: { post: PostEntity }) => {
       <Box bg="white" padding={2} borderRadius="md" marginBottom={4}>
         <Text>{post.body}</Text>
       </Box>
-      <Stack direction="row" spacing={4} alignItems="center" marginBottom={2}>
-        <Text marginBottom={0} fontSize="xs" color="gray.500" fontWeight="bold">
-          Comments
-        </Text>
+      <Stack direction="row" spacing={0} alignItems="center" marginBottom={2}>
+        {isOpen ? (
+          <Button
+            size="sm"
+            variant="link"
+            rightIcon={<BsArrowUpCircle />}
+            onClick={onToggle}
+          >
+            Comments
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant="link"
+            rightIcon={<BsArrowDownCircle />}
+            onClick={onToggle}
+          >
+            Comments
+          </Button>
+        )}
       </Stack>
-      <Box bg="white" p={1} borderRadius="md">
-        {rootComments?.map((comment) => {
-          return (
-            <CommentItem
-              postId={post.id}
-              key={comment.comment.id}
-              commentNode={comment}
-              fetchReplies={fetchReplies}
-              onReply={onReply}
-              initialPage={1}
-            />
-          );
-        })}
-      </Box>
+      <Collapse in={isOpen} animateOpacity>
+        <Box bg="white" p={1} borderRadius="md">
+          {rootComments.length > 0 ? (
+            rootComments?.map((comment) => {
+              return (
+                <CommentItem
+                  postId={post.id}
+                  key={comment.comment.id}
+                  commentNode={comment}
+                  fetchReplies={fetchReplies}
+                  onReply={onReply}
+                  initialPage={1}
+                />
+              );
+            })
+          ) : (
+            <Text>
+              <i>No comments yet</i>
+            </Text>
+          )}
+        </Box>
+      </Collapse>
     </Box>
   );
 });
