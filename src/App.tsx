@@ -5,18 +5,23 @@ import { Layout } from "./components/Layout";
 import { PostList } from "./components/posts/PostList";
 import { SubmitForm } from "./components/SubmitForm";
 import { UserDetail } from "./components/UserDetail";
+import { Card, CardBody } from "@chakra-ui/react";
 
 function App() {
   return (
     <Layout>
       <Container fluid>
         <Row>
-          <Col sm={4} className="column">
+          <Col sm={4}>
             <UserDetail />
           </Col>
-          <Col sm={{ offset: 0 }} className="column">
-            <SubmitForm />
-            <PostList />
+          <Col sm={{ offset: 0 }}>
+            <Card>
+              <CardBody>
+                <SubmitForm />
+                <PostList />
+              </CardBody>
+            </Card>
           </Col>
         </Row>
       </Container>
