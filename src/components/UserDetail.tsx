@@ -4,7 +4,6 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { fetchProfile } from "../api/profile";
 import { Profile } from "../domain.interface";
 import { useAuth } from "../lib/auth/hooks/useAuth";
-import "./UserDetail.css";
 
 export const UserDetail = () => {
   const [isLoading, setIsLoading] = useState(false);
