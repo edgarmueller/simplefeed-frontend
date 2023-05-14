@@ -18,7 +18,6 @@ function App() {
           <Col sm={{ offset: 0 }}>
             <Card>
               <CardBody>
-                <SubmitForm />
                 <PostList />
               </CardBody>
             </Card>

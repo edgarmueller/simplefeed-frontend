@@ -3,33 +3,44 @@ import { fetchPosts } from "../../api/posts";
 import { Post as PostEntity } from "../../domain.interface";
 import "./PostList.css";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { uniqBy } from "lodash"
+import { uniqBy } from "lodash";
 import { Post } from "./Post";
+import { SubmitForm } from "../SubmitForm";
 
 export const PostList = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [posts, setPosts] = useState<PostEntity[]>([]);
   useEffect(() => {
+    // TODO: can we fetch by different means
+    // fetchLikedPosts();
     fetchPosts(pageNumber).then((page) => {
-      setPosts(p => uniqBy([...p, ...page.items], 'id'));
-      setHasMore(page.meta.totalPages !== pageNumber)//page.meta.currentPage)
+      setPosts((p) => uniqBy([...p, ...page.items], "id"));
+      setHasMore(page.meta.totalPages !== pageNumber);
     });
-  }, [pageNumber])
-  const memoedPosts = useMemo(() => posts.map((post) => (<Post key={post.id} post={post} />)), [posts])
+  }, [pageNumber]);
+  const memoedPosts = useMemo(
+    () => posts.map((post) => <Post key={post.id} post={post} />),
+    [posts]
+  );
   return (
-    <InfiniteScroll
-      dataLength={posts.length}
-      next={() => setPageNumber(pageNumber + 1)}
-      hasMore={hasMore}
-      loader={<h4>Loading...</h4>}
-      endMessage={
-        <p style={{ textAlign: 'center' }}>
-          <b>Yay! You have seen it all</b>
-        </p>
-      }
-    >
-      {memoedPosts}
-    </InfiniteScroll>
+    <>
+      <SubmitForm
+        onSubmit={(newPost: PostEntity) => setPosts((posts) => [newPost, ...posts])}
+      />
+      <InfiniteScroll
+        dataLength={posts.length}
+        next={() => setPageNumber(pageNumber + 1)}
+        hasMore={hasMore}
+        loader={<h4>Loading...</h4>}
+        endMessage={
+          <p style={{ textAlign: "center" }}>
+            <b>Yay! You have seen it all</b>
+          </p>
+        }
+      >
+        {memoedPosts}
+      </InfiniteScroll>
+    </>
   );
 };
