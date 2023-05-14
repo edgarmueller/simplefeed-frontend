@@ -5,15 +5,26 @@ import { login as loginApi } from "../lib/auth/api/auth";
 import { SignInLogic } from "../lib/auth/components/SignInLogic";
 import { useAuth } from "../lib/auth/hooks/useAuth";
 import "./SignIn.css";
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  Text,
+  FormLabel,
+  Input,
+} from "@chakra-ui/react";
+import { Logo } from "./Logo";
 
 export const SignIn = () => {
   const { user, login: loginApp } = useAuth();
   const login = async (email: string, password: string) => {
     const user = await loginApi(email, password);
-    loginApp(jwtDecode<User>(user.token))
-  }
+    loginApp(jwtDecode<User>(user.token));
+  };
   if (user) {
-    return (<Navigate replace to="/home" />)
+    return <Navigate replace to="/home" />;
   }
   return (
     <SignInLogic login={login}>
@@ -26,41 +37,50 @@ export const SignIn = () => {
         handlePasswordUpdated,
       }) => {
         return (
-        <div className="wrapper">
-          <div className="login_box">
-            <div className="login_header">
-              <h1>Swirlfeed</h1>
-              Login or sign up below
-            </div>
-              <form id="login-form" onSubmit={handleSubmit}>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="Email address"
-                  onChange={handleEmailUpdated}
-                  required
-                />
-                <br />
-                <input
-                  id="password"
-                  type="password"
-                  placeholder="Password"
-                  onChange={handlePasswordUpdated}
-                />
-                <br />
+          <Flex alignItems="center" justifyContent="center" minHeight="100vh">
+            <Box maxW="md" w="100%">
+              <Logo />
+              <form onSubmit={handleSubmit}>
+                <FormControl>
+                  <FormLabel>Email address</FormLabel>
+                  <Input
+                    type="email"
+                    placeholder="Email address"
+                    onChange={handleEmailUpdated}
+                  />
+                  <FormLabel>Password</FormLabel>
+                </FormControl>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="Password"
+                    onChange={handlePasswordUpdated}
+                  />
+                </FormControl>
                 {errors.map((error) => (
-                  <p key={error}>{error}</p>
+                  <FormErrorMessage key={error}>{error}</FormErrorMessage>
                 ))}
-                {isSubmitted && <p>Login successful!</p>}
-                <input type="submit" disabled={!canSubmit} value="Sign In"/>
-                <br/>
-                <Link to="/sign-up" className="sign-up">Need an account? Register here!</Link>
+                <FormControl>
+                  <Button
+                    type="submit"
+                    disabled={!canSubmit}
+                    onClick={handleSubmit}
+                  >
+                    Sign in
+                  </Button>
+                  {isSubmitted && <FormLabel>Login successful!</FormLabel>}
+                </FormControl>
               </form>
-            </div>
-          </div>
-      )
-      }
-      }
+              <Box p={4}>
+                <Text>
+                  Don't have an account?{" "}
+                  <Link to="/sign-up">Sign up here!</Link>
+                </Text>
+              </Box>
+            </Box>
+          </Flex>
+        );
+      }}
     </SignInLogic>
   );
 };
