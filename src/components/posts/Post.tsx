@@ -17,6 +17,7 @@ import {
   CommentNode,
   fetchComments,
   likePost,
+  unlikePost,
 } from "../../api/posts";
 import { Post as PostEntity, Comment } from "../../domain.interface";
 import { CommentItem } from "./CommentItem";
@@ -28,6 +29,9 @@ const Post = memo(({ post }: { post: PostEntity }) => {
   const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>();
   const [commentTree, setCommentTree] = useState<CommentNode[]>([]);
+  const [isLiked, setLiked] = useState(
+    post.likes?.find(({ userId }) => userId === user?.userId) !== undefined
+  );
   const { isOpen, onToggle } = useDisclosure();
   const fetchReplies = useCallback(
     (p: number = 1, commentId = post.id) => {
@@ -126,7 +130,7 @@ const Post = memo(({ post }: { post: PostEntity }) => {
               </Text>
               <CommentForm
                 postId={post.id}
-                path=''
+                path=""
                 onSubmit={(comment: Comment) => {
                   onReply(comment);
                   fetchReplies();
@@ -136,10 +140,19 @@ const Post = memo(({ post }: { post: PostEntity }) => {
           )}
         </Box>
       </Collapse>
-      <Button leftIcon={<BiLike />} onClick={() => likePost(post.id)}>
-        {post.likes?.find(({ userId }) => userId === user?.userId) === undefined
-          ? "Like"
-          : "Unlike"}
+      <Button
+        leftIcon={<BiLike />}
+        onClick={async () => {
+          if (isLiked) {
+            await unlikePost(post.id)
+            setLiked(false);
+          } else {
+            await likePost(post.id)
+            setLiked(true);
+          }
+        }}
+      >
+        {isLiked ? "Unlike" : "Like"}
       </Button>
     </Box>
   );

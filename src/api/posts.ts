@@ -53,6 +53,15 @@ export async function likePost(postId: string): Promise<void> {
   });
 }
 
+export async function unlikePost(postId: string): Promise<void> {
+  await fetchOne(`${API_URL}/posts/${postId}/like`, {
+    headers: {
+      ...createHeaders(),
+    },
+    method: "DELETE",
+  });
+}
+
 // export async function fetchLikedPosts(): Promise<void> {
 //   await fetchOne(`${API_URL}/posts/likes`, {
 //     headers: {
