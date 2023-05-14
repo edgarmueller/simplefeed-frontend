@@ -104,7 +104,7 @@ const CommentItem = memo(
                   onReply &&
                     onReply({
                       ...postedComment,
-                      author: postedComment.author.profile.username,
+                      author: postedComment.author,
                       postId,
                     });
                   setShowReplyForm(false);

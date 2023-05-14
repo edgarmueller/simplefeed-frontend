@@ -1,5 +1,6 @@
 export interface UserToken {
 	username: string;
+	userId: string;
 }
 
 export interface Profile {
@@ -25,6 +26,7 @@ export interface Post {
 	author: {
 		profile: Pick<Profile, 'firstName' | 'lastName' | 'imageUrl' | 'username'>,
 	}
+	likes: any[]
 }
 
 export interface Pagination<T> {

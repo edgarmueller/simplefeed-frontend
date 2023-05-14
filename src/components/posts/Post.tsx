@@ -11,14 +11,23 @@ import isEqual from "lodash/isEqual";
 import { uniqBy } from "lodash";
 import { memo, useCallback, useEffect, useState } from "react";
 import { BsArrowDownCircle, BsArrowUpCircle } from "react-icons/bs";
-import { buildCommentTree, CommentNode, fetchComments } from "../../api/posts";
+import { BiLike } from "react-icons/bi";
+import {
+  buildCommentTree,
+  CommentNode,
+  fetchComments,
+  likePost,
+} from "../../api/posts";
 import { Post as PostEntity, Comment } from "../../domain.interface";
 import { CommentItem } from "./CommentItem";
 import { formatTimeAgo } from "../../lib/time-ago";
+import { useAuth } from "../../lib/auth/hooks/useAuth";
+import { CommentForm } from "./CommentForm";
 
 const Post = memo(({ post }: { post: PostEntity }) => {
+  const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>();
-  const [rootComments, setRootComments] = useState<CommentNode[]>([]);
+  const [commentTree, setCommentTree] = useState<CommentNode[]>([]);
   const { isOpen, onToggle } = useDisclosure();
   const fetchReplies = useCallback(
     (p: number = 1, commentId = post.id) => {
@@ -40,14 +49,11 @@ const Post = memo(({ post }: { post: PostEntity }) => {
     [post.id]
   );
   useEffect(() => {
-    fetchReplies();
-  }, [fetchReplies]);
-  useEffect(() => {
     const newTree = buildCommentTree(comments || []);
-    if (!isEqual(newTree, rootComments)) {
-      setRootComments(newTree);
+    if (!isEqual(newTree, commentTree)) {
+      setCommentTree(newTree);
     }
-  }, [comments, rootComments]);
+  }, [comments, commentTree]);
   const onReply = useCallback((comment: Comment) => {
     setComments((prevComments) => [...(prevComments || []), comment]);
   }, []);
@@ -90,7 +96,10 @@ const Post = memo(({ post }: { post: PostEntity }) => {
             size="sm"
             variant="link"
             rightIcon={<BsArrowDownCircle />}
-            onClick={onToggle}
+            onClick={() => {
+              onToggle();
+              fetchReplies();
+            }}
           >
             Comments
           </Button>
@@ -98,8 +107,8 @@ const Post = memo(({ post }: { post: PostEntity }) => {
       </Stack>
       <Collapse in={isOpen} animateOpacity>
         <Box bg="white" p={1} borderRadius="md">
-          {rootComments.length > 0 ? (
-            rootComments?.map((comment) => {
+          {commentTree.length > 0 ? (
+            commentTree?.map((comment) => {
               return (
                 <CommentItem
                   postId={post.id}
@@ -107,17 +116,31 @@ const Post = memo(({ post }: { post: PostEntity }) => {
                   commentNode={comment}
                   fetchReplies={fetchReplies}
                   onReply={onReply}
-                  initialPage={1}
                 />
               );
             })
           ) : (
-            <Text>
-              <i>No comments yet</i>
-            </Text>
+            <>
+              <Text>
+                <i>No comments yet</i>
+              </Text>
+              <CommentForm
+                postId={post.id}
+                path=''
+                onSubmit={(comment: Comment) => {
+                  onReply(comment);
+                  fetchReplies();
+                }}
+              />
+            </>
           )}
         </Box>
       </Collapse>
+      <Button leftIcon={<BiLike />} onClick={() => likePost(post.id)}>
+        {post.likes?.find(({ userId }) => userId === user?.userId) === undefined
+          ? "Like"
+          : "Unlike"}
+      </Button>
     </Box>
   );
 });
