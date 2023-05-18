@@ -1,15 +1,15 @@
 import { Button, Stack, Textarea } from '@chakra-ui/react';
 import { useState } from 'react';
 import { submitPost } from '../api/posts';
-import { useAuth } from '../lib/auth/hooks/useAuth';
 import { Post } from '../domain.interface';
+import { useUser } from '../lib/auth/hooks/useUser';
 
 export const SubmitForm = ({ onSubmit }: { onSubmit: (post: Post) => void }) => {
   const [text, setPostContent] = useState('');
-  const { user } = useAuth();
+  const { user } = useUser();
 	const handleSubmit = async (event: any) => {
     event.preventDefault();
-    const post = await submitPost(text, user?.userId)
+    const post = await submitPost(text, user?.id)
     onSubmit(post);
 	};
   return (

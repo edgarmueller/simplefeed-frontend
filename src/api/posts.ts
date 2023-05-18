@@ -1,6 +1,7 @@
 import { Comment, Pagination, Post } from "../domain.interface";
 import { API_URL } from "../lib/auth/api/constants";
 import fetch, { createHeaders } from "../lib/fetch";
+import axios from "axios";
 
 // TODO
 const fetchOne = fetch<Post>();
@@ -20,13 +21,27 @@ export async function submitPost(body: string, toUserId?: string) {
   return res.body;
 }
 
-export async function fetchPosts(page: number, limit = 50): Promise<Pagination<Post>> {
+export async function fetchFeed(page: number, limit = 50): Promise<Pagination<Post>> {
   const res = await fetchMany(`${API_URL}/posts?page=${page}&limit=${limit}`, {
     headers: {
       ...createHeaders(),
     },
   });
   return res.body;
+}
+
+export async function fetchPosts(userId: string, page: number, limit = 50): Promise<Pagination<Post>> {
+  const res = await axios.get(`${API_URL}/posts`, {
+    headers: {
+      ...createHeaders(),
+    },
+    params: {
+      userId,
+      page,
+      limit,
+    },
+  });
+  return res.data;
 }
 
 export async function postComment(

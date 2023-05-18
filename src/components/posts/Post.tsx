@@ -7,30 +7,30 @@ import {
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
-import isEqual from "lodash/isEqual";
 import { uniqBy } from "lodash";
+import isEqual from "lodash/isEqual";
 import { memo, useCallback, useEffect, useState } from "react";
-import { BsArrowDownCircle, BsArrowUpCircle } from "react-icons/bs";
 import { BiLike } from "react-icons/bi";
+import { BsArrowDownCircle, BsArrowUpCircle } from "react-icons/bs";
 import {
-  buildCommentTree,
   CommentNode,
+  buildCommentTree,
   fetchComments,
   likePost,
   unlikePost,
 } from "../../api/posts";
-import { Post as PostEntity, Comment } from "../../domain.interface";
-import { CommentItem } from "./CommentItem";
+import { Comment, Post as PostEntity } from "../../domain.interface";
+import { useUser } from "../../lib/auth/hooks/useUser";
 import { formatTimeAgo } from "../../lib/time-ago";
-import { useAuth } from "../../lib/auth/hooks/useAuth";
 import { CommentForm } from "./CommentForm";
+import { CommentItem } from "./CommentItem";
 
 const Post = memo(({ post }: { post: PostEntity }) => {
-  const { user } = useAuth();
+  const { user } = useUser();
   const [comments, setComments] = useState<Comment[]>();
   const [commentTree, setCommentTree] = useState<CommentNode[]>([]);
   const [isLiked, setLiked] = useState(
-    post.likes?.find(({ userId }) => userId === user?.userId) !== undefined
+    post.likes?.find(({ userId }) => userId === user?.id) !== undefined
   );
   const { isOpen, onToggle } = useDisclosure();
   const fetchReplies = useCallback(
