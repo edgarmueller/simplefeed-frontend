@@ -13,7 +13,9 @@ export interface Profile {
 	nrOfPosts: number
 }
 export interface User {
-	profile: Profile
+	id: string
+	username: string
+	friends: User[]
 }
 
 export interface Post {
@@ -45,4 +47,10 @@ export interface Comment {
 	createdAt: string;
 	author: string;
 	path: string;
+}
+
+export interface FriendRequest {
+	id: string;
+	from: string;
+	to: string;
 }

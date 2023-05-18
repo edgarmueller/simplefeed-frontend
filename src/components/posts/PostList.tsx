@@ -1,34 +1,39 @@
+import { uniqBy } from "lodash";
 import { useEffect, useMemo, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { fetchPosts } from "../../api/posts";
 import { Post as PostEntity } from "../../domain.interface";
-import "./PostList.css";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { uniqBy } from "lodash";
 import { Post } from "./Post";
-import { SubmitForm } from "../SubmitForm";
+import "./PostList.css";
 
-export const PostList = () => {
+export interface PostListProps {
+  userId: string;
+}
+
+export const PostList = ({ userId }: PostListProps) => {
   const [pageNumber, setPageNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [posts, setPosts] = useState<PostEntity[]>([]);
   useEffect(() => {
+    if (!userId) {
+      return;
+    }
     // TODO: can we fetch by different means
     // fetchLikedPosts();
-    fetchPosts(pageNumber).then((page) => {
+    fetchPosts(userId, pageNumber).then((page) => {
       setPosts((p) => uniqBy([...p, ...page.items], "id"));
       setHasMore(page.meta.totalPages !== pageNumber);
     });
-  }, [pageNumber]);
+  }, [userId, pageNumber]);
   const memoedPosts = useMemo(
     () => posts.map((post) => <Post key={post.id} post={post} />),
     [posts]
   );
+  console.log({posts})
   return (
     <>
-      <SubmitForm
-        onSubmit={(newPost: PostEntity) => setPosts((posts) => [newPost, ...posts])}
-      />
       <InfiniteScroll
+        key={userId}
         dataLength={posts.length}
         next={() => setPageNumber(pageNumber + 1)}
         hasMore={hasMore}
