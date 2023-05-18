@@ -1,5 +1,8 @@
+import { createHeaders } from "../../fetch";
 import { API_URL } from "./constants";
 import { writeStorage, deleteFromStorage } from "@rehooks/local-storage";
+import axios from 'axios'
+
 
 export function getAccessToken() {
   return localStorage.getItem("token");
@@ -70,21 +73,32 @@ export async function login(email: string, password: string) {
     method: "POST",
     headers: headers,
     body: raw,
-    // redirect: 'follow'
   };
 
   const response = await fetch(`${API_URL}/auth/login`, requestOptions);
   if (!response.ok) {
     throw new Error(response.statusText);
   }
-  const { user } = await response.json();
-  saveAccessToken(user.token);
-  saveRefreshToken(user.refreshToken);
-  return user;
+  const { accessToken, refreshToken } = await response.json();
+  saveAccessToken(accessToken);
+  saveRefreshToken(refreshToken);
+  return {
+    accessToken,
+    refreshToken,
+  }
 }
 
 export function logout() {
   deleteFromStorage("user");
   deleteFromStorage("token");
   deleteFromStorage("refreshToken");
+}
+
+export async function me() {
+  const res = await axios.get(`${API_URL}/users/me`, {
+    headers: {
+      ...createHeaders(),
+    },
+  });
+  return res.data;
 }
