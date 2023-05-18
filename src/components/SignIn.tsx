@@ -1,27 +1,25 @@
-import jwtDecode from "jwt-decode";
-import { Link, Navigate } from "react-router-dom";
-import { User } from "../domain.interface";
-import { login as loginApi } from "../lib/auth/api/auth";
-import { SignInLogic } from "../lib/auth/components/SignInLogic";
-import { useAuth } from "../lib/auth/hooks/useAuth";
-import "./SignIn.css";
 import {
   Box,
   Button,
   Flex,
   FormControl,
   FormErrorMessage,
-  Text,
   FormLabel,
   Input,
+  Text,
 } from "@chakra-ui/react";
+import { Link, Navigate } from "react-router-dom";
+import { login as loginApi } from "../lib/auth/api/auth";
+import { SignInLogic } from "../lib/auth/components/SignInLogic";
+import { useAuth } from "../lib/auth/hooks/useAuth";
 import { Logo } from "./Logo";
+import "./SignIn.css";
 
 export const SignIn = () => {
-  const { user, login: loginApp } = useAuth();
+  const { token: user, login: loginApp } = useAuth();
   const login = async (email: string, password: string) => {
-    const user = await loginApi(email, password);
-    loginApp(jwtDecode<User>(user.token));
+    const { accessToken } = await loginApi(email, password);
+    loginApp(accessToken); 
   };
   if (user) {
     return <Navigate replace to="/home" />;

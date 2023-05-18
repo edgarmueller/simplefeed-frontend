@@ -5,8 +5,8 @@ import { useAuth } from "../lib/auth/hooks/useAuth";
 import "./SignUp.css"
 
 export const SignUp = () => {
-  const { user } = useAuth()
-  if (user) return <Navigate to="/" />
+  const { token } = useAuth()
+  if (token) return <Navigate to="/" />
   return (
     <SignUpLogic register={register}>
       {({

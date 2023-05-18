@@ -4,13 +4,13 @@ import fetch, { createHeaders } from "../lib/fetch";
 
 const fetchUser = fetch<User>();
 
-export async function fetchProfile(username: string): Promise<any> {
-  const res = await fetchUser(`${API_URL}/profiles/${username}`, {
+export async function fetchUserProfile(username: string): Promise<any> {
+  const res = await fetchUser(`${API_URL}/users/${username}`, {
     headers: {
       "Content-Type": "application/json",
     },
   });
-  return res.body.profile;
+  return res.body;
 }
 
 export async function followProfile(username: string) {
@@ -20,7 +20,7 @@ export async function followProfile(username: string) {
     },
     method: "POST",
   });
-  return res.body.profile;
+  return res.body;
 }
 
 export async function unfollowProfile(username: string) {
@@ -30,5 +30,5 @@ export async function unfollowProfile(username: string) {
     },
     method: "DELETE",
   });
-  return res.body.profile;
+  return res.body;
 }
