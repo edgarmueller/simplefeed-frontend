@@ -3,10 +3,12 @@ import {
   Box,
   Button,
   Collapse,
+  Link,
   Stack,
   Text,
   useDisclosure,
 } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 import { uniqBy } from "lodash";
 import isEqual from "lodash/isEqual";
 import { memo, useCallback, useEffect, useState } from "react";
@@ -70,9 +72,9 @@ const Post = memo(({ post }: { post: PostEntity }) => {
           src={post.author.profile?.imageUrl}
         />
         <div className="posted_by" style={{ color: "#ACACAC" }}>
-          <a href={post.author.profile.username}>
+          <Link as={RouterLink} to={`/users/${post.author.profile.username}`}>
             {post.author.profile.firstName} {post.author.profile.lastName}
-          </a>{" "}
+          </Link>{" "}
           {post.postedTo && "to "}
           {post.postedTo && (
             <a href={post.postedTo.profile.username}>
