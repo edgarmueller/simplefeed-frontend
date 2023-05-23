@@ -8,21 +8,21 @@ import { SignUp } from './components/SignUp';
 import { FriendRequests } from './components/FriendRequests';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
-import App from './App';
+import App from './Feed';
 import { NoMatch } from './NoMatch';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthOutlet } from './lib/auth/components/AuthOutlet';
-import { loader as userLoader, UserProfile } from './components/UserProfile';
+import { loader as userLoader, UserProfile } from './pages/UserProfile';
 import { ChakraProvider } from '@chakra-ui/react';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthOutlet />}>
       <Route path='/home' element={<ProtectedRoute><App/></ProtectedRoute>} />
-      <Route path='/:username' element={<ProtectedRoute><UserProfile/></ProtectedRoute>} loader={userLoader}/>
+      <Route path='/users/:username' element={<ProtectedRoute><UserProfile/></ProtectedRoute>} loader={userLoader}/>
       <Route path="/sign-up" element={<SignUp />} />
       <Route path='/sign-in' element={<SignIn />} />
-      <Route path='/friend-requests' element={<ProtectedRoute><FriendRequests /></ProtectedRoute>} />
+      <Route path='/friends' element={<ProtectedRoute><FriendRequests /></ProtectedRoute>} />
       <Route path="*" element={<NoMatch /> } />
     </Route>
   )
