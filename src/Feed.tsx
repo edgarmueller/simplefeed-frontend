@@ -3,8 +3,10 @@ import "./App.css";
 import { Layout } from "./components/Layout";
 import { Feed } from "./components/posts/Feed";
 import { UserDetail } from "./components/UserDetail";
-import { Card, CardBody } from "@chakra-ui/react";
+import { Button, Card, CardBody, Icon, Stack } from "@chakra-ui/react";
 import { useUser } from "./lib/auth/hooks/useUser";
+import { FiUsers } from "react-icons/fi";
+import { Link as RouterLink } from "react-router-dom";
 
 function App() {
   const { user } = useUser()
@@ -12,16 +14,7 @@ function App() {
     <Layout>
       <Container fluid>
         <Row>
-          <Col sm={4}>
-            <UserDetail user={user} />
-          </Col>
-          <Col sm={{ offset: 0 }}>
-            <Card>
-              <CardBody>
                 <Feed />
-              </CardBody>
-            </Card>
-          </Col>
         </Row>
       </Container>
     </Layout>
