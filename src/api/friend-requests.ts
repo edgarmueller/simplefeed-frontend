@@ -1,3 +1,4 @@
+import axios from "axios";
 import { FriendRequest, User } from "../domain.interface";
 import { API_URL } from "../lib/auth/api/constants";
 import fetch, { createHeaders } from "../lib/fetch";
@@ -24,6 +25,24 @@ export const getFriendRequests = async (): Promise<FriendRequest[]> => {
   return res.body;
 };
 
+export const getSentFriendRequests = async (): Promise<FriendRequest[]> => {
+  const res = await fetchManyFriendRequest(`${API_URL}/friend-requests/sent`, {
+    headers: {
+      ...createHeaders(),
+    },
+  });
+  return res.body;
+};
+
+export const cancelFriendRequest = async (friendRequestId: string): Promise<void> => {
+  const res = await axios.delete(`${API_URL}/friend-requests/${friendRequestId}`, {
+    headers: {
+      ...createHeaders(),
+    },
+  });
+  return res.data;
+};
+
 export const acceptFriendRequest = async (friendRequestId: string): Promise<FriendRequest> => {
   const res = await fetchOneFriendRequest(`${API_URL}/friend-requests/${friendRequestId}`, {
     headers: {
@@ -32,6 +51,15 @@ export const acceptFriendRequest = async (friendRequestId: string): Promise<Frie
     method: "PATCH",
   });
   return res.body;
+};
+
+export const declineFriendRequest = async (friendRequestId: string): Promise<FriendRequest> => {
+  const res = await axios.delete(`${API_URL}/friend-requests/${friendRequestId}`, {
+    headers: {
+      ...createHeaders(),
+    },
+  });
+  return res.data;
 };
 
 export const fetchFriendsOfUser = async (username: string): Promise<User[]> => {
