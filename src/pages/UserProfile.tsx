@@ -16,7 +16,7 @@ export async function loader({ params }: any): Promise<Profile | Response> {
   }
 }
 
-export const UserProfile = () => {
+const UserProfile = () => {
   const { user: myself } = useUser();
   const user = useLoaderData() as User;
   const [isFriend, setIsFriend] = useState(false);
@@ -52,3 +52,5 @@ export const UserProfile = () => {
     </Layout>
   );
 };
+
+export default UserProfile;

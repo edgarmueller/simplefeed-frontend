@@ -8,17 +8,18 @@ import { SignUp } from './components/SignUp';
 import { FriendRequests } from './components/FriendRequests';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
-import App from './Feed';
 import { NoMatch } from './NoMatch';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthOutlet } from './lib/auth/components/AuthOutlet';
-import { loader as userLoader, UserProfile } from './pages/UserProfile';
+import Feed from './pages/Feed';
+import { loader as userLoader } from './pages/UserProfile';
+import UserProfile from './pages/UserProfile';
 import { ChakraProvider } from '@chakra-ui/react';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthOutlet />}>
-      <Route path='/home' element={<ProtectedRoute><App/></ProtectedRoute>} />
+      <Route path='/feed' element={<ProtectedRoute><Feed/></ProtectedRoute>} />
       <Route path='/users/:username' element={<ProtectedRoute><UserProfile/></ProtectedRoute>} loader={userLoader}/>
       <Route path="/sign-up" element={<SignUp />} />
       <Route path='/sign-in' element={<SignIn />} />
