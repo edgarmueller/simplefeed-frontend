@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }: any) => {
   const navigate = useNavigate();
   // TODO types
   const login = useCallback(async (token: any) => {
-    navigate("/home");
+    navigate("/feed");
   }, [navigate])
 
   // call this function to sign out logged in user

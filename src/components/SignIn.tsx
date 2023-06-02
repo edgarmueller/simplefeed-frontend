@@ -22,7 +22,7 @@ export const SignIn = () => {
     loginApp(accessToken); 
   };
   if (user) {
-    return <Navigate replace to="/home" />;
+    return <Navigate replace to="/feed" />;
   }
   return (
     <SignInLogic login={login}>

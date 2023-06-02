@@ -1,14 +1,15 @@
 import { Box, Button, Grid, Stack } from "@chakra-ui/react";
-import { UserDetail } from "./UserDetail";
+import { FiLogOut, FiUsers } from "react-icons/fi";
+import { MdOutlineFeed } from "react-icons/md";
 import { Link as RouterLink } from "react-router-dom";
-import { FiHome, FiLogOut, FiUsers } from "react-icons/fi";
+import { useAuth } from "../lib/auth/hooks/useAuth";
 import { useUser } from "../lib/auth/hooks/useUser";
 import { Logo } from "./Logo";
-import { useAuth } from "../lib/auth/hooks/useAuth";
+import { UserDetail } from "./UserDetail";
 
 export const Layout = ({ children }: any) => {
   const { user } = useUser();
-	const { logout } = useAuth();
+  const { logout } = useAuth();
   return (
     <Grid
       templateColumns="20% 1fr"
@@ -23,9 +24,9 @@ export const Layout = ({ children }: any) => {
         {/* Navigation */}
         <Stack h="100%" spacing={4} marginLeft={12} align="flex-start">
           <UserDetail small user={user} />
-          <RouterLink to="/home">
-            <Button variant="link" leftIcon={<FiHome />}>
-              Home
+          <RouterLink to="/feed">
+            <Button variant="link" leftIcon={<MdOutlineFeed />}>
+              Feed
             </Button>
           </RouterLink>
           <RouterLink to="/friends">
@@ -33,9 +34,9 @@ export const Layout = ({ children }: any) => {
               Friends
             </Button>
           </RouterLink>
-					<Button variant="link" leftIcon={<FiLogOut />} onClick={logout}>
-						Logout
-					</Button>
+          <Button variant="link" leftIcon={<FiLogOut />} onClick={logout}>
+            Logout
+          </Button>
         </Stack>
       </Box>
       <Box p={4}>
