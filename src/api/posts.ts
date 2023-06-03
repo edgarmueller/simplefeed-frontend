@@ -31,14 +31,9 @@ export async function fetchFeed(page: number, limit = 50): Promise<Pagination<Po
 }
 
 export async function fetchPosts(userId: string, page: number, limit = 50): Promise<Pagination<Post>> {
-  const res = await axios.get(`${API_URL}/posts`, {
+  const res = await axios.get(`${API_URL}/posts?userId=${userId}&page=${page}&limit=${limit}`, {
     headers: {
       ...createHeaders(),
-    },
-    params: {
-      userId,
-      page,
-      limit,
     },
   });
   return res.data;
@@ -74,6 +69,14 @@ export async function unlikePost(postId: string): Promise<void> {
       ...createHeaders(),
     },
     method: "DELETE",
+  });
+}
+
+export async function deletePost(postId: string): Promise<void> {
+  await axios.delete(`${API_URL}/posts/${postId}`, {
+    headers: {
+      ...createHeaders(),
+    },
   });
 }
 
