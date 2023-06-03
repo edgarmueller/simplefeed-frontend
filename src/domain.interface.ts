@@ -15,19 +15,18 @@ export interface Profile {
 export interface User {
 	id: string
 	username: string
+	firstName: string;
+	lastName: string;
 	friends: User[]
+	imageUrl: string
 }
 
 export interface Post {
 	id: string;
 	body: string
 	createdAt: string;
-	postedTo: {
-		profile: Pick<Profile, 'firstName' | 'lastName' | 'username'>,
-	},
-	author: {
-		profile: Pick<Profile, 'firstName' | 'lastName' | 'imageUrl' | 'username'>,
-	}
+	postedTo: User
+	author: User
 	likes: any[]
 }
 

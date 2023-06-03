@@ -4,12 +4,12 @@ import { submitPost } from '../api/posts';
 import { Post } from '../domain.interface';
 import { useUser } from '../lib/auth/hooks/useUser';
 
-export const SubmitForm = ({ onSubmit }: { onSubmit: (post: Post) => void }) => {
+export const SubmitForm = ({ onSubmit, postTo }: { onSubmit: (post: Post) => void, postTo?: string }) => {
   const [text, setPostContent] = useState('');
   const { user } = useUser();
 	const handleSubmit = async (event: any) => {
     event.preventDefault();
-    const post = await submitPost(text, user?.id)
+    const post = await submitPost(text, postTo ? postTo : user?.id)
     onSubmit(post);
 	};
   return (

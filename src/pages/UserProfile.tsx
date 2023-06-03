@@ -7,6 +7,7 @@ import { useUser } from "../lib/auth/hooks/useUser";
 import { Layout } from "../components/Layout";
 import { UserDetail } from "../components/UserDetail";
 import { PostList } from "../components/posts/PostList";
+import { SubmitForm } from "../components/SubmitForm";
 
 export async function loader({ params }: any): Promise<Profile | Response> {
   try {
@@ -17,12 +18,12 @@ export async function loader({ params }: any): Promise<Profile | Response> {
 }
 
 const UserProfile = () => {
+  const [postRefreshCount, setPostRefreshCount] = useState(0);
   const { user: myself } = useUser();
   const user = useLoaderData() as User;
   const [isFriend, setIsFriend] = useState(false);
   const [userId, setUserId] = useState("");
   useEffect(() => {
-    console.log({ user });
     const isBefriended = !!myself?.friends?.find(({ id }) => id === user?.id);
     setIsFriend(isBefriended);
     setUserId(user?.id);
@@ -37,7 +38,8 @@ const UserProfile = () => {
         </TabList>
         <TabPanels>
           <TabPanel>
-              <PostList userId={userId} />
+              <SubmitForm onSubmit={() => setPostRefreshCount(cnt => cnt + 1)} postTo={userId} />
+              <PostList key={postRefreshCount} userId={userId} />
           </TabPanel>
           <TabPanel>
               {/*<Friends userId={userId} />*/}
