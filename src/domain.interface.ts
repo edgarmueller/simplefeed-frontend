@@ -51,5 +51,7 @@ export interface Comment {
 export interface FriendRequest {
 	id: string;
 	from: string;
-	to: string;
+	to: {
+		id: string
+	};
 }

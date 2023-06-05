@@ -62,7 +62,7 @@ export const declineFriendRequest = async (friendRequestId: string): Promise<Fri
   return res.data;
 };
 
-export const fetchFriendsOfUser = async (username: string): Promise<User[]> => {
+export const fetchFriends = async (username: string): Promise<User[]> => {
   const res = await fetchManyUsers(`${API_URL}/users/${username}/friends`, {
     headers: {
       ...createHeaders(),

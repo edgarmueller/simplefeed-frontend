@@ -1,11 +1,26 @@
-import { Avatar, Box, Card, CardBody, Heading, Link, Stack, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Card,
+  CardBody,
+  Heading,
+  Link,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from "react-router-dom";
 import { Profile } from "../domain.interface";
 import { BefriendButton } from "./BefriendButton";
 
-export const UserDetail = ({ user, username, small, isFriend }: any) => {
-  const [userProfile, setUserProfile] = useState<Profile | null>(user|| null);
+export const UserDetail = ({
+  user,
+  username,
+  small,
+  hasFriendRequest,
+  isFriend,
+}: any) => {
+  const [userProfile, setUserProfile] = useState<Profile | null>(user || null);
 
   useEffect(() => {
     setUserProfile(user);
@@ -14,10 +29,7 @@ export const UserDetail = ({ user, username, small, isFriend }: any) => {
   if (small) {
     return (
       <Stack direction="row" align="center">
-        <Avatar
-          src={userProfile?.imageUrl}
-          borderRadius='lg'
-        />
+        <Avatar src={userProfile?.imageUrl} borderRadius="lg" />
         <Link as={RouterLink} to={`/users/${userProfile?.username}`}>
           {userProfile?.firstName} {userProfile?.lastName}
         </Link>
@@ -43,7 +55,12 @@ export const UserDetail = ({ user, username, small, isFriend }: any) => {
               </Text>
             </Stack>
             <Box>
-              {isFriend ? null : <BefriendButton username={userProfile?.username!} />}
+              {isFriend ? null : (
+                <BefriendButton
+                  hasFriendRequest={hasFriendRequest}
+                  username={userProfile?.username!}
+                />
+              )}
             </Box>
           </Stack>
         </Stack>

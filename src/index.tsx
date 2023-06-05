@@ -5,7 +5,7 @@ import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import { SignIn } from './components/SignIn';
 import { SignUp } from './components/SignUp';
-import { FriendRequests } from './components/FriendRequests';
+import { FriendRequests } from './components/Friends';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 import { NoMatch } from './NoMatch';
