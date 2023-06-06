@@ -19,6 +19,8 @@ export interface User {
 	lastName: string;
 	friends: User[]
 	imageUrl: string
+	nrOfPosts: number
+	nrOfLikes: number
 }
 
 export interface Post {

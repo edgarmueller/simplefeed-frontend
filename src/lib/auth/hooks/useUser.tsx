@@ -5,15 +5,19 @@ import { me } from "../api/auth"
 
 type UserContextProps = {
 	user: User | null,
+  incrementPostCount: () => void
+  decrementPostCount: () => void
 }
 
 const UserContext = createContext<UserContextProps>({
   user: null,
+  incrementPostCount: () => {},
+  decrementPostCount: () => {}
 });
 
 export const UserProvider = ({ children }: any) => {
   const { token } = useAuth();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   useEffect(() => {
     if (token) {
       me().then((me) => setUser(me))
@@ -22,9 +26,32 @@ export const UserProvider = ({ children }: any) => {
   const value = useMemo(
     () => ({
       user,
+      incrementPostCount: () => {
+        setUser((prevUser) => {
+          if (prevUser) {
+            return {
+              ...prevUser,
+              nrOfPosts: prevUser.nrOfPosts + 1,
+            };
+          }
+          return prevUser;
+        });
+      },
+      decrementPostCount: () => {
+        setUser((prevUser) => {
+          if (prevUser) {
+            return {
+              ...prevUser,
+              nrOfPosts: prevUser.nrOfPosts - 1,
+            };
+          }
+          return prevUser;
+        });
+      }
     }),
     [user]
   );
+  console.log('user provider', value)
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 

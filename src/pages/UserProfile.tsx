@@ -6,7 +6,7 @@ import {
   Tabs
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { redirect, useLoaderData } from "react-router-dom";
+import { redirect, useLoaderData, useParams } from "react-router-dom";
 import { getSentFriendRequests } from "../api/friend-requests";
 import { fetchUserProfile } from "../api/profile";
 import { Layout } from "../components/Layout";
@@ -25,12 +25,14 @@ export async function loader({ params }: any): Promise<Profile | Response> {
 }
 
 const UserProfile = () => {
+  const params = useParams();
+  console.log({ params })
+  const { user: myself, incrementPostCount } = useUser();
+  const isMyProfile = params.username === myself?.username;
   const [postRefreshCount, setPostRefreshCount] = useState(0);
-  const { user: myself } = useUser();
   const user = useLoaderData() as User;
   const [isFriend, setIsFriend] = useState(false);
   const [userId, setUserId] = useState("");
-  const isMyProfile = user.id === myself?.id;
   useEffect(() => {
     const isBefriended =
       isMyProfile || !!myself?.friends?.find(({ id }) => id === user?.id);
@@ -45,7 +47,7 @@ const UserProfile = () => {
   });
   return (
     <Layout>
-      <UserDetail user={user} isFriend={isFriend} hasFriendRequest={friendRequestSent}  />
+      <UserDetail user={isMyProfile ? myself : user} isFriend={isFriend} hasFriendRequest={friendRequestSent}  />
       <Tabs variant="soft-rounded" marginTop={4} colorScheme="blackAlpha">
         <TabList>
           <Tab>Posts</Tab>
@@ -54,7 +56,10 @@ const UserProfile = () => {
         <TabPanels>
           <TabPanel>
             <SubmitForm
-              onSubmit={() => setPostRefreshCount((cnt) => cnt + 1)}
+              onSubmit={() => {
+                setPostRefreshCount((cnt) => cnt + 1)
+                incrementPostCount();
+              }}
               postTo={userId}
             />
             <PostList key={postRefreshCount} userId={userId} />

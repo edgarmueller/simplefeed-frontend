@@ -29,7 +29,7 @@ import { CommentForm } from "./CommentForm";
 import { CommentItem } from "./CommentItem";
 
 const Post = memo(({ post }: { post: PostEntity }) => {
-  const { user } = useUser();
+  const { user, decrementPostCount } = useUser();
   const [comments, setComments] = useState<Comment[]>();
   const [commentTree, setCommentTree] = useState<CommentNode[]>([]);
   const [isLiked, setLiked] = useState(
@@ -168,6 +168,7 @@ const Post = memo(({ post }: { post: PostEntity }) => {
           onClick={async () => {
             await deletePost(post.id);
             setVisible(false);
+            decrementPostCount();
           }}
         >
           Delete
