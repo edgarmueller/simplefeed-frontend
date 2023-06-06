@@ -2,13 +2,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from 'react-router-dom';
 import { SignIn } from './components/SignIn';
 import { SignUp } from './components/SignUp';
 import { FriendRequests } from './components/Friends';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './index.css';
-import { NoMatch } from './NoMatch';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthOutlet } from './lib/auth/components/AuthOutlet';
 import Feed from './pages/Feed';
@@ -24,7 +21,7 @@ const router = createBrowserRouter(
       <Route path="/sign-up" element={<SignUp />} />
       <Route path='/sign-in' element={<SignIn />} />
       <Route path='/friends' element={<ProtectedRoute><FriendRequests /></ProtectedRoute>} />
-      <Route path="*" element={<NoMatch /> } />
+      <Route path="*" element={<Navigate to="/feed" replace /> } />
     </Route>
   )
 )

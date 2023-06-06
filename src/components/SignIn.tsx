@@ -13,7 +13,6 @@ import { login as loginApi } from "../lib/auth/api/auth";
 import { SignInLogic } from "../lib/auth/components/SignInLogic";
 import { useAuth } from "../lib/auth/hooks/useAuth";
 import { Logo } from "./Logo";
-import "./SignIn.css";
 
 export const SignIn = () => {
   const { token: user, login: loginApp } = useAuth();
