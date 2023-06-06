@@ -9,6 +9,7 @@ import { UserDetail } from "../components/UserDetail";
 import { PostList } from "../components/posts/PostList";
 import { Profile, User } from "../domain.interface";
 import { useUser } from "../lib/auth/hooks/useUser";
+import { MyProfile } from "../components/MyProfile";
 
 export async function loader({ params }: any): Promise<Profile | Response> {
   try {
@@ -41,11 +42,14 @@ const UserProfile = () => {
   });
   return (
     <Layout>
-      <UserDetail
-        user={isMyProfile ? myself : user}
-        isFriend={isFriend}
-        hasFriendRequest={friendRequestSent}
-      />
+      {
+        isMyProfile ? <MyProfile /> :
+          <UserDetail
+            user={user}
+            isFriend={isFriend}
+            hasFriendRequest={friendRequestSent}
+          />
+      }
       {isMyProfile ? null : (
         <Tabs variant="soft-rounded" marginTop={4} colorScheme="blackAlpha">
           <TabList>

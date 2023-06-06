@@ -21,7 +21,6 @@ export const Layout = ({ children }: any) => {
         <Logo />
       </Box>
       <Box p={4}>
-        {/* Navigation */}
         <Stack h="100%" spacing={4} marginLeft={12} align="flex-start">
           <UserDetail small user={user} />
           <RouterLink to="/feed">
