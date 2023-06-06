@@ -5,7 +5,8 @@ import {
   CardBody,
   Flex,
   Heading,
-  Stack
+  Text,
+  Stack,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -55,11 +56,9 @@ export const FriendRequests = () => {
               Friend Requests
             </Heading>
             <Box>
-              <Heading size="xs" textTransform="uppercase">
-                Received
-              </Heading>
+              <Heading size="xs">Received</Heading>
               {receivedFriendRequests.length === 0
-                ? "No friend requests"
+                ? <Text size="sm">No friend requests</Text>
                 : receivedFriendRequests.map((friendRequest) => (
                     <Flex justify="space-between" align="center">
                       <UserDetail
@@ -74,7 +73,11 @@ export const FriendRequests = () => {
                           size="xs"
                           onClick={async () => {
                             await acceptFriendRequest(friendRequest.id);
-                            setReceivedFriendRequests(requests => requests.filter(request => request.id !== friendRequest.id))
+                            setReceivedFriendRequests((requests) =>
+                              requests.filter(
+                                (request) => request.id !== friendRequest.id
+                              )
+                            );
                             await fetchFriendsOfUser();
                           }}
                         >
@@ -85,8 +88,12 @@ export const FriendRequests = () => {
                           colorScheme="red"
                           size="xs"
                           onClick={async () => {
-                            await declineFriendRequest(friendRequest.id)
-                            setReceivedFriendRequests(requests => requests.filter(request => request.id !== friendRequest.id))
+                            await declineFriendRequest(friendRequest.id);
+                            setReceivedFriendRequests((requests) =>
+                              requests.filter(
+                                (request) => request.id !== friendRequest.id
+                              )
+                            );
                           }}
                         >
                           Decline
@@ -96,28 +103,28 @@ export const FriendRequests = () => {
                   ))}
             </Box>
             <Box>
-              <Heading size="xs" textTransform="uppercase">
-                Sent
-              </Heading>
-              {sentFriendRequests.length === 0
-                ? "No friend requests"
-                : sentFriendRequests.map((friendRequest) => (
-                    <Flex justify="space-between" align="center">
-                      <UserDetail
-                        key={friendRequest.id}
-                        user={friendRequest.to}
-                        small
-                        hasFriendRequest
-                      />
-                      <Button
-                        colorScheme="red"
-                        size="xs"
-                        onClick={() => declineFriendRequest(friendRequest.id)}
-                      >
-                        Cancel
-                      </Button>
-                    </Flex>
-                  ))}
+              <Heading size="xs">Sent</Heading>
+              {sentFriendRequests.length === 0 ? (
+                <Text size="sm">No friend requests</Text>
+              ) : (
+                sentFriendRequests.map((friendRequest) => (
+                  <Flex justify="space-between" align="center">
+                    <UserDetail
+                      key={friendRequest.id}
+                      user={friendRequest.to}
+                      small
+                      hasFriendRequest
+                    />
+                    <Button
+                      colorScheme="red"
+                      size="xs"
+                      onClick={() => declineFriendRequest(friendRequest.id)}
+                    >
+                      Cancel
+                    </Button>
+                  </Flex>
+                ))
+              )}
             </Box>
           </Stack>
           <Heading size="sm" textTransform="uppercase" paddingTop={4}>

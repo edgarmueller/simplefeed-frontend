@@ -1,10 +1,4 @@
-import {
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs
-} from "@chakra-ui/react";
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { redirect, useLoaderData, useParams } from "react-router-dom";
 import { getSentFriendRequests } from "../api/friend-requests";
@@ -26,7 +20,7 @@ export async function loader({ params }: any): Promise<Profile | Response> {
 
 const UserProfile = () => {
   const params = useParams();
-  console.log({ params })
+  console.log({ params });
   const { user: myself, incrementPostCount } = useUser();
   const isMyProfile = params.username === myself?.username;
   const [postRefreshCount, setPostRefreshCount] = useState(0);
@@ -47,35 +41,41 @@ const UserProfile = () => {
   });
   return (
     <Layout>
-      <UserDetail user={isMyProfile ? myself : user} isFriend={isFriend} hasFriendRequest={friendRequestSent}  />
-      <Tabs variant="soft-rounded" marginTop={4} colorScheme="blackAlpha">
-        <TabList>
-          <Tab>Posts</Tab>
-          <Tab>Friends</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>
-            <SubmitForm
-              onSubmit={() => {
-                setPostRefreshCount((cnt) => cnt + 1)
-                incrementPostCount();
-              }}
-              postTo={userId}
-            />
-            <PostList key={postRefreshCount} userId={userId} />
-          </TabPanel>
-          <TabPanel>
-            {/*<Friends userId={userId} />*/}
-            {user.friends.length === 0
-              ? "No friends"
-              : user.friends.map((friend) => (
-                  <>
-                    <UserDetail key={friend.id} user={friend} small />
-                  </>
-                ))}
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+      <UserDetail
+        user={isMyProfile ? myself : user}
+        isFriend={isFriend}
+        hasFriendRequest={friendRequestSent}
+      />
+      {isMyProfile ? null : (
+        <Tabs variant="soft-rounded" marginTop={4} colorScheme="blackAlpha">
+          <TabList>
+            <Tab>Posts</Tab>
+            <Tab>Friends</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <SubmitForm
+                onSubmit={() => {
+                  setPostRefreshCount((cnt) => cnt + 1);
+                  incrementPostCount();
+                }}
+                postTo={userId}
+              />
+              <PostList key={postRefreshCount} userId={userId} />
+            </TabPanel>
+            <TabPanel>
+              {/*<Friends userId={userId} />*/}
+              {user.friends.length === 0
+                ? "No friends"
+                : user.friends.map((friend) => (
+                    <>
+                      <UserDetail key={friend.id} user={friend} small />
+                    </>
+                  ))}
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      )}
     </Layout>
   );
 };

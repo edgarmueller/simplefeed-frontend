@@ -30,6 +30,11 @@ export const PostList = ({ userId }: PostListProps) => {
     () => posts.map((post) => <Post key={post.id} post={post} />),
     [posts]
   );
+
+  if (posts.length === 0) {
+    return null;
+  }
+
   return (
     <InfiniteScroll
       key={userId}

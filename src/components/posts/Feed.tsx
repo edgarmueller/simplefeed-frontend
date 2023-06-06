@@ -28,20 +28,23 @@ export const Feed = () => {
       <SubmitForm
         onSubmit={(newPost: PostEntity) => setPosts((posts) => [newPost, ...posts])}
       />
-      <InfiniteScroll
-        key='my-feed'
-        dataLength={posts.length}
-        next={() => setPageNumber(pageNumber + 1)}
-        hasMore={hasMore}
-        loader={<h4>Loading...</h4>}
-        endMessage={
-          <p style={{ textAlign: "center" }}>
-            <b>Yay! You have seen it all</b>
-          </p>
-        }
-      >
-        {memoedPosts}
-      </InfiniteScroll>
+      {
+        posts.length === 0 ? null :
+          <InfiniteScroll
+            key='my-feed'
+            dataLength={posts.length}
+            next={() => setPageNumber(pageNumber + 1)}
+            hasMore={hasMore}
+            loader={<h4>Loading...</h4>}
+            endMessage={
+              <p style={{ textAlign: "center" }}>
+                <b>Yay! You have seen it all</b>
+              </p>
+            }
+          >
+            {memoedPosts}
+          </InfiniteScroll>
+      }
     </>
   );
 };
