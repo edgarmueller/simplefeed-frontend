@@ -18,7 +18,7 @@ export const SignIn = () => {
   const { token: user, login: loginApp } = useAuth();
   const login = async (email: string, password: string) => {
     const { accessToken } = await loginApi(email, password);
-    loginApp(accessToken); 
+    loginApp(accessToken);
   };
   if (user) {
     return <Navigate replace to="/feed" />;
@@ -33,31 +33,30 @@ export const SignIn = () => {
         handleEmailUpdated,
         handlePasswordUpdated,
       }) => {
+        console.log({ errors }, errors.length > 0)
         return (
           <Flex alignItems="center" justifyContent="center" minHeight="100vh">
             <Box maxW="md" w="100%">
               <Logo />
-              <form onSubmit={handleSubmit}>
-                <FormControl>
-                  <FormLabel>Email address</FormLabel>
-                  <Input
-                    type="email"
-                    placeholder="Email address"
-                    onChange={handleEmailUpdated}
-                  />
-                  <FormLabel>Password</FormLabel>
-                </FormControl>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="Password"
-                    onChange={handlePasswordUpdated}
-                  />
-                </FormControl>
+              <FormControl onSubmit={handleSubmit} isInvalid={errors.length > 0}>
+                <FormLabel>Email address</FormLabel>
+                <Input
+                  type="email"
+                  placeholder="Email address"
+                  onChange={handleEmailUpdated}
+                  minW="100%"
+                />
+                <FormLabel>Password</FormLabel>
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  onChange={handlePasswordUpdated}
+                  minW="100%"
+                />
                 {errors.map((error) => (
                   <FormErrorMessage key={error}>{error}</FormErrorMessage>
                 ))}
-                <FormControl>
+                <Flex justifyContent="flex-end" marginTop={4}>
                   <Button
                     type="submit"
                     disabled={!canSubmit}
@@ -65,9 +64,9 @@ export const SignIn = () => {
                   >
                     Sign in
                   </Button>
-                  {isSubmitted && <FormLabel>Login successful!</FormLabel>}
-                </FormControl>
-              </form>
+                </Flex>
+                {isSubmitted && <FormLabel>Login successful!</FormLabel>}
+              </FormControl>
               <Box p={4}>
                 <Text>
                   Don't have an account?{" "}

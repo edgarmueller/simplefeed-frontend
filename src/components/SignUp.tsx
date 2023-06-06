@@ -1,12 +1,22 @@
 import { Link, Navigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { register } from "../lib/auth/api/auth";
 import { SignUpLogic } from "../lib/auth/components/SignUpLogic";
 import { useAuth } from "../lib/auth/hooks/useAuth";
-import "./SignUp.css"
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Input,
+  Text
+} from "@chakra-ui/react";
+import { Logo } from "./Logo";
 
 export const SignUp = () => {
-  const { token } = useAuth()
-  if (token) return <Navigate to="/" />
+  const { token } = useAuth();
+  if (token) return <Navigate to="/" />;
   return (
     <SignUpLogic register={register}>
       {({
@@ -19,80 +29,89 @@ export const SignUp = () => {
         handlePasswordUpdated,
         handlePasswordConfirmUpdated,
       }) => (
-        <div className="wrapper">
-          <div className="login_box">
-            <div className="login_header">
-              <h1>Swirlfeed</h1>
-              Login or sign up below
-            </div>
-            <form id="login-form" onSubmit={handleSubmit}>
-              <input
-                id="email"
+        <Flex alignItems="center" justifyContent="center" minHeight="100vh">
+          <Box maxW="md" w="100%">
+            <Logo />
+            <FormControl onSubmit={handleSubmit} isInvalid={errors.length > 0}>
+              <FormLabel>Email address</FormLabel>
+              <Input
                 type="email"
                 placeholder="Email address"
                 onChange={handleEmailUpdated}
-                required
+                minW="100%"
               />
-              <br />
-              <input
-                id="username"
+              <FormLabel>Username</FormLabel>
+              <Input
                 type="text"
                 placeholder="Username"
-                onChange={handleSignUpInfoUpdated('username')}
-                required
+                onChange={handleSignUpInfoUpdated("username")}
+                minW="100%"
               />
-              <br />
-              <input
-                id="firstName"
+              <FormLabel>First Name</FormLabel>
+              <Input
                 type="text"
                 placeholder="First name"
-                onChange={handleSignUpInfoUpdated('firstName')}
-                required
+                onChange={handleSignUpInfoUpdated("firstName")}
+                minW="100%"
               />
-              <br />
-              <input
-                id="lastName"
+              <FormLabel>Last Name</FormLabel>
+              <Input
                 type="text"
                 placeholder="Last name"
-                onChange={handleSignUpInfoUpdated('lastName')}
-                required
+                onChange={handleSignUpInfoUpdated("lastName")}
+                minW="100%"
               />
-              <br />
-              <input
-                id="imageUrl"
+              <FormLabel>Avatar</FormLabel>
+              <Input
                 type="text"
-                placeholder="Image "
-                onChange={handleSignUpInfoUpdated('imageUrl')}
-                required
+                placeholder="Last name"
+                onChange={handleSignUpInfoUpdated("imageUrl")}
+                minW="100%"
               />
-              <input
-                id="password"
+              <FormLabel>Password</FormLabel>
+              <Input
                 type="password"
                 placeholder="Password"
                 onChange={handlePasswordUpdated}
+                minW="100%"
               />
-              <br />
-              <input
-                id="confirm-password"
+              <FormLabel>Confirm Password</FormLabel>
+              <Input
                 type="password"
                 placeholder="Confirm Password"
                 onChange={handlePasswordConfirmUpdated}
+                minW="100%"
               />
-              {errors.map((error) => (
-                <p key={error}>{error}</p>
-              ))}
-              {isSubmitted && <>
-                <p>Sign up successful!</p>
-                <Link to="/sign-in" className="sign-up">Login here!</Link>
-                </>
-              }
-              <br/>
-              <input type="submit" disabled={!canSubmit} value="Sign Up"/>
-              <br/>
-              <Link to="/sign-in" className="sign-up">Already have an account? Sign in here!</Link>
-            </form>
-          </div>
-        </div>
+            </FormControl>
+            {errors.map((error) => (
+              <p key={error}>{error}</p>
+            ))}
+            <Flex justifyContent="flex-end" marginTop={4}>
+              <Button
+                type="submit"
+                disabled={!canSubmit}
+                onClick={handleSubmit}
+              >
+                Sign up
+              </Button>
+            </Flex>
+            {isSubmitted && (
+              <Text>
+                Sign up successful!&nbsp;
+                <RouterLink to="/sign-in">
+                  <Button variant="link">
+                    Login here
+                  </Button>
+                </RouterLink>
+              </Text>
+            )}
+            <Box>
+              <Link to="/sign-in">
+                Already have an account? Sign in here!
+              </Link>
+            </Box>
+          </Box>
+        </Flex>
       )}
     </SignUpLogic>
   );
