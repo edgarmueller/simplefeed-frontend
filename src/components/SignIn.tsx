@@ -15,12 +15,12 @@ import { useAuth } from "../lib/auth/hooks/useAuth";
 import { Logo } from "./Logo";
 
 export const SignIn = () => {
-  const { token: user, login: loginApp } = useAuth();
+  const { token, login: loginApp } = useAuth();
   const login = async (email: string, password: string) => {
     const { accessToken } = await loginApi(email, password);
     loginApp(accessToken);
   };
-  if (user) {
+  if (token) {
     return <Navigate replace to="/feed" />;
   }
   return (

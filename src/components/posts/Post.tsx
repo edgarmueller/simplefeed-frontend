@@ -35,6 +35,9 @@ const Post = memo(({ post }: { post: PostEntity }) => {
   const [isLiked, setLiked] = useState(
     post.likes?.find(({ userId }) => userId === user?.id) !== undefined
   );
+  useEffect(() => {
+    setLiked(post.likes?.find(({ userId }) => userId === user?.id) !== undefined)
+  }, [post, user])
   const [isVisible, setVisible] = useState(true);
   const { isOpen, onToggle } = useDisclosure();
   const fetchReplies = useCallback(

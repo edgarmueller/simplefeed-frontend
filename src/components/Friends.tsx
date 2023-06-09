@@ -22,7 +22,7 @@ import { useUser } from "../lib/auth/hooks/useUser";
 import { Layout } from "./Layout";
 import { UserDetail } from "./UserDetail";
 
-export const FriendRequests = () => {
+export const Friends = () => {
   const { user } = useUser();
   const [receivedFriendRequests, setReceivedFriendRequests] = useState<
     FriendRequest[]

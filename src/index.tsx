@@ -1,17 +1,15 @@
 // import './wdyr';
-import React from 'react';
+import { ChakraProvider } from '@chakra-ui/react';
 import ReactDOM from 'react-dom/client';
-import reportWebVitals from './reportWebVitals';
-import { createBrowserRouter, createRoutesFromElements, Navigate, Route, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
+import { Friends } from './components/Friends';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { SignIn } from './components/SignIn';
 import { SignUp } from './components/SignUp';
-import { FriendRequests } from './components/Friends';
-import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthOutlet } from './lib/auth/components/AuthOutlet';
 import Feed from './pages/Feed';
-import { loader as userLoader } from './pages/UserProfile';
-import UserProfile from './pages/UserProfile';
-import { ChakraProvider } from '@chakra-ui/react';
+import UserProfile, { loader as userLoader } from './pages/UserProfile';
+import reportWebVitals from './reportWebVitals';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -20,8 +18,7 @@ const router = createBrowserRouter(
       <Route path='/users/:username' element={<ProtectedRoute><UserProfile/></ProtectedRoute>} loader={userLoader}/>
       <Route path="/sign-up" element={<SignUp />} />
       <Route path='/sign-in' element={<SignIn />} />
-      <Route path='/friends' element={<ProtectedRoute><FriendRequests /></ProtectedRoute>} />
-      <Route path="*" element={<Navigate to="/feed" replace /> } />
+      <Route path='/friends' element={<ProtectedRoute><Friends /></ProtectedRoute>} />
     </Route>
   )
 )
