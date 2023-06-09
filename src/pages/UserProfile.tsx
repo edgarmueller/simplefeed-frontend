@@ -21,7 +21,6 @@ export async function loader({ params }: any): Promise<Profile | Response> {
 
 const UserProfile = () => {
   const params = useParams();
-  console.log({ params });
   const { user: myself, incrementPostCount } = useUser();
   const isMyProfile = params.username === myself?.username;
   const [postRefreshCount, setPostRefreshCount] = useState(0);

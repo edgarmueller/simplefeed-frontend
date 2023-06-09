@@ -1,3 +1,4 @@
+import { uniq } from "lodash";
 import React, { useEffect, useState } from "react";
 
 export interface SignUpProps {
@@ -91,10 +92,19 @@ export function SignUpLogic({
 		})
 	}
 	const handlePasswordConfirmUpdated = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const errorMsg = "Passwords do not match";
 		setSignUpInfo({
 			...signUpInfo,
 			confirmPassword: event.target.value
 		})
+		if (event.target.value !== signUpInfo.password) {
+			setErrors(errors => uniq(([
+				...errors,
+				errorMsg
+			])))
+		} else {
+			setErrors(errors => errors.filter(msg => msg !== errorMsg))
+		}
 	}
 
 	const getApi = () => ({

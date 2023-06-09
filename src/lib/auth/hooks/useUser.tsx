@@ -51,7 +51,6 @@ export const UserProvider = ({ children }: any) => {
     }),
     [user]
   );
-  console.log('user provider', value)
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 

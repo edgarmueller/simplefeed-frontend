@@ -3,7 +3,6 @@ import en from "javascript-time-ago/locale/en";
 
 
 function getLang() {
-	console.log(navigator.languages)
   if (navigator.languages !== undefined) 
     return navigator.languages[navigator.languages.length - 1]; 
   return navigator.language;
