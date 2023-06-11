@@ -7,11 +7,11 @@ import { Layout } from "../components/Layout";
 import { SubmitForm } from "../components/SubmitForm";
 import { UserDetail } from "../components/UserDetail";
 import { PostList } from "../components/posts/PostList";
-import { Profile, User } from "../domain.interface";
+import { User } from "../domain.interface";
 import { useUser } from "../lib/auth/hooks/useUser";
 import { MyProfile } from "../components/MyProfile";
 
-export async function loader({ params }: any): Promise<Profile | Response> {
+export async function loader({ params }: any): Promise<User | Response> {
   try {
     return await fetchUserProfile(params.username);
   } catch (error) {

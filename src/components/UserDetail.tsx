@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Profile } from "../domain.interface";
+import { User } from "../domain.interface";
 import { BefriendButton } from "./BefriendButton";
 
 export const UserDetail = ({
@@ -20,7 +20,7 @@ export const UserDetail = ({
   hasFriendRequest,
   isFriend,
 }: any) => {
-  const [userProfile, setUserProfile] = useState<Profile | null>(user || null);
+  const [userProfile, setUserProfile] = useState<User | null>(user || null);
 
   useEffect(() => {
     setUserProfile(user);
@@ -53,6 +53,15 @@ export const UserDetail = ({
               <Text pt="2" fontSize="sm">
                 Likes: {userProfile?.nrOfLikes}
               </Text>
+              <Text pt="2" fontSize="sm">
+                Friends: {userProfile?.friends.length}
+              </Text>
+              {
+                userProfile?.mutualFriendsCount ? 
+                <Text pt="2" fontSize="sm">
+                  Mutual Friends: {userProfile.mutualFriendsCount}
+                </Text> : null
+              }
             </Stack>
             <Box>
               {isFriend ? null : (

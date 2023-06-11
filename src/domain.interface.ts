@@ -3,15 +3,6 @@ export interface UserToken {
 	userId: string;
 }
 
-export interface Profile {
-	username: string;
-	firstName: string;
-	lastName: string;
-	bio?: string;
-	imageUrl?: string;
-	nrOfLikes: number
-	nrOfPosts: number
-}
 export interface User {
 	id: string
 	username: string
@@ -21,6 +12,7 @@ export interface User {
 	imageUrl: string
 	nrOfPosts: number
 	nrOfLikes: number
+	mutualFriendsCount?: number
 }
 
 export interface Post {
