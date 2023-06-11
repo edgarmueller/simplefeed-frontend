@@ -139,7 +139,10 @@ export const Friends = () => {
                     variant="outline"
                     colorScheme="red"
                     size="xs"
-                    onClick={() => removeFriend(friend.id)}
+                    onClick={async () => {
+                      await removeFriend(friend.id)
+                      await fetchFriendsOfUser();
+                    }}
                   >
                     Remove
                   </Button>
