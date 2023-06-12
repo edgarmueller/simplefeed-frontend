@@ -1,16 +1,18 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { me } from "../../../api/user";
 import { User } from "../../../domain.interface";
 import { useAuth } from "./useAuth";
-import { me } from "../api/auth"
 
 type UserContextProps = {
 	user: User | null,
+  setUser: (user: User) => void
   incrementPostCount: () => void
   decrementPostCount: () => void
 }
 
 const UserContext = createContext<UserContextProps>({
   user: null,
+  setUser: () => {},
   incrementPostCount: () => {},
   decrementPostCount: () => {}
 });
@@ -26,6 +28,7 @@ export const UserProvider = ({ children }: any) => {
   const value = useMemo(
     () => ({
       user,
+      setUser,
       incrementPostCount: () => {
         setUser((prevUser) => {
           if (prevUser) {

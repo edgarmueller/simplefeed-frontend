@@ -12,6 +12,19 @@ const shouldRefreshToken = (response: any) => {
   return false
 }
 
+export const rawRefreshAwareFetch = <T>() => configureRefreshFetch({
+  // Pass fetch function you want to wrap, it should already be adding
+  // token to the request
+  fetch: wrappedRawFetch<T>(),
+  // shouldRefreshToken is called when API fetch fails and it should decide
+  // whether the response error means we need to refresh token
+  shouldRefreshToken,
+  // refreshToken should call the refresh token API, save the refreshed
+  // token and return promise -- resolving it when everything goes fine,
+  // rejecting it when refreshing fails for some reason
+  refreshToken,
+})
+
 const refreshAwareFetch = <T>() => configureRefreshFetch({
   // Pass fetch function you want to wrap, it should already be adding
   // token to the request
@@ -56,6 +69,19 @@ const wrappedFetch = <T>() => async (url: string, options: RequestInit) => {
     },
   };
   return fetchJson<T>(url, opts);
+}
+
+const wrappedRawFetch = <T>() => async (url: string, options: RequestInit) => {
+  const headers = createHeaders();
+  const opts = {
+    ...options,
+    headers: {
+      ...options?.headers,
+      ...headers,
+    },
+  };
+  const res = await fetch(url, opts);
+  return res.clone().text();
 }
 
 export const createHeaders = () => {

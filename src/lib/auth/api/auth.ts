@@ -1,8 +1,6 @@
 import { createHeaders } from "../../fetch";
 import { API_URL } from "./constants";
 import { writeStorage, deleteFromStorage } from "@rehooks/local-storage";
-import axios from 'axios'
-
 
 export function getAccessToken() {
   return localStorage.getItem("token");
@@ -27,7 +25,12 @@ export function clearAccessToken() {
 export async function register(
   email: string,
   password: string,
-  userProfile: { username: string, firstName: string; lastName: string; imageUrl: string }
+  userProfile: {
+    username: string;
+    firstName: string;
+    lastName: string;
+    imageUrl: string;
+  }
 ) {
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
@@ -36,7 +39,7 @@ export async function register(
     user: {
       email,
       password,
-			username: userProfile.username,
+      username: userProfile.username,
       firstName: userProfile.firstName,
       lastName: userProfile.lastName,
       imageUrl: userProfile.imageUrl,
@@ -85,7 +88,7 @@ export async function login(email: string, password: string) {
   return {
     accessToken,
     refreshToken,
-  }
+  };
 }
 
 export function logout() {
@@ -94,11 +97,15 @@ export function logout() {
   deleteFromStorage("refreshToken");
 }
 
-export async function me() {
-  const res = await axios.get(`${API_URL}/users/me`, {
-    headers: {
-      ...createHeaders(),
-    },
-  });
-  return res.data;
-}
+//export const updatePassword = async (userId: string, password: string) => {
+//  const res = await fetch(
+//    `${API_URL}/auth/update-password`,
+//    {
+//      body: JSON.stringify({ password }),
+//      method: "PATCH",
+//      headers: createHeaders(),
+//    }
+//  );
+//  return res.body;
+//};
+//

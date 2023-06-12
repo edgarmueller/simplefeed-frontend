@@ -10,11 +10,13 @@ import { AuthOutlet } from './lib/auth/components/AuthOutlet';
 import Feed from './pages/Feed';
 import UserProfile, { loader as userLoader } from './pages/UserProfile';
 import reportWebVitals from './reportWebVitals';
+import Settings from './pages/Settings';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthOutlet />}>
       <Route path='/feed' element={<ProtectedRoute><Feed/></ProtectedRoute>} />
+      <Route path='/settings' element={<ProtectedRoute><Settings/></ProtectedRoute>} />
       <Route path='/users/:username' element={<ProtectedRoute><UserProfile/></ProtectedRoute>} loader={userLoader}/>
       <Route path="/sign-up" element={<SignUp />} />
       <Route path='/sign-in' element={<SignIn />} />

@@ -14,7 +14,6 @@ export const MyProfile = ({
   small,
 }: any) => {
   const { user } = useUser();
-  console.log({ user })
   const userProfile = user;
 
   if (small) {

@@ -5,9 +5,10 @@ export interface UserToken {
 
 export interface User {
 	id: string
+	email: string
 	username: string
-	firstName: string;
-	lastName: string;
+	firstName: string
+	lastName: string
 	friends: User[]
 	imageUrl: string
 	nrOfPosts: number

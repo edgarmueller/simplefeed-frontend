@@ -12,9 +12,7 @@ const fetchManyComments = fetch<Pagination<Comment>>();
 
 export async function submitPost(body: string, toUserId?: string) {
   const res = await fetchOne(`${API_URL}/posts`, {
-    headers: {
-      ...createHeaders(),
-    },
+    headers: createHeaders(),
     method: "POST",
     body: JSON.stringify({ body, toUserId }),
   });
@@ -23,18 +21,14 @@ export async function submitPost(body: string, toUserId?: string) {
 
 export async function fetchFeed(page: number, limit = 50): Promise<Pagination<Post>> {
   const res = await fetchMany(`${API_URL}/posts?page=${page}&limit=${limit}`, {
-    headers: {
-      ...createHeaders(),
-    },
+    headers: createHeaders(),
   });
   return res.body;
 }
 
 export async function fetchPosts(userId: string, page: number, limit = 50): Promise<Pagination<Post>> {
   const res = await axios.get(`${API_URL}/posts?userId=${userId}&page=${page}&limit=${limit}`, {
-    headers: {
-      ...createHeaders(),
-    },
+    headers: createHeaders(),
   });
   return res.data;
 }
@@ -45,9 +39,7 @@ export async function postComment(
   path: string | undefined
 ): Promise<Comment> {
   const res = await fetchOneComment(`${API_URL}/posts/${postId}/comments`, {
-    headers: {
-      ...createHeaders(),
-    },
+    headers: createHeaders(),
     method: "POST",
     body: JSON.stringify({ content, path: `${postId}/${path}` }),
   });
@@ -56,27 +48,21 @@ export async function postComment(
 
 export async function likePost(postId: string): Promise<void> {
   await fetchOne(`${API_URL}/posts/${postId}/like`, {
-    headers: {
-      ...createHeaders(),
-    },
+    headers: createHeaders(),
     method: "POST",
   });
 }
 
 export async function unlikePost(postId: string): Promise<void> {
   await fetchOne(`${API_URL}/posts/${postId}/like`, {
-    headers: {
-      ...createHeaders(),
-    },
+    headers: createHeaders(),
     method: "DELETE",
   });
 }
 
 export async function deletePost(postId: string): Promise<void> {
   await axios.delete(`${API_URL}/posts/${postId}`, {
-    headers: {
-      ...createHeaders(),
-    },
+    headers: createHeaders(),
   });
 }
 
@@ -135,9 +121,7 @@ export async function fetchComments(
     ? `${API_URL}/posts/${postId}/comments/${commentId}?page=${page}&limit=${limit}}`
     : `${API_URL}/posts/${postId}/comments?page=${page}&limit=${limit}`;
   const res = await fetchManyComments(url, {
-    headers: {
-      ...createHeaders(),
-    },
+    headers: createHeaders(),
   });
   return res.body;
 }
