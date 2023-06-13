@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Stack } from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, Grid, Stack } from "@chakra-ui/react";
 import { FiLogOut, FiUsers } from "react-icons/fi";
 import { MdOutlineFeed } from "react-icons/md";
 import { Link as RouterLink } from "react-router-dom";
@@ -9,7 +9,7 @@ import { UserDetail } from "./UserDetail";
 import { BiCog } from "react-icons/bi";
 
 export const Layout = ({ children }: any) => {
-  const { user } = useUser();
+  const { user, hasError, error } = useUser();
   const { logout } = useAuth();
   return (
     <Grid
@@ -47,7 +47,14 @@ export const Layout = ({ children }: any) => {
       <Box p={4}>
         {/* Main Content */}
         <Box bg="white" maxWidth="65%" h="100%">
-          {children}
+          {
+            hasError ? 
+              <Alert status="error">
+                <AlertIcon />
+                <AlertTitle>An error occurred</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert> : children
+          }
         </Box>
       </Box>
       <Box bg="gray.200" p={4} gridColumn="1 / -1">

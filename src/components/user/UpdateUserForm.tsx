@@ -1,17 +1,14 @@
 import {
-  Button,
   Box,
+  Button,
   Flex,
   FormControl,
   FormLabel,
   Input,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
-import { Logo } from "../Logo";
 import React, { useEffect, useState } from "react";
-import { User } from "../../domain.interface";
-import { me, updateUserInfo } from "../../api/user";
+import { updateUserInfo } from "../../api/user";
 import { useUser } from "../../lib/auth/hooks/useUser";
 
 
@@ -20,7 +17,7 @@ const formatError = (error: string) => {
 };
 
 export const UpdateUserForm = () => {
-  const { user, setUser } = useUser();
+  const { user, setUser, hasError } = useUser();
   const [userInfo, setUserInfo] = useState({
     email: user?.email || "",
     firstName: user?.firstName || "",
