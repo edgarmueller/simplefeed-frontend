@@ -7,6 +7,7 @@ import {
   Heading,
   Text,
   Stack,
+  useChakra,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -21,9 +22,11 @@ import { useUser } from "../lib/auth/hooks/useUser";
 import { Layout } from "./Layout";
 import { UserDetail } from "./UserDetail";
 import { me } from "../api/user";
+import { useChat } from "./chat/useChat";
 
 export const Friends = () => {
   const { user } = useUser();
+  const { fetchConversations } = useChat();
   const [receivedFriendRequests, setReceivedFriendRequests] = useState<
     FriendRequest[]
   >([]);
@@ -78,6 +81,7 @@ export const Friends = () => {
                               )
                             );
                             await refetchMyProfile();
+                            await fetchConversations();
                           }}
                         >
                           Accept
