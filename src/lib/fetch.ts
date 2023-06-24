@@ -38,7 +38,7 @@ const refreshAwareFetch = <T>() => configureRefreshFetch({
   refreshToken,
 })
 
-async function refreshToken() {
+export async function refreshToken() {
   console.log('refreshing token...')
   const refreshToken = localStorage.getItem('refreshToken')
   if (!refreshToken) {

@@ -33,7 +33,6 @@ export const SignIn = () => {
         handleEmailUpdated,
         handlePasswordUpdated,
       }) => {
-        console.log({ errors }, errors.length > 0)
         return (
           <Flex alignItems="center" justifyContent="center" minHeight="100vh">
             <Box maxW="md" w="100%">

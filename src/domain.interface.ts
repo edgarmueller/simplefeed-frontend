@@ -1,7 +1,3 @@
-export interface UserToken {
-	username: string;
-	userId: string;
-}
 
 export interface User {
 	id: string
@@ -13,7 +9,14 @@ export interface User {
 	imageUrl: string
 	nrOfPosts: number
 	nrOfLikes: number
+	// TODO: split dtos?
 	mutualFriendsCount?: number
+	conversations: Conversation[]
+}
+
+export interface Conversation {
+	id: string
+	participantIds: string[]
 }
 
 export interface Post {

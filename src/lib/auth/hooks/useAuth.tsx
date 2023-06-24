@@ -1,11 +1,11 @@
 import useLocalStorage from "@rehooks/local-storage";
 import { createContext, useCallback, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, UserToken } from "../../../domain.interface";
+import { User } from "../../../domain.interface";
 import { logout as apiLogout } from "../api/auth";
 
 type AuthContextProps = {
-	token: UserToken | null,
+	token: string | null,
 	login: (user: User) => void,
 	logout: () => void
 }

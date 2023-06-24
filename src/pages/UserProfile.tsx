@@ -10,6 +10,8 @@ import { PostList } from "../components/posts/PostList";
 import { User } from "../domain.interface";
 import { useUser } from "../lib/auth/hooks/useUser";
 import { MyProfile } from "../components/MyProfile";
+import Chat from "../components/chat/Chat";
+import { useChat } from "../components/chat/useChat";
 
 export async function loader({ params }: any): Promise<User | Response> {
   try {
@@ -34,6 +36,12 @@ const UserProfile = () => {
     setUserId(user?.id);
   }, [isMyProfile, myself, setIsFriend, user]);
   const [friendRequestSent, setFriendRequestSent] = useState<boolean>(false);
+  const { conversations } = useChat()
+  const conversationId = conversations?.find((conversation) =>
+    conversation.participantIds?.some(
+      (participantId) => participantId === user?.id
+    )
+  )?.id;
   useEffect(() => {
     getSentFriendRequests().then((friendRequests) => {
       setFriendRequestSent(friendRequests.some((fr) => fr.to.id === userId));
@@ -41,19 +49,29 @@ const UserProfile = () => {
   });
   return (
     <Layout>
-      {
-        isMyProfile ? <MyProfile /> :
-          <UserDetail
-            user={user}
-            isFriend={isFriend}
-            hasFriendRequest={friendRequestSent}
-          />
-      }
+      {isMyProfile ? (
+        <MyProfile />
+      ) : (
+        <UserDetail
+          user={user}
+          isFriend={isFriend}
+          hasFriendRequest={friendRequestSent}
+        />
+      )}
       {isMyProfile ? null : (
-        <Tabs variant="soft-rounded" marginTop={4} colorScheme="blackAlpha">
+        <Tabs
+          variant="soft-rounded"
+          marginTop={4}
+          colorScheme="blackAlpha"
+          onChange={(index) => {
+            if (index === 2) {
+            }
+          }}
+        >
           <TabList>
             <Tab>Posts</Tab>
             <Tab>Friends</Tab>
+            <Tab>Chat</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
@@ -67,14 +85,19 @@ const UserProfile = () => {
               <PostList key={postRefreshCount} userId={userId} />
             </TabPanel>
             <TabPanel>
-              {/*<Friends userId={userId} />*/}
               {user.friends.length === 0
                 ? "No friends"
                 : user.friends.map((friend) => (
-                    <>
-                      <UserDetail key={friend.id} user={friend} small />
-                    </>
+                    <UserDetail key={friend.id} user={friend} small />
                   ))}
+            </TabPanel>
+            <TabPanel>
+              {conversationId ? (
+                <Chat
+                  friend={{ id: user.id, username: user.username }}
+                  conversationId={conversationId}
+                />
+              ) : null}
             </TabPanel>
           </TabPanels>
         </Tabs>
