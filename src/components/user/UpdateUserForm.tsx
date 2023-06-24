@@ -89,7 +89,7 @@ export const UpdateUserForm = () => {
   }
 
   return (
-    <Flex alignItems="center" justifyContent="center" minHeight="100vh">
+    <Flex alignItems="center" justifyContent="center">
       <Box maxW="md" w="100%">
         <FormControl onSubmit={handleSubmit} isInvalid={errors.length > 0}>
           <FormLabel>Email address</FormLabel>
