@@ -12,7 +12,6 @@ import { useCallback, useEffect, useState } from "react";
 import {
   acceptFriendRequest,
   declineFriendRequest,
-  fetchFriends,
   getFriendRequests,
   getSentFriendRequests,
 } from "../api/friend-requests";
@@ -21,6 +20,7 @@ import { FriendRequest, User } from "../domain.interface";
 import { useUser } from "../lib/auth/hooks/useUser";
 import { Layout } from "./Layout";
 import { UserDetail } from "./UserDetail";
+import { me } from "../api/user";
 
 export const Friends = () => {
   const { user } = useUser();
@@ -30,11 +30,11 @@ export const Friends = () => {
   const [sentFriendRequests, setSentFriendRequests] = useState<FriendRequest[]>(
     []
   );
-  const [friends, setFriends] = useState<User[]>([]);
-  const fetchFriendsOfUser = useCallback(async () => {
+  const [friends, setFriends] = useState<User[]>(user?.friends || []);
+  const refetchMyProfile = useCallback(async () => {
     if (user?.username) {
-      const friends = await fetchFriends(user?.username);
-      setFriends(friends);
+      const refetchedProfile = await me()
+      setFriends(refetchedProfile.friends);
     }
   }, [user]);
   useEffect(() => {
@@ -44,8 +44,8 @@ export const Friends = () => {
     getSentFriendRequests().then((friendRequests) => {
       setSentFriendRequests(friendRequests);
     });
-    fetchFriendsOfUser();
-  }, [fetchFriendsOfUser]);
+    refetchMyProfile();
+  }, [refetchMyProfile]);
 
   return (
     <Layout>
@@ -60,9 +60,8 @@ export const Friends = () => {
               {receivedFriendRequests.length === 0
                 ? <Text size="sm">No friend requests</Text>
                 : receivedFriendRequests.map((friendRequest) => (
-                    <Flex justify="space-between" align="center">
+                    <Flex key={friendRequest.id} justify="space-between" align="center">
                       <UserDetail
-                        key={friendRequest.id}
                         user={friendRequest.from}
                         small
                       />
@@ -78,7 +77,7 @@ export const Friends = () => {
                                 (request) => request.id !== friendRequest.id
                               )
                             );
-                            await fetchFriendsOfUser();
+                            await refetchMyProfile();
                           }}
                         >
                           Accept
@@ -133,15 +132,15 @@ export const Friends = () => {
           {friends.length === 0
             ? "No friends"
             : friends.map((friend) => (
-                <Flex justify={"space-between"} align={"center"}>
-                  <UserDetail key={friend.id} user={friend} small />
+                <Flex key={friend.id} justify={"space-between"} align={"center"}>
+                  <UserDetail user={friend} small />
                   <Button
                     variant="outline"
                     colorScheme="red"
                     size="xs"
                     onClick={async () => {
                       await removeFriend(friend.id)
-                      await fetchFriendsOfUser();
+                      await refetchMyProfile();
                     }}
                   >
                     Remove
