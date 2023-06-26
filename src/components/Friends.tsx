@@ -5,9 +5,8 @@ import {
   CardBody,
   Flex,
   Heading,
-  Text,
   Stack,
-  useChakra,
+  Text
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -17,11 +16,11 @@ import {
   getSentFriendRequests,
 } from "../api/friend-requests";
 import { removeFriend } from "../api/friends";
+import { me } from "../api/user";
 import { FriendRequest, User } from "../domain.interface";
 import { useUser } from "../lib/auth/hooks/useUser";
 import { Layout } from "./Layout";
-import { UserDetail } from "./UserDetail";
-import { me } from "../api/user";
+import { UserDetailSmall } from "./UserDetailSmall";
 import { useChat } from "./chat/useChat";
 
 export const Friends = () => {
@@ -64,9 +63,8 @@ export const Friends = () => {
                 ? <Text size="sm">No friend requests</Text>
                 : receivedFriendRequests.map((friendRequest) => (
                     <Flex key={friendRequest.id} justify="space-between" align="center">
-                      <UserDetail
+                      <UserDetailSmall
                         user={friendRequest.from}
-                        small
                       />
                       <Stack direction="row" spacing={2}>
                         <Button
@@ -112,7 +110,7 @@ export const Friends = () => {
               ) : (
                 sentFriendRequests.map((friendRequest) => (
                   <Flex justify="space-between" align="center">
-                    <UserDetail
+                    <UserDetailSmall
                       key={friendRequest.id}
                       user={friendRequest.to}
                       small
@@ -137,7 +135,7 @@ export const Friends = () => {
             ? "No friends"
             : friends.map((friend) => (
                 <Flex key={friend.id} justify={"space-between"} align={"center"}>
-                  <UserDetail user={friend} small />
+                  <UserDetailSmall user={friend} asLink />
                   <Button
                     variant="outline"
                     colorScheme="red"

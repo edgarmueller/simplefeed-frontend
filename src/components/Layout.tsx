@@ -6,7 +6,7 @@ import { useAuth } from "../lib/auth/hooks/useAuth";
 import { useUser } from "../lib/auth/hooks/useUser";
 import { Logo } from "./Logo";
 import { UserDetail } from "./UserDetail";
-import { BiCog } from "react-icons/bi";
+import { BiChat, BiCog } from "react-icons/bi";
 
 export const Layout = ({ children }: any) => {
   const { user, hasError, error } = useUser();
@@ -27,6 +27,11 @@ export const Layout = ({ children }: any) => {
           <RouterLink to="/feed">
             <Button variant="link" leftIcon={<MdOutlineFeed />}>
               Feed
+            </Button>
+          </RouterLink>
+          <RouterLink to="/chat">
+            <Button variant="link" leftIcon={<BiChat />}>
+              Chat
             </Button>
           </RouterLink>
           <RouterLink to="/friends">

@@ -1,6 +1,6 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { redirect, useLoaderData, useParams } from "react-router-dom";
+import { redirect, useLoaderData, useLocation, useParams } from "react-router-dom";
 import { getSentFriendRequests } from "../api/friend-requests";
 import { fetchUserProfile } from "../api/profile";
 import { Layout } from "../components/Layout";
@@ -23,6 +23,8 @@ export async function loader({ params }: any): Promise<User | Response> {
 
 const UserProfile = () => {
   const params = useParams();
+  const location = useLocation();
+  const showChat = location.pathname.includes('/chat');
   const { user: myself, incrementPostCount } = useUser();
   const isMyProfile = params.username === myself?.username;
   const [postRefreshCount, setPostRefreshCount] = useState(0);
@@ -63,15 +65,12 @@ const UserProfile = () => {
           variant="soft-rounded"
           marginTop={4}
           colorScheme="blackAlpha"
-          onChange={(index) => {
-            if (index === 2) {
-            }
-          }}
+          defaultIndex={showChat ? 1 : 0}
         >
           <TabList>
             <Tab>Posts</Tab>
-            <Tab>Friends</Tab>
             <Tab>Chat</Tab>
+            <Tab>Friends</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
@@ -85,19 +84,19 @@ const UserProfile = () => {
               <PostList key={postRefreshCount} userId={userId} />
             </TabPanel>
             <TabPanel>
-              {user.friends.length === 0
-                ? "No friends"
-                : user.friends.map((friend) => (
-                    <UserDetail key={friend.id} user={friend} small />
-                  ))}
-            </TabPanel>
-            <TabPanel>
               {conversationId ? (
                 <Chat
                   friend={{ id: user.id, username: user.username }}
                   conversationId={conversationId}
                 />
               ) : null}
+            </TabPanel>
+            <TabPanel>
+              {user.friends.length === 0
+                ? "No friends"
+                : user.friends.map((friend) => (
+                    <UserDetail key={friend.id} user={friend} small />
+                  ))}
             </TabPanel>
           </TabPanels>
         </Tabs>

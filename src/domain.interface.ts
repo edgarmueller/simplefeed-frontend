@@ -17,6 +17,12 @@ export interface User {
 export interface Conversation {
 	id: string
 	participantIds: string[]
+	messages: Message[]
+}
+
+export interface Message {
+	content: string
+	authorId: string
 }
 
 export interface Post {

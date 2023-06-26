@@ -1,16 +1,15 @@
+import { Conversation } from "../domain.interface";
 import { API_URL } from "../lib/auth/api/constants";
-import { createHeaders } from "../lib/fetch";
+import fetch, { createHeaders } from "../lib/fetch";
 
-export const fetchConversations = async () => {
-		const response = await fetch(`${API_URL}/chat`, {
+export const fetchConversations = async (): Promise<Conversation[]> => {
+		const response = await fetch<Conversation[]>()(`${API_URL}/chat`, {
 				headers: {
 						...createHeaders(),
 						'Content-Type': 'application/json'
 				},
 		});
 
-		const conv = await response.json();
-		console.log(conv)
-		return conv;
+		return response.body;
 }
 

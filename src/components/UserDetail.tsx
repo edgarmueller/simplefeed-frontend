@@ -4,14 +4,13 @@ import {
   Card,
   CardBody,
   Heading,
-  Link,
   Stack,
-  Text,
+  Text
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
 import { User } from "../domain.interface";
 import { BefriendButton } from "./BefriendButton";
+import { UserDetailSmall } from "./UserDetailSmall";
 
 export const UserDetail = ({
   user,
@@ -27,14 +26,7 @@ export const UserDetail = ({
   }, [username, user]);
 
   if (small) {
-    return (
-      <Stack direction="row" align="center">
-        <Avatar src={userProfile?.imageUrl} borderRadius="lg" />
-        <Link as={RouterLink} to={`/users/${userProfile?.username}`}>
-          {userProfile?.firstName} {userProfile?.lastName}
-        </Link>
-      </Stack>
-    );
+    return <UserDetailSmall user={user} username={username} clickable />;
   }
 
   return (

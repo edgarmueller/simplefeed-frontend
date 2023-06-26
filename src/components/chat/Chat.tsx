@@ -1,4 +1,4 @@
-import { Box, Button, Input, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Highlight, Input, Text, VStack } from "@chakra-ui/react";
 import React, { useEffect, useRef, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import decodeToken from "jwt-decode";
@@ -20,7 +20,7 @@ export interface ChatProps {
   friend: {
     id: string;
     username: string;
-  }
+  };
 }
 
 const Chat = ({ friend, conversationId }: ChatProps) => {
@@ -32,7 +32,6 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
   const { token } = useAuth();
   const updateChatAccessToken = (newToken: string | null) => {
     if (socket && newToken) {
-      console.log('updating token')
       socket.io.opts.extraHeaders = {
         Authorization: `Bearer ${newToken}`,
       };
@@ -43,7 +42,7 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
     if (!token) {
       return;
     }
-    const socket = io('http://localhost:5001', {
+    const socket = io("http://localhost:5001", {
       autoConnect: false,
       extraHeaders: {
         Authorization: `Bearer ${token}`,
@@ -81,12 +80,11 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
     }
 
     function onAllMessages(conversation: any) {
-      console.log({ conversation })
       setMessages(conversation.messages);
     }
 
     function onMessage(msg: Message) {
-      setMessages(msgs => ([...msgs, msg]));
+      setMessages((msgs) => [...msgs, msg]);
     }
 
     if (socket?.active) {
@@ -122,11 +120,15 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
     };
 
     await validateToken();
-    socket?.emit('send_message', JSON.stringify(message));
+    socket?.emit("send_message", JSON.stringify(message));
     setInputValue("");
   };
 
-  const formatDate = (dateString: string) => new Date(dateString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
   return (
     <Box>
@@ -140,9 +142,22 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
           overflowY="auto"
         >
           {messages.map((message, index) => (
-            <Box key={index} p={2} textAlign={message.authorId === friend.id ? "left" : "right"}>
-              <Text>{message.authorId === friend?.id ? friend.username : user?.username}: {message.content}</Text>
-              <Text fontSize="xs" color="gray.500">{formatDate(message.createdAt)}</Text>
+            <Box
+              key={index}
+              p={2}
+              textAlign={message.authorId === friend.id ? "left" : "right"}
+            >
+              <Text>
+                <Highlight
+                  query={message.content}
+                  styles={{ px: '2', py: '1', rounded: 'full', bg: message.authorId === friend?.id ? 'teal.100' : 'blue.300' }}
+                >
+                  {message.content}
+                </Highlight>
+              </Text>
+              <Text fontSize="xs" color="gray.500">
+                {formatDate(message.createdAt)}
+              </Text>
             </Box>
           ))}
         </ScrollableBox>
