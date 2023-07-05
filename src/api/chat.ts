@@ -12,4 +12,3 @@ export const fetchConversations = async (): Promise<Conversation[]> => {
 
 		return response.body;
 }
-

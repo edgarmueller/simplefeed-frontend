@@ -21,8 +21,12 @@ export interface Conversation {
 }
 
 export interface Message {
+	conversationId: string
 	content: string
 	authorId: string
+	recipientId?: string
+	createdAt?: string
+	isRead?: boolean
 }
 
 export interface Post {

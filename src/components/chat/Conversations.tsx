@@ -34,6 +34,7 @@ export const Conversations = () => {
   return (
     <Card>
       <CardBody>
+        {conversations.length === 0 && <Text>No conversations</Text>}
         {conversations?.map((conversation) => (
           <Box key={conversation.id} _hover={{ bg: "blackAlpha.100", cursor: "pointer" }} onClick={() => {
 						navigate(`/users/${lookupUserId(conversation.participantIds)?.username}/chat`)
