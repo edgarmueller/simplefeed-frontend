@@ -12,11 +12,13 @@ import UserProfile, { loader as userLoader } from './pages/UserProfile';
 import reportWebVitals from './reportWebVitals';
 import Settings from './pages/Settings';
 import Chat from './pages/Chat';
+import Search from './pages/Search';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthOutlet />}>
       <Route path='/feed' element={<ProtectedRoute><Feed/></ProtectedRoute>} />
+      <Route path='/search' element={<ProtectedRoute><Search/></ProtectedRoute>} />
       <Route path='/settings' element={<ProtectedRoute><Settings/></ProtectedRoute>} />
       <Route path='/users/:username/chat' element={<ProtectedRoute><UserProfile/></ProtectedRoute>} loader={userLoader}/>
       <Route path='/users/:username' element={<ProtectedRoute><UserProfile/></ProtectedRoute>} loader={userLoader}/>
