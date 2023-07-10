@@ -29,6 +29,9 @@ export interface Message {
 	isRead?: boolean
 }
 
+export interface Notification {
+
+}
 export interface Post {
 	id: string;
 	body: string

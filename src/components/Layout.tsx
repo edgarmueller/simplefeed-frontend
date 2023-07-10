@@ -1,6 +1,6 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Badge, Box, Button, Grid, Stack } from "@chakra-ui/react";
 import { useEffect } from "react";
-import { BiChat, BiCog } from "react-icons/bi";
+import { BiBell, BiChat, BiCog } from "react-icons/bi";
 import { FiLogOut, FiSearch, FiUsers } from "react-icons/fi";
 import { MdOutlineFeed } from "react-icons/md";
 import { Link as RouterLink } from "react-router-dom";
@@ -14,25 +14,8 @@ import { useNotifications } from "./notifications/useNotifications";
 
 export const Layout = ({ children }: any) => {
   const { user, hasError, error } = useUser();
-  const { requestAllMessages, messagesByConversation } = useChat()
-  const { unreadCount, setUnreadCount } = useNotifications();
-  useEffect(() => {
-    const unreadMessagesCount = Object.values(messagesByConversation).reduce(
-      (acc, messages) => {
-        return (
-          acc + (messages?.filter((msg) => msg.authorId !== user?.id).filter(msg => !msg.isRead).length || 0)
-        )
-      }, 0)
-    setUnreadCount(unreadMessagesCount);
-  }, [messagesByConversation, setUnreadCount, user?.id]);
-  useEffect(() => {
-    fetchConversations()
-      .then((conversations) => {
-        for (const conversation of conversations) {
-          requestAllMessages(conversation.id);
-        }
-      })
-  }, [requestAllMessages]);
+  const { unreadByConversations: { total: unreadCount } } = useChat()
+  const { notifications } = useNotifications();
   const { logout } = useAuth();
   return (
     <Grid
@@ -71,6 +54,11 @@ export const Layout = ({ children }: any) => {
           <RouterLink to="/friends">
             <Button variant="link" leftIcon={<FiUsers />}>
               Friends
+            </Button>
+          </RouterLink>
+          <RouterLink to="/notifications">
+            <Button variant="link" leftIcon={<BiBell />}>
+              Notifications
             </Button>
           </RouterLink>
           <RouterLink to="/settings">

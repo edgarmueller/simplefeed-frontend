@@ -1,19 +1,16 @@
-import {
-  Box,
-  Card,
-  CardBody,
-  Text
-} from "@chakra-ui/react";
+import { Badge, Box, Card, CardBody, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchConversations } from "../../api/chat";
 import { Conversation } from "../../domain.interface";
 import { useUser } from "../../lib/auth/hooks/useUser";
 import { UserDetailSmall } from "../UserDetailSmall";
+import { useChat } from "./useChat";
 
 export const Conversations = () => {
-	const navigate = useNavigate();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const navigate = useNavigate();
+  const { conversations, unreadByConversations } = useChat();
+console.log({unreadByConversations})
   const { user } = useUser();
   const lookupUserId = (participantIds: string[]) =>
     user?.friends.find((friend) => participantIds.includes(friend.id));
@@ -26,24 +23,34 @@ export const Conversations = () => {
     }
     return "";
   };
-  useEffect(() => {
-    fetchConversations().then((data) => setConversations(data));
-  }, []);
-  console.log({ conversations });
 
   return (
     <Card>
       <CardBody>
         {conversations.length === 0 && <Text>No conversations</Text>}
         {conversations?.map((conversation) => (
-          <Box key={conversation.id} _hover={{ bg: "blackAlpha.100", cursor: "pointer" }} onClick={() => {
-						navigate(`/users/${lookupUserId(conversation.participantIds)?.username}/chat`)
-					}}>
+          <Box
+            key={conversation.id}
+            _hover={{ bg: "blackAlpha.100", cursor: "pointer" }}
+            onClick={() => {
+              navigate(
+                `/users/${
+                  lookupUserId(conversation.participantIds)?.username
+                }/chat`
+              );
+            }}
+          >
             <UserDetailSmall
               user={lookupUserId(conversation.participantIds)}
               bold
-							asLink={false}
+              asLink={false}
             />
+              {
+                unreadByConversations[conversation.id] === 0 ? null :
+                  <Badge colorScheme="red" variant="solid" ml={2}>
+                    {unreadByConversations[conversation.id]}
+                  </Badge>
+              }
             <Text>
               {mostRecentMessageAuthor(conversation)}
               {mostRecentMessage(conversation)?.content}

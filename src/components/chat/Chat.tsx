@@ -23,8 +23,11 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
   const { isConnected, markAsRead, sendMessage, requestAllMessages, messagesByConversation } = useChat();
   const [inputValue, setInputValue] = useState("");
   useEffect(() => { 
-    requestAllMessages(conversationId)
-  }, [conversationId, requestAllMessages]);
+    if (isConnected && conversationId) {
+		  console.log('requesting all messages')
+      requestAllMessages(conversationId)
+    }
+  }, [isConnected, conversationId, requestAllMessages]);
 
   return (
     <Box>
@@ -37,7 +40,7 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
           height="20em"
           overflowY="auto"
           onScrollToBottom={() => {
-            markAsRead(conversationId);
+            markAsRead(conversationId, messagesByConversation[conversationId]);
           }}
         >
           {messagesByConversation[conversationId]?.map((message, index) => (

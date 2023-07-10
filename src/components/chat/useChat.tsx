@@ -17,23 +17,25 @@ import { refreshToken } from "../../lib/fetch";
 
 type ChatContextProps = {
   conversations: Conversation[];
+  unreadByConversations: any;
   fetchConversations(): void;
   hasError: boolean;
   error: string | undefined;
   isConnected: boolean;
   sendMessage(conversationId: string, msg: string): void;
   requestAllMessages(conversationId: string): void;
-  markAsRead(conversationId: string): void;
+  markAsRead(conversationId: string, msg: Message[]): void;
   messagesByConversation: { [conversationId: string]: Message[] };
 };
 
 const ChatContext = createContext<ChatContextProps>({
   conversations: [],
+  unreadByConversations: {},
   hasError: false,
   error: undefined,
+  isConnected: false,
   fetchConversations: () => {},
   sendMessage: () => {},
-  isConnected: false,
   requestAllMessages: () => {},
   markAsRead: () => {},
   messagesByConversation: {},
@@ -44,6 +46,7 @@ export const ChatProvider = ({ children }: any) => {
   const { token } = useAuth();
   const [socket, setSocket] = useState<Socket>();
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [unreadByConversations, setUnreadByConversations] = useState<any>({ total: 0});
   const [error, setError] = useState();
   const [isConnected, setIsConnected] = useState(false);
   const [messagesByConversation, setMessagesByConversation] = useState<{
@@ -65,6 +68,7 @@ export const ChatProvider = ({ children }: any) => {
     () =>
       fetchConversations()
         .then((conversations) => {
+          console.log(conversations)
           setConversations(conversations);
           setError(undefined);
         })
@@ -98,7 +102,12 @@ export const ChatProvider = ({ children }: any) => {
     [socket]
   );
   const markAsRead = useCallback(
-    (conversationId: string) => {
+    (conversationId: string, messages: Message[]) => {
+      messages?.forEach((msg) => {
+        if (msg.authorId !== user?.id) {
+          msg.isRead = true;
+        }
+      });
       socket?.emit("mark_as_read", {
         conversationId,
       });
@@ -139,21 +148,41 @@ export const ChatProvider = ({ children }: any) => {
       },
     });
     setSocket(socket);
-
     return () => {
       socket.close();
     };
   }, [token]);
 
   useEffect(() => {
-    function onConnect() {
-      setIsConnected(true);
+    if (!socket?.connected) {
+    // TODO
+    fetchConversations().then((conversations) => {
+      setConversations(conversations);
+      for (const conversation of conversations) {
+        requestAllMessages(conversation.id);
+      }
+    });
     }
+  }, [socket, requestAllMessages]);
 
-    function onDisconnect() {
-      setIsConnected(false);
-    }
+  useEffect(() => {
+    const unreadMessagesCountByConversation = Object.entries(messagesByConversation).reduce(
+      (acc, [convId, messages]) => {
+        acc[convId] =
+          messages
+            ?.filter((msg) => msg.authorId !== user?.id)
+            .filter((msg) => !msg.isRead).length || 0;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+    setUnreadByConversations({
+      ...unreadMessagesCountByConversation,
+      total: Object.values(unreadMessagesCountByConversation).reduce((acc: number, count: number) => acc + count, 0),
+    });
+  }, [messagesByConversation, user?.id]);
 
+  useEffect(() => {
     function onAllMessages(conversation: any) {
       setMessagesByConversation((prev) => ({
         ...prev,
@@ -177,7 +206,7 @@ export const ChatProvider = ({ children }: any) => {
             return msg;
           }),
         };
-      })
+      });
     }
 
     function onMessage(msg: Message) {
@@ -194,15 +223,11 @@ export const ChatProvider = ({ children }: any) => {
     }
     socket?.connect();
 
-    socket?.on("connect", onConnect);
-    socket?.on("disconnect", onDisconnect);
     socket?.on("send_all_messages", onAllMessages);
     socket?.on("receive_message", onMessage);
-    socket?.on("mark_as_read", onMessageRead);
+    socket?.on("message_read", onMessageRead);
 
     return () => {
-      socket?.off("connect", onConnect);
-      socket?.off("disconnect", onDisconnect);
       socket?.off("receive_message", onMessage);
       socket?.off("send_all_messages", onAllMessages);
     };
@@ -216,20 +241,22 @@ export const ChatProvider = ({ children }: any) => {
       error,
       fetchConversations: fetchAllConversations,
       requestAllMessages,
-      isConnected,
       sendMessage,
       markAsRead,
       messagesByConversation,
+      unreadByConversations,
+      isConnected
     }),
     [
+      unreadByConversations,
       conversations,
       error,
       fetchAllConversations,
       requestAllMessages,
-      isConnected,
       sendMessage,
       markAsRead,
       messagesByConversation,
+      isConnected
     ]
   );
 

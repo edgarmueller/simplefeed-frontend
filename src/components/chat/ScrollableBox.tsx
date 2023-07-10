@@ -18,14 +18,14 @@ export function ScrollableBox({ children, onScrollToBottom, ...boxProps }: any) 
   useEffect(() => {
     // TODO: Automatically scroll to the bottom when new content is added
     // keep enabled?
-    boxRef.current.scrollTop = boxRef.current.scrollHeight;
+    // boxRef.current.scrollTop = boxRef.current.scrollHeight;
   }, [children]);
 
   useEffect(() => {
     if (boxRef.current.scrollHeight <= boxRef.current.clientHeight) {
       onScrollToBottom();
     }
-  }, []);
+  });
 
   return (
     <Box overflow="auto" onScroll={handleScroll} ref={boxRef} {...boxProps}>
