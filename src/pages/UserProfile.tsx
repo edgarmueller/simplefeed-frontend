@@ -48,7 +48,7 @@ const UserProfile = () => {
     getSentFriendRequests().then((friendRequests) => {
       setFriendRequestSent(friendRequests.some((fr) => fr.to.id === userId));
     });
-  }, []);
+  }, [userId]);
   return (
     <Layout>
       {isMyProfile ? (

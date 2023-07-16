@@ -4,10 +4,12 @@ import { useAuth } from "../../lib/auth/hooks/useAuth";
 
 type NotificationContextProps = {
   notifications: any[];
+  markAsRead: (id: string) => void;
 };
 
 const NotificationContext = createContext<NotificationContextProps>({
   notifications: [],
+  markAsRead: (id: string) => {},
 });
 
 export const NotificationProvider = ({ children }: any) => {
@@ -34,8 +36,7 @@ export const NotificationProvider = ({ children }: any) => {
 
   useEffect(() => {
     if (socket?.connected) {
-      console.log('requesting_all_notifications')
-      console.log('notification socket init')
+      // 
     }
   }, [socket?.connected, token]);
 
@@ -45,11 +46,11 @@ export const NotificationProvider = ({ children }: any) => {
     }
 
     function onAllNotifications(notifications: any) {
-      console.log('notifications received', notifications)
       setNotifications(notifications);
     }
 
     function onNotification(msg: Notification) {
+      setNotifications((prev) => [...prev, msg]);
     }
 
     if (socket?.active) {
@@ -68,9 +69,15 @@ export const NotificationProvider = ({ children }: any) => {
     };
   }, [socket]);
 
+  const markAsRead = (notificationId: string) => {
+    console.log('marking as read', notificationId)
+    socket?.emit("mark_notification_as_read", notificationId);
+  };
+
   const value = useMemo(
     () => ({
       notifications,
+      markAsRead
     }),
     [notifications]
   );

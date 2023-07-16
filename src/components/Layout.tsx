@@ -4,7 +4,6 @@ import { BiBell, BiChat, BiCog } from "react-icons/bi";
 import { FiLogOut, FiSearch, FiUsers } from "react-icons/fi";
 import { MdOutlineFeed } from "react-icons/md";
 import { Link as RouterLink } from "react-router-dom";
-import { fetchConversations } from "../api/chat";
 import { useAuth } from "../lib/auth/hooks/useAuth";
 import { useUser } from "../lib/auth/hooks/useUser";
 import { Logo } from "./Logo";
@@ -16,6 +15,7 @@ export const Layout = ({ children }: any) => {
   const { user, hasError, error } = useUser();
   const { unreadByConversations: { total: unreadCount } } = useChat()
   const { notifications } = useNotifications();
+  const unreadNotifications = notifications.filter(n => !n.viewed)
   const { logout } = useAuth();
   return (
     <Grid
@@ -59,6 +59,12 @@ export const Layout = ({ children }: any) => {
           <RouterLink to="/notifications">
             <Button variant="link" leftIcon={<BiBell />}>
               Notifications
+              {
+                unreadNotifications.length === 0 ? null :
+                  <Badge colorScheme="red" variant="solid" ml={2}>
+                    {unreadNotifications.length}
+                  </Badge>
+              }
             </Button>
           </RouterLink>
           <RouterLink to="/settings">

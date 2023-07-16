@@ -31,6 +31,7 @@ export const getSentFriendRequests = async (): Promise<FriendRequest[]> => {
       ...createHeaders(),
     },
   });
+  console.log('sent friend requests' ,res.body);
   return res.body;
 };
 

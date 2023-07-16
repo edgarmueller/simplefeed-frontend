@@ -13,6 +13,7 @@ import reportWebVitals from './reportWebVitals';
 import Settings from './pages/Settings';
 import Chat from './pages/Chat';
 import Search from './pages/Search';
+import Notifications from './pages/Notifications';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -26,6 +27,7 @@ const router = createBrowserRouter(
       <Route path='/sign-in' element={<SignIn />} />
       <Route path='/friends' element={<ProtectedRoute><Friends /></ProtectedRoute>} />
       <Route path='/chat' element={<ProtectedRoute><Chat/></ProtectedRoute>} />
+      <Route path='/notifications' element={<ProtectedRoute><Notifications/></ProtectedRoute>} />
     </Route>
   )
 )
