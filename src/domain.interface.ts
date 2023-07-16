@@ -30,7 +30,8 @@ export interface Message {
 }
 
 export interface Notification {
-
+	id: string
+	viewed: boolean
 }
 export interface Post {
 	id: string;

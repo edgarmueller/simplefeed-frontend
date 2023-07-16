@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import { useAuth } from "../../lib/auth/hooks/useAuth";
+import { Notification } from "../../domain.interface";
 
 type NotificationContextProps = {
   notifications: any[];
@@ -53,6 +54,11 @@ export const NotificationProvider = ({ children }: any) => {
       setNotifications((prev) => [...prev, msg]);
     }
 
+    function onNotificationRead(msg: Notification) {
+      console.log('notification read', msg)
+      setNotifications((prev) => prev.filter((n) => n.id !== msg.id));
+    }
+
     if (socket?.active) {
       return;
     }
@@ -61,17 +67,19 @@ export const NotificationProvider = ({ children }: any) => {
     socket?.on("connect", onConnect);
     socket?.on("send_all_notifications", onAllNotifications);
     socket?.on("receive_notification", onNotification);
+    socket?.on("notification_read", onNotificationRead);
 
     return () => {
       socket?.off("connect", onConnect);
       socket?.off("send_all_notifications", onAllNotifications);
       socket?.off("receive_notification", onNotification);
+      socket?.off("notification_read", onNotificationRead);
     };
   }, [socket]);
 
   const markAsRead = (notificationId: string) => {
     console.log('marking as read', notificationId)
-    socket?.emit("mark_notification_as_read", notificationId);
+    socket?.emit("mark_notification_as_read", { notificationId });
   };
 
   const value = useMemo(
