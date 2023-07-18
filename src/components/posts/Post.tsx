@@ -36,8 +36,10 @@ const Post = memo(({ post }: { post: PostEntity }) => {
     post.likes?.find(({ userId }) => userId === user?.id) !== undefined
   );
   useEffect(() => {
-    setLiked(post.likes?.find(({ userId }) => userId === user?.id) !== undefined)
-  }, [post, user])
+    setLiked(
+      post.likes?.find(({ userId }) => userId === user?.id) !== undefined
+    );
+  }, [post, user]);
   const [isVisible, setVisible] = useState(true);
   const { isOpen, onToggle } = useDisclosure();
   const fetchReplies = useCallback(
@@ -68,8 +70,7 @@ const Post = memo(({ post }: { post: PostEntity }) => {
   const onReply = useCallback((comment: Comment) => {
     setComments((prevComments) => [...(prevComments || []), comment]);
   }, []);
-  return (
-    isVisible ? 
+  return isVisible ? (
     <Box key={post.id} bg="gray.100" p={3} borderRadius="md" marginBottom={3}>
       <Stack direction="row" spacing={4} alignItems="center" marginBottom={2}>
         <Avatar
@@ -83,9 +84,9 @@ const Post = memo(({ post }: { post: PostEntity }) => {
           </Link>{" "}
           {post.postedTo && "to "}
           {post.postedTo && (
-              <Link as={RouterLink} to={`/users/${post.postedTo.username}`}>
-                {post.postedTo.firstName} {post.postedTo.lastName}
-              </Link>
+            <Link as={RouterLink} to={`/users/${post.postedTo.username}`}>
+              {post.postedTo.firstName} {post.postedTo.lastName}
+            </Link>
           )}
         </div>
         <Box marginBottom={4}>{formatTimeAgo(post.createdAt)}</Box>
@@ -132,20 +133,18 @@ const Post = memo(({ post }: { post: PostEntity }) => {
               );
             })
           ) : (
-            <>
-              <Text>
-                <i>No comments yet</i>
-              </Text>
-              <CommentForm
-                postId={post.id}
-                path=""
-                onSubmit={(comment: Comment) => {
-                  onReply(comment);
-                  fetchReplies();
-                }}
-              />
-            </>
+            <Text>
+              <i>No comments yet</i>
+            </Text>
           )}
+          <CommentForm
+            postId={post.id}
+            path=""
+            onSubmit={(comment: Comment) => {
+              onReply(comment);
+              fetchReplies();
+            }}
+          />
         </Box>
       </Collapse>
       <Button
@@ -153,18 +152,17 @@ const Post = memo(({ post }: { post: PostEntity }) => {
         leftIcon={<BiLike />}
         onClick={async () => {
           if (isLiked) {
-            await unlikePost(post.id)
+            await unlikePost(post.id);
             setLiked(false);
           } else {
-            await likePost(post.id)
+            await likePost(post.id);
             setLiked(true);
           }
         }}
       >
         {isLiked ? "Unlike" : "Like"}
       </Button>
-      {
-        post.author.id === user?.id &&
+      {post.author.id === user?.id && (
         <Button
           size="sm"
           leftIcon={<BiTrash />}
@@ -176,9 +174,9 @@ const Post = memo(({ post }: { post: PostEntity }) => {
         >
           Delete
         </Button>
-      }
-    </Box> : null
-  );
+      )}
+    </Box>
+  ) : null;
 });
 Post.displayName = "Post";
 export { Post };

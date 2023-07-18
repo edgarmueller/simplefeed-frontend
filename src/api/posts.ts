@@ -33,6 +33,13 @@ export async function fetchPosts(userId: string, page: number, limit = 50): Prom
   return res.data;
 }
 
+export async function fetchPost(postId: string): Promise<Post> {
+  const res = await axios.get(`${API_URL}/posts/${postId}`, {
+    headers: createHeaders(),
+  });
+  return res.data;
+}
+
 export async function postComment(
   postId: string,
   content: string,

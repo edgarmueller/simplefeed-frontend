@@ -14,6 +14,7 @@ import Settings from './pages/Settings';
 import Chat from './pages/Chat';
 import Search from './pages/Search';
 import Notifications from './pages/Notifications';
+import Post from './pages/Post';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -28,6 +29,7 @@ const router = createBrowserRouter(
       <Route path='/friends' element={<ProtectedRoute><Friends /></ProtectedRoute>} />
       <Route path='/chat' element={<ProtectedRoute><Chat/></ProtectedRoute>} />
       <Route path='/notifications' element={<ProtectedRoute><Notifications/></ProtectedRoute>} />
+      <Route path='/posts/:id' element={<ProtectedRoute><Post/></ProtectedRoute>} />
     </Route>
   )
 )
