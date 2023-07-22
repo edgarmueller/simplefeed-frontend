@@ -22,7 +22,7 @@ export const CommentForm = ({ postId, path, onSubmit }: CommentProps) => {
     });
   };
   return (
-    <Stack direction="row" spacing={4}>
+    <Stack direction="row" spacing={4} m={2}>
 			<Textarea
 				className="comment"
 				placeholder="Write a comment..."

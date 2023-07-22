@@ -8,6 +8,8 @@ type UserContextProps = {
   setUser: (user: User) => void;
   hasError: boolean;
   error: string | undefined;
+  refresh: () => Promise<void>;
+  // TODO: remove these
   incrementPostCount: () => void;
   decrementPostCount: () => void;
 };
@@ -17,6 +19,7 @@ const UserContext = createContext<UserContextProps>({
   setUser: () => {},
   hasError: false,
   error: undefined,
+  refresh: async () => {},
   incrementPostCount: () => {},
   decrementPostCount: () => {},
 });
@@ -37,10 +40,19 @@ export const UserProvider = ({ children }: any) => {
         });
     }
   }, [token]);
+  const refresh = () => me()
+    .then((me) => {
+      setUser(me);
+      setError(undefined);
+    })
+    .catch((error) => {
+      setError(error.message);
+    });
   const value = useMemo(
     () => ({
       user,
       setUser,
+      refresh,
       hasError: error !== undefined,
       error,
       incrementPostCount: () => {

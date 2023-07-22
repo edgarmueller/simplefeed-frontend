@@ -68,7 +68,6 @@ export const ChatProvider = ({ children }: any) => {
     () =>
       fetchConversations()
         .then((conversations) => {
-          console.log(conversations)
           setConversations(conversations);
           setError(undefined);
         })

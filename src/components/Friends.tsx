@@ -8,7 +8,7 @@ import {
   Stack,
   Text
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   acceptFriendRequest,
   declineFriendRequest,
@@ -16,15 +16,14 @@ import {
   getSentFriendRequests,
 } from "../api/friend-requests";
 import { removeFriend } from "../api/friends";
-import { me } from "../api/user";
-import { FriendRequest, User } from "../domain.interface";
+import { FriendRequest } from "../domain.interface";
 import { useUser } from "../lib/auth/hooks/useUser";
 import { Layout } from "./Layout";
 import { UserDetailSmall } from "./UserDetailSmall";
 import { useChat } from "./chat/useChat";
 
 export const Friends = () => {
-  const { user } = useUser();
+  const { user, refresh: refreshUser } = useUser();
   const { fetchConversations } = useChat();
   const [receivedFriendRequests, setReceivedFriendRequests] = useState<
     FriendRequest[]
@@ -32,13 +31,6 @@ export const Friends = () => {
   const [sentFriendRequests, setSentFriendRequests] = useState<FriendRequest[]>(
     []
   );
-  const [friends, setFriends] = useState<User[]>(user?.friends || []);
-  const refetchMyProfile = useCallback(async () => {
-    if (user?.username) {
-      const refetchedProfile = await me()
-      setFriends(refetchedProfile.friends);
-    }
-  }, [user]);
   useEffect(() => {
     getFriendRequests().then((friendRequests) => {
       setReceivedFriendRequests(friendRequests);
@@ -46,8 +38,7 @@ export const Friends = () => {
     getSentFriendRequests().then((friendRequests) => {
       setSentFriendRequests(friendRequests);
     });
-    refetchMyProfile();
-  }, [refetchMyProfile]);
+  }, []);
 
   return (
     <Layout>
@@ -78,7 +69,7 @@ export const Friends = () => {
                                 (request) => request.id !== friendRequest.id
                               )
                             );
-                            await refetchMyProfile();
+                            await refreshUser();
                             await fetchConversations();
                           }}
                         >
@@ -131,9 +122,9 @@ export const Friends = () => {
           <Heading size="sm" textTransform="uppercase" paddingTop={4}>
             Friends
           </Heading>
-          {friends.length === 0
+          {user?.friends.length === 0
             ? "No friends"
-            : friends.map((friend) => (
+            : user?.friends.map((friend) => (
                 <Flex key={friend.id} justify={"space-between"} align={"center"}>
                   <UserDetailSmall user={friend} asLink />
                   <Button
@@ -142,7 +133,7 @@ export const Friends = () => {
                     size="xs"
                     onClick={async () => {
                       await removeFriend(friend.id)
-                      await refetchMyProfile();
+                      await refreshUser();
                     }}
                   >
                     Remove

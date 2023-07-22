@@ -1,7 +1,5 @@
 import { Badge, Box, Card, CardBody, Text } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchConversations } from "../../api/chat";
 import { Conversation } from "../../domain.interface";
 import { useUser } from "../../lib/auth/hooks/useUser";
 import { UserDetailSmall } from "../UserDetailSmall";
@@ -10,7 +8,6 @@ import { useChat } from "./useChat";
 export const Conversations = () => {
   const navigate = useNavigate();
   const { conversations, unreadByConversations } = useChat();
-console.log({unreadByConversations})
   const { user } = useUser();
   const lookupUserId = (participantIds: string[]) =>
     user?.friends.find((friend) => participantIds.includes(friend.id));
