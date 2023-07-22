@@ -1,6 +1,7 @@
-import { Box, Button, Grid, GridItem, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Grid, GridItem, Heading, Link, Text } from "@chakra-ui/react";
 import { Layout } from "../components/Layout";
 import { useNotifications } from "../components/notifications/useNotifications";
+import { Link as RouterLink } from "react-router-dom";
 
 const Notifications = () => {
   const { notifications, markAsRead } = useNotifications();
@@ -15,18 +16,21 @@ const Notifications = () => {
       <Grid templateColumns="4fr 1fr" gap={4}>
         <Box p={4}></Box>
         <Box>
-          <Button
-            colorScheme="green"
-            variant="outline"
-            size="xs"
-            onClick={() => {
-              unreadNotificatons.map((notification) => {
-                markAsRead(notification.id);
-              });
-            }}
-          >
-            Mark all as read
-          </Button>
+          {
+            unreadNotificatons.length > 0 ?
+              <Button
+                colorScheme="green"
+                variant="outline"
+                size="xs"
+                onClick={() => {
+                  unreadNotificatons.map((notification) => {
+                    markAsRead(notification.id);
+                  });
+                }}
+              >
+                Mark all as read
+              </Button> : null
+          }
         </Box>
       </Grid>
       {unreadNotificatons.length === 0 ? (
@@ -36,7 +40,9 @@ const Notifications = () => {
           {unreadNotificatons.map((notification) => {
             return (
               <GridItem colSpan={2} key={notification.id} >
-								{notification.message} from {notification.recipientId}
+                <Link as={RouterLink} to={notification.link} onClick={() => markAsRead(notification.id)}>
+								  {notification.message}
+                </Link>
                 <Button
 									m={2}
                   colorScheme="green"
