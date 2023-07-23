@@ -18,10 +18,11 @@ import { refreshToken } from "../../lib/fetch";
 type ChatContextProps = {
   conversations: Conversation[];
   unreadByConversations: any;
-  fetchConversations(): void;
+  fetchConversations(): Promise<Conversation[]>;
   hasError: boolean;
   error: string | undefined;
   isConnected: boolean;
+  joinConversation(conversationId: string): void;
   sendMessage(conversationId: string, msg: string): void;
   requestAllMessages(conversationId: string): void;
   markAsRead(conversationId: string, msg: Message[]): void;
@@ -34,7 +35,8 @@ const ChatContext = createContext<ChatContextProps>({
   hasError: false,
   error: undefined,
   isConnected: false,
-  fetchConversations: () => {},
+  fetchConversations: async () => [],
+  joinConversation: (id) => {},
   sendMessage: () => {},
   requestAllMessages: () => {},
   markAsRead: () => {},
@@ -70,9 +72,11 @@ export const ChatProvider = ({ children }: any) => {
         .then((conversations) => {
           setConversations(conversations);
           setError(undefined);
+          return conversations;
         })
         .catch((error) => {
           setError(error.message);
+          return [];
         }),
     []
   );
@@ -164,6 +168,13 @@ export const ChatProvider = ({ children }: any) => {
     }
   }, [socket, requestAllMessages]);
 
+  function joinConversation(conversationId: string) {
+    console.log('joining', conversationId)
+    socket?.emit("join_conversation", {
+      conversationId,
+    });
+  }
+
   useEffect(() => {
     const unreadMessagesCountByConversation = Object.entries(messagesByConversation).reduce(
       (acc, [convId, messages]) => {
@@ -239,6 +250,7 @@ export const ChatProvider = ({ children }: any) => {
       hasError: error !== undefined,
       error,
       fetchConversations: fetchAllConversations,
+      joinConversation,
       requestAllMessages,
       sendMessage,
       markAsRead,
@@ -250,6 +262,7 @@ export const ChatProvider = ({ children }: any) => {
       unreadByConversations,
       conversations,
       error,
+      joinConversation,
       fetchAllConversations,
       requestAllMessages,
       sendMessage,

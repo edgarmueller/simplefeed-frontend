@@ -6,7 +6,7 @@ import {
   Flex,
   Heading,
   Stack,
-  Text
+  Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {
@@ -24,7 +24,7 @@ import { useChat } from "./chat/useChat";
 
 export const Friends = () => {
   const { user, refresh: refreshUser } = useUser();
-  const { fetchConversations } = useChat();
+  const { fetchConversations, joinConversation } = useChat();
   const [receivedFriendRequests, setReceivedFriendRequests] = useState<
     FriendRequest[]
   >([]);
@@ -50,49 +50,64 @@ export const Friends = () => {
             </Heading>
             <Box>
               <Heading size="xs">Received</Heading>
-              {receivedFriendRequests.length === 0
-                ? <Text size="sm">No friend requests</Text>
-                : receivedFriendRequests.map((friendRequest) => (
-                    <Flex key={friendRequest.id} justify="space-between" align="center">
-                      <UserDetailSmall
-                        user={friendRequest.from}
-                      />
-                      <Stack direction="row" spacing={2}>
-                        <Button
-                          variant="outline"
-                          colorScheme="green"
-                          size="xs"
-                          onClick={async () => {
-                            await acceptFriendRequest(friendRequest.id);
-                            setReceivedFriendRequests((requests) =>
-                              requests.filter(
-                                (request) => request.id !== friendRequest.id
+              {receivedFriendRequests.length === 0 ? (
+                <Text size="sm">No friend requests</Text>
+              ) : (
+                receivedFriendRequests.map((friendRequest) => (
+                  <Flex
+                    key={friendRequest.id}
+                    justify="space-between"
+                    align="center"
+                  >
+                    <UserDetailSmall user={friendRequest.from} />
+                    <Stack direction="row" spacing={2}>
+                      <Button
+                        variant="outline"
+                        colorScheme="green"
+                        size="xs"
+                        onClick={async () => {
+                          await acceptFriendRequest(friendRequest.id);
+                          setReceivedFriendRequests((requests) =>
+                            requests.filter(
+                              (request) => request.id !== friendRequest.id
+                            )
+                          );
+                          await refreshUser();
+                          const conversations = await fetchConversations();
+                          const conversationId = conversations.find(
+                            (conversation) =>
+                              conversation.participantIds.includes(user?.id || '') &&
+                              conversation.participantIds.includes(
+                                friendRequest.from.id
                               )
-                            );
-                            await refreshUser();
-                            await fetchConversations();
-                          }}
-                        >
-                          Accept
-                        </Button>
-                        <Button
-                          variant="outline"
-                          colorScheme="red"
-                          size="xs"
-                          onClick={async () => {
-                            await declineFriendRequest(friendRequest.id);
-                            setReceivedFriendRequests((requests) =>
-                              requests.filter(
-                                (request) => request.id !== friendRequest.id
-                              )
-                            );
-                          }}
-                        >
-                          Decline
-                        </Button>
-                      </Stack>
-                    </Flex>
-                  ))}
+                          );
+                          if (!conversationId) {
+                            return;
+                          }
+                          await joinConversation(conversationId.id);
+                        }}
+                      >
+                        Accept
+                      </Button>
+                      <Button
+                        variant="outline"
+                        colorScheme="red"
+                        size="xs"
+                        onClick={async () => {
+                          await declineFriendRequest(friendRequest.id);
+                          setReceivedFriendRequests((requests) =>
+                            requests.filter(
+                              (request) => request.id !== friendRequest.id
+                            )
+                          );
+                        }}
+                      >
+                        Decline
+                      </Button>
+                    </Stack>
+                  </Flex>
+                ))
+              )}
             </Box>
             <Box>
               <Heading size="xs">Sent</Heading>
@@ -125,14 +140,18 @@ export const Friends = () => {
           {user?.friends.length === 0
             ? "No friends"
             : user?.friends.map((friend) => (
-                <Flex key={friend.id} justify={"space-between"} align={"center"}>
+                <Flex
+                  key={friend.id}
+                  justify={"space-between"}
+                  align={"center"}
+                >
                   <UserDetailSmall user={friend} asLink />
                   <Button
                     variant="outline"
                     colorScheme="red"
                     size="xs"
                     onClick={async () => {
-                      await removeFriend(friend.id)
+                      await removeFriend(friend.id);
                       await refreshUser();
                     }}
                   >

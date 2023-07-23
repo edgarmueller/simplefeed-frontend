@@ -32,6 +32,8 @@ export interface Message {
 export interface Notification {
 	id: string
 	viewed: boolean
+	type: string
+	resourceId: string
 }
 export interface Post {
 	id: string;
@@ -62,7 +64,7 @@ export interface Comment {
 
 export interface FriendRequest {
 	id: string;
-	from: string;
+	from: any;
 	to: {
 		id: string
 	};

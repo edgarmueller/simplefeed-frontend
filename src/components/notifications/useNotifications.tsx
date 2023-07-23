@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import { useAuth } from "../../lib/auth/hooks/useAuth";
 import { Notification } from "../../domain.interface";
+import { useChat } from "../chat/useChat";
+import { useUser } from "../../lib/auth/hooks/useUser";
 
 type NotificationContextProps = {
   notifications: any[];
@@ -15,6 +17,8 @@ const NotificationContext = createContext<NotificationContextProps>({
 
 export const NotificationProvider = ({ children }: any) => {
   const { token } = useAuth();
+  const { refresh } = useUser();
+  const { joinConversation, fetchConversations } = useChat()
   const [socket, setSocket] = useState<Socket>();
   const [notifications, setNotifications] = useState<any[]>([]);
 
@@ -51,11 +55,17 @@ export const NotificationProvider = ({ children }: any) => {
     }
 
     function onNotification(msg: Notification) {
+      console.log('received notification', msg)
+      if (msg.type === "friend-request-accepted") {
+        refresh()
+        fetchConversations().then(() => {
+          joinConversation(msg.resourceId)
+        });
+      }
       setNotifications((prev) => [...prev, msg]);
     }
 
     function onNotificationRead(msg: Notification) {
-      console.log('notification read', msg)
       setNotifications((prev) => prev.filter((n) => n.id !== msg.id));
     }
 
