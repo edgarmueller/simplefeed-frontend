@@ -5,6 +5,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { Socket, io } from "socket.io-client";
@@ -47,24 +48,25 @@ export const ChatProvider = ({ children }: any) => {
   const { user } = useUser();
   const { token } = useAuth();
   const [socket, setSocket] = useState<Socket>();
+  let lastMessage = useRef<string>();
+  let lastConversation = useRef<string>();
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [unreadByConversations, setUnreadByConversations] = useState<any>({ total: 0});
+  const [unreadByConversations, setUnreadByConversations] = useState<any>({
+    total: 0,
+  });
   const [error, setError] = useState();
   const [isConnected, setIsConnected] = useState(false);
   const [messagesByConversation, setMessagesByConversation] = useState<{
     [conversationId: string]: Message[];
   }>({});
 
-  const updateChatAccessToken = useCallback(
-    (newToken: string | null) => {
-      if (socket && newToken) {
-        socket.io.opts.extraHeaders = {
-          Authorization: `Bearer ${newToken}`,
-        };
-      }
-    },
-    [socket]
-  );
+  const updateChatAccessToken = (newToken: string | null) => {
+    if (socket && newToken) {
+      socket.io.opts.extraHeaders = {
+        Authorization: `Bearer ${newToken}`,
+      };
+    }
+  };
 
   const fetchAllConversations = useCallback(
     () =>
@@ -91,9 +93,11 @@ export const ChatProvider = ({ children }: any) => {
       // Token has expired
       // You can trigger the token refresh process here
       await refreshToken();
-      const accessToken = getAccessToken();
-      updateChatAccessToken(accessToken);
+      await updateChatAccessToken(getAccessToken());
+      console.log("token refreshed", getAccessToken());
+      return true;
     }
+    return false;
   }, [token, updateChatAccessToken]);
 
   const requestAllMessages = useCallback(
@@ -106,6 +110,7 @@ export const ChatProvider = ({ children }: any) => {
   );
   const markAsRead = useCallback(
     (conversationId: string, messages: Message[]) => {
+      console.log("marking as read", messages);
       messages?.forEach((msg) => {
         if (msg.authorId !== user?.id) {
           msg.isRead = true;
@@ -117,22 +122,22 @@ export const ChatProvider = ({ children }: any) => {
     },
     [socket]
   );
-  const sendMessage = useCallback(
-    async (conversationId: string, msg: string) => {
-      if (!msg) return;
+  const sendMessage = async (conversationId: string, msg: string) => {
+    if (!msg) return;
 
-      const message: Message = {
-        authorId: user?.id || "",
-        content: msg,
-        conversationId,
-      };
-
-      await validateToken();
-      socket?.emit("send_message", JSON.stringify(message));
-      // setInputValue("");
-    },
-    [socket, validateToken]
-  );
+    const message: Message = {
+      authorId: user?.id || "",
+      content: msg,
+      conversationId,
+    };
+    await validateToken();
+    console.log('sending message now..', socket?.connected, socket?.active, socket?.io.opts.extraHeaders);
+    socket?.emit("send_message", JSON.stringify({
+      message,
+      auth: socket?.io.opts.extraHeaders,
+    }));
+    // setInputValue("");
+  };
   // --
   useEffect(() => {
     if (token) {
@@ -158,37 +163,39 @@ export const ChatProvider = ({ children }: any) => {
 
   useEffect(() => {
     if (!socket?.connected) {
-    // TODO
-    fetchConversations().then((conversations) => {
-      setConversations(conversations);
-      for (const conversation of conversations) {
-        requestAllMessages(conversation.id);
-      }
-    });
+      // TODO
+      fetchConversations().then((conversations) => {
+        setConversations(conversations);
+        for (const conversation of conversations) {
+          requestAllMessages(conversation.id);
+        }
+      });
     }
   }, [socket, requestAllMessages]);
 
   function joinConversation(conversationId: string) {
-    console.log('joining', conversationId)
+    console.log("joining", conversationId);
     socket?.emit("join_conversation", {
       conversationId,
     });
   }
 
   useEffect(() => {
-    const unreadMessagesCountByConversation = Object.entries(messagesByConversation).reduce(
-      (acc, [convId, messages]) => {
-        acc[convId] =
-          messages
-            ?.filter((msg) => msg.authorId !== user?.id)
-            .filter((msg) => !msg.isRead).length || 0;
-        return acc;
-      },
-      {} as Record<string, number>
-    );
+    const unreadMessagesCountByConversation = Object.entries(
+      messagesByConversation
+    ).reduce((acc, [convId, messages]) => {
+      acc[convId] =
+        messages
+          ?.filter((msg) => msg.authorId !== user?.id)
+          .filter((msg) => !msg.isRead).length || 0;
+      return acc;
+    }, {} as Record<string, number>);
     setUnreadByConversations({
       ...unreadMessagesCountByConversation,
-      total: Object.values(unreadMessagesCountByConversation).reduce((acc: number, count: number) => acc + count, 0),
+      total: Object.values(unreadMessagesCountByConversation).reduce(
+        (acc: number, count: number) => acc + count,
+        0
+      ),
     });
   }, [messagesByConversation, user?.id]);
 
@@ -232,7 +239,6 @@ export const ChatProvider = ({ children }: any) => {
       return;
     }
     socket?.connect();
-
     socket?.on("send_all_messages", onAllMessages);
     socket?.on("receive_message", onMessage);
     socket?.on("message_read", onMessageRead);
@@ -256,7 +262,7 @@ export const ChatProvider = ({ children }: any) => {
       markAsRead,
       messagesByConversation,
       unreadByConversations,
-      isConnected
+      isConnected,
     }),
     [
       unreadByConversations,
@@ -268,7 +274,7 @@ export const ChatProvider = ({ children }: any) => {
       sendMessage,
       markAsRead,
       messagesByConversation,
-      isConnected
+      isConnected,
     ]
   );
 

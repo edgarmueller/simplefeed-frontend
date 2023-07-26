@@ -40,7 +40,7 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
           height="20em"
           overflowY="auto"
           onScrollToBottom={() => {
-            markAsRead(conversationId, messagesByConversation[conversationId]);
+            markAsRead(conversationId, messagesByConversation[conversationId]?.filter(({ isRead }) => !isRead))
           }}
         >
           {messagesByConversation[conversationId]?.map((message, index) => (

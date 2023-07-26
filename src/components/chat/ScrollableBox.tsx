@@ -22,7 +22,8 @@ export function ScrollableBox({ children, onScrollToBottom, ...boxProps }: any) 
   }, [children]);
 
   useEffect(() => {
-    if (boxRef.current.scrollHeight <= boxRef.current.clientHeight) {
+    if (boxRef.current.scrollHeight < boxRef.current.clientHeight) {
+      console.log(boxRef.current.scrollHeight, boxRef.current.clientHeight)
       onScrollToBottom();
     }
   });
