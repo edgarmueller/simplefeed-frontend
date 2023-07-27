@@ -1,5 +1,4 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Badge, Box, Button, Grid, Stack } from "@chakra-ui/react";
-import { useEffect } from "react";
 import { BiBell, BiChat, BiCog } from "react-icons/bi";
 import { FiLogOut, FiSearch, FiUsers } from "react-icons/fi";
 import { MdOutlineFeed } from "react-icons/md";

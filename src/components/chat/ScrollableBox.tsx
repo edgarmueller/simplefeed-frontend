@@ -1,35 +1,39 @@
 import { Box } from "@chakra-ui/react";
 import { useEffect, useRef } from "react";
 
-export function ScrollableBox({ children, onScrollToBottom, ...boxProps }: any) {
+export function ScrollableBox({
+  children,
+  onScrollToBottom,
+  ...boxProps
+}: any) {
   const boxRef = useRef<any>(null);
+  useEffect(() => {
+    const boxElement = boxRef.current;
 
-  const handleScroll = () => {
-    const { scrollTop, scrollHeight, clientHeight } = boxRef.current;
- 
-    if (scrollTop + clientHeight === scrollHeight) {
-      // Scrolled to the bottom
-      if (typeof onScrollToBottom === 'function') {
+    const handleIntersection = (entries: any) => {
+      const isIntersecting = entries[0].isIntersecting;
+      if (isIntersecting) {
         onScrollToBottom();
       }
-    } 
-  };
+    };
 
-  useEffect(() => {
-    // TODO: Automatically scroll to the bottom when new content is added
-    // keep enabled?
-    // boxRef.current.scrollTop = boxRef.current.scrollHeight;
-  }, [children]);
+    const options = {
+      root: null, // Use the viewport as the root
+      rootMargin: "0px",
+      threshold: 0.1, // 10% of the box visible is considered as intersection
+    };
 
-  useEffect(() => {
-    if (boxRef.current.scrollHeight < boxRef.current.clientHeight) {
-      console.log(boxRef.current.scrollHeight, boxRef.current.clientHeight)
-      onScrollToBottom();
-    }
-  });
+    const observer = new IntersectionObserver(handleIntersection, options);
+
+    observer.observe(boxElement);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [onScrollToBottom]);
 
   return (
-    <Box overflow="auto" onScroll={handleScroll} ref={boxRef} {...boxProps}>
+    <Box overflowY="scroll" ref={boxRef} {...boxProps}>
       {children}
     </Box>
   );

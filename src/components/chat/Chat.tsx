@@ -20,19 +20,17 @@ const formatDate = (dateString: string | undefined) => {
 }
 
 const Chat = ({ friend, conversationId }: ChatProps) => {
-  const { isConnected, markAsRead, sendMessage, requestAllMessages, messagesByConversation } = useChat();
+  const { markAsRead, sendMessage, requestAllMessages, messagesByConversation } = useChat();
   const [inputValue, setInputValue] = useState("");
   useEffect(() => { 
-    if (isConnected && conversationId) {
-		  console.log('requesting all messages')
+    if (conversationId) {
       requestAllMessages(conversationId)
     }
-  }, [isConnected, conversationId, requestAllMessages]);
+  }, [conversationId, requestAllMessages]);
 
   return (
     <Box>
       <VStack spacing={4} align="stretch">
-        <Box>{isConnected}</Box>
         <ScrollableBox
           bg="gray.200"
           borderRadius="md"

@@ -5,8 +5,7 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
-  useState,
+  useState
 } from "react";
 import { Socket, io } from "socket.io-client";
 import { fetchConversations } from "../../api/chat";
@@ -22,7 +21,6 @@ type ChatContextProps = {
   fetchConversations(): Promise<Conversation[]>;
   hasError: boolean;
   error: string | undefined;
-  isConnected: boolean;
   joinConversation(conversationId: string): void;
   sendMessage(conversationId: string, msg: string): void;
   requestAllMessages(conversationId: string): void;
@@ -35,7 +33,6 @@ const ChatContext = createContext<ChatContextProps>({
   unreadByConversations: {},
   hasError: false,
   error: undefined,
-  isConnected: false,
   fetchConversations: async () => [],
   joinConversation: (id) => {},
   sendMessage: () => {},
@@ -48,25 +45,22 @@ export const ChatProvider = ({ children }: any) => {
   const { user } = useUser();
   const { token } = useAuth();
   const [socket, setSocket] = useState<Socket>();
-  let lastMessage = useRef<string>();
-  let lastConversation = useRef<string>();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [unreadByConversations, setUnreadByConversations] = useState<any>({
     total: 0,
   });
   const [error, setError] = useState();
-  const [isConnected, setIsConnected] = useState(false);
   const [messagesByConversation, setMessagesByConversation] = useState<{
     [conversationId: string]: Message[];
   }>({});
 
-  const updateChatAccessToken = (newToken: string | null) => {
+  const updateChatAccessToken = useCallback((newToken: string | null) => {
     if (socket && newToken) {
       socket.io.opts.extraHeaders = {
         Authorization: `Bearer ${newToken}`,
       };
     }
-  };
+  }, [socket]);
 
   const fetchAllConversations = useCallback(
     () =>
@@ -109,7 +103,9 @@ export const ChatProvider = ({ children }: any) => {
     [socket]
   );
   const markAsRead = useCallback(
-    (conversationId: string, messages: Message[]) => {
+    async (conversationId: string, messages: Message[]) => {
+      if (messages.length === 0) return;
+      await validateToken();
       console.log("marking as read", messages);
       messages?.forEach((msg) => {
         if (msg.authorId !== user?.id) {
@@ -120,9 +116,9 @@ export const ChatProvider = ({ children }: any) => {
         conversationId,
       });
     },
-    [socket]
+    [socket, user?.id]
   );
-  const sendMessage = async (conversationId: string, msg: string) => {
+  const sendMessage = useCallback(async (conversationId: string, msg: string) => {
     if (!msg) return;
 
     const message: Message = {
@@ -132,23 +128,24 @@ export const ChatProvider = ({ children }: any) => {
     };
     await validateToken();
     console.log('sending message now..', socket?.connected, socket?.active, socket?.io.opts.extraHeaders);
-    socket?.emit("send_message", JSON.stringify({
+    socket?.emit("send_message", {
       message,
       auth: socket?.io.opts.extraHeaders,
-    }));
-    // setInputValue("");
-  };
-  // --
+    });
+  }, [validateToken, socket, user?.id])
+  
   useEffect(() => {
     if (token) {
       fetchAllConversations();
     }
   }, [token, fetchAllConversations]);
+
   useEffect(() => {
     if (!token) {
       return;
     }
     // TODO
+    console.log("connecting to socket", token);
     const socket = io("http://localhost:5001", {
       autoConnect: false,
       extraHeaders: {
@@ -173,12 +170,11 @@ export const ChatProvider = ({ children }: any) => {
     }
   }, [socket, requestAllMessages]);
 
-  function joinConversation(conversationId: string) {
-    console.log("joining", conversationId);
+  const joinConversation = useCallback((conversationId: string) => {
     socket?.emit("join_conversation", {
       conversationId,
     });
-  }
+  }, [socket]);
 
   useEffect(() => {
     const unreadMessagesCountByConversation = Object.entries(
@@ -262,7 +258,6 @@ export const ChatProvider = ({ children }: any) => {
       markAsRead,
       messagesByConversation,
       unreadByConversations,
-      isConnected,
     }),
     [
       unreadByConversations,
@@ -274,7 +269,6 @@ export const ChatProvider = ({ children }: any) => {
       sendMessage,
       markAsRead,
       messagesByConversation,
-      isConnected,
     ]
   );
 
