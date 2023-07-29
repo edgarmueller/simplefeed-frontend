@@ -85,7 +85,7 @@ export const NotificationProvider = ({ children }: any) => {
       socket?.off("receive_notification", onNotification);
       socket?.off("notification_read", onNotificationRead);
     };
-  }, [socket]);
+  }, []);
 
   const markAsRead = (notificationId: string) => {
     console.log('marking notifcation as read', notificationId)

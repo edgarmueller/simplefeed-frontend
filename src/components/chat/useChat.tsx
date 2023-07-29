@@ -8,7 +8,7 @@ import {
   useState
 } from "react";
 import { Socket, io } from "socket.io-client";
-import { fetchConversations } from "../../api/chat";
+import { JOIN_CONVERSATION, fetchConversations } from "../../api/chat";
 import { Conversation, Message } from "../../domain.interface";
 import { getAccessToken } from "../../lib/auth/api/auth";
 import { useAuth } from "../../lib/auth/hooks/useAuth";
@@ -54,14 +54,6 @@ export const ChatProvider = ({ children }: any) => {
     [conversationId: string]: Message[];
   }>({});
 
-  const updateChatAccessToken = useCallback((newToken: string | null) => {
-    if (socket && newToken) {
-      socket.io.opts.extraHeaders = {
-        Authorization: `Bearer ${newToken}`,
-      };
-    }
-  }, [socket]);
-
   const fetchAllConversations = useCallback(
     () =>
       fetchConversations()
@@ -78,26 +70,28 @@ export const ChatProvider = ({ children }: any) => {
   );
 
   const validateToken = useCallback(async () => {
-    if (!token) return false;
+    const existingToken = getAccessToken();
+    if (!existingToken) {
+      return;
+    }
     // Perform your token validation logic here
     // You can use a library like jwt-decode to decode the token and check its expiration
-    const decodedToken = decodeToken<{ exp: number }>(token);
+    const decodedToken = decodeToken<{ exp: number }>(existingToken);
 
     if (decodedToken && decodedToken.exp * 1000 < Date.now()) {
       // Token has expired
       // You can trigger the token refresh process here
       await refreshToken();
-      await updateChatAccessToken(getAccessToken());
-      console.log("token refreshed", getAccessToken());
-      return true;
+      console.log("token refreshed");
     }
-    return false;
-  }, [token, updateChatAccessToken]);
+    return getAccessToken();
+  }, []);
 
   const requestAllMessages = useCallback(
-    (conversationId: string) => {
+    async (conversationId: string) => {
       socket?.emit("request_all_messages", {
         conversationId,
+        auth: await validateToken(),
       });
     },
     [socket]
@@ -112,9 +106,7 @@ export const ChatProvider = ({ children }: any) => {
           msg.isRead = true;
         }
       });
-      socket?.emit("mark_as_read", {
-        conversationId,
-      });
+      socket?.emit("mark_as_read", { conversationId, auth: await validateToken() });
     },
     [socket, user?.id]
   );
@@ -126,13 +118,11 @@ export const ChatProvider = ({ children }: any) => {
       content: msg,
       conversationId,
     };
-    await validateToken();
-    console.log('sending message now..', socket?.connected, socket?.active, socket?.io.opts.extraHeaders);
     socket?.emit("send_message", {
       message,
-      auth: socket?.io.opts.extraHeaders,
+      auth: await validateToken()
     });
-  }, [validateToken, socket, user?.id])
+  }, [validateToken, token, socket, user?.id])
   
   useEffect(() => {
     if (token) {
@@ -141,11 +131,13 @@ export const ChatProvider = ({ children }: any) => {
   }, [token, fetchAllConversations]);
 
   useEffect(() => {
+    refreshToken();
+  }, []);
+
+  useEffect(() => {
     if (!token) {
       return;
     }
-    // TODO
-    console.log("connecting to socket", token);
     const socket = io("http://localhost:5001", {
       autoConnect: false,
       extraHeaders: {
@@ -154,7 +146,7 @@ export const ChatProvider = ({ children }: any) => {
     });
     setSocket(socket);
     return () => {
-      socket.close();
+      socket.close()
     };
   }, [token]);
 
@@ -171,10 +163,11 @@ export const ChatProvider = ({ children }: any) => {
   }, [socket, requestAllMessages]);
 
   const joinConversation = useCallback((conversationId: string) => {
-    socket?.emit("join_conversation", {
+    socket?.emit(JOIN_CONVERSATION, {
       conversationId,
+      auth: token
     });
-  }, [socket]);
+  }, [socket, token]);
 
   useEffect(() => {
     const unreadMessagesCountByConversation = Object.entries(

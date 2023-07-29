@@ -1,5 +1,7 @@
 import { Box, Button, Highlight, Input, Text, VStack } from "@chakra-ui/react";
+import { last } from "lodash";
 import { useEffect, useState } from "react";
+import { useUser } from "../../lib/auth/hooks/useUser";
 import { ScrollableBox } from "./ScrollableBox";
 import { useChat } from "./useChat";
 
@@ -17,17 +19,32 @@ const formatDate = (dateString: string | undefined) => {
     hour: "2-digit",
     minute: "2-digit",
   });
-}
+};
 
 const Chat = ({ friend, conversationId }: ChatProps) => {
-  const { markAsRead, sendMessage, requestAllMessages, messagesByConversation } = useChat();
+  const {
+    markAsRead,
+    sendMessage,
+    requestAllMessages,
+    messagesByConversation,
+  } = useChat();
+  const { user } = useUser();
   const [inputValue, setInputValue] = useState("");
-  useEffect(() => { 
+  useEffect(() => {
     if (conversationId) {
-      requestAllMessages(conversationId)
+      requestAllMessages(conversationId);
     }
   }, [conversationId, requestAllMessages]);
 
+  let ref: any = undefined;
+ 
+  useEffect(() => {
+    const lastElement = ref?.current?.lastElementChild;
+    // only scroll to bottom on our own messages
+    if (lastElement && last(messagesByConversation[conversationId])?.authorId === user?.id ) {
+      lastElement.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [messagesByConversation[conversationId].length, conversationId, user?.id])
   return (
     <Box>
       <VStack spacing={4} align="stretch">
@@ -38,38 +55,57 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
           height="20em"
           overflowY="auto"
           onScrollToBottom={() => {
-            markAsRead(conversationId, messagesByConversation[conversationId]?.filter(({ isRead }) => !isRead))
+            markAsRead(
+              conversationId,
+              messagesByConversation[conversationId]?.filter(
+                ({ isRead }) => !isRead
+              )
+            );
           }}
         >
-          {messagesByConversation[conversationId]?.map((message, index) => (
-            <Box
-              key={index}
-              p={2}
-              textAlign={message.authorId === friend.id ? "left" : "right"}
-            >
-              <Text>
-                <Highlight
-                  query={message.content}
-                  styles={{ px: '2', py: '1', rounded: 'full', bg: message.authorId === friend?.id ? 'teal.100' : 'blue.300' }}
-                >
-                  {message.content}
-                </Highlight>
-              </Text>
-              <Text fontSize="xs" color="gray.500">
-                {formatDate(message.createdAt)}
-              </Text>
-            </Box>
-          ))}
+          {(scrollRef: any) => {
+            ref= scrollRef;
+            return messagesByConversation[conversationId]?.map((message, index) => (
+              <Box
+                key={index}
+                p={2}
+                textAlign={message.authorId === friend.id ? "left" : "right"}
+              >
+                <Text>
+                  <Highlight
+                    query={message.content}
+                    styles={{
+                      px: "2",
+                      py: "1",
+                      rounded: "full",
+                      bg:
+                        message.authorId === friend?.id
+                          ? "teal.100"
+                          : "blue.300",
+                    }}
+                  >
+                    {message.content}
+                  </Highlight>
+                </Text>
+                <Text fontSize="xs" color="gray.500">
+                  {formatDate(message.createdAt)}
+                </Text>
+              </Box>
+            ));
+          }}
         </ScrollableBox>
         <Input
           placeholder="Type a message"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
         />
-        <Button colorScheme="blackAlpha" onClick={() => {
-          sendMessage(conversationId, inputValue)
-          setInputValue('')
-        }}>
+        <Button
+          colorScheme="blackAlpha"
+          onClick={() => {
+            sendMessage(conversationId, inputValue);
+            setInputValue("");
+          }}
+        >
           Send
         </Button>
       </VStack>
