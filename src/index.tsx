@@ -15,10 +15,12 @@ import Chat from './pages/Chat';
 import Search from './pages/Search';
 import Notifications from './pages/Notifications';
 import Post from './pages/Post';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<AuthOutlet />}>
+      <Route path='*' element={<ProtectedRoute><Feed/></ProtectedRoute>} />
       <Route path='/feed' element={<ProtectedRoute><Feed/></ProtectedRoute>} />
       <Route path='/search' element={<ProtectedRoute><Search/></ProtectedRoute>} />
       <Route path='/settings' element={<ProtectedRoute><Settings/></ProtectedRoute>} />
@@ -34,13 +36,17 @@ const router = createBrowserRouter(
   )
 )
 
+const queryClient = new QueryClient()
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
+  <QueryClientProvider client={queryClient}>
     <ChakraProvider>
       <RouterProvider router={router} />
     </ChakraProvider>
+  </QueryClientProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

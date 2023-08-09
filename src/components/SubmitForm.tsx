@@ -1,16 +1,22 @@
 import { Button, Stack, Textarea } from '@chakra-ui/react';
 import { useState } from 'react';
 import { submitPost } from '../api/posts';
-import { Post } from '../domain.interface';
 import { useUser } from '../lib/auth/hooks/useUser';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export const SubmitForm = ({ onSubmit, postTo }: { onSubmit: (post: Post) => void, postTo?: string }) => {
+export const SubmitForm = ({ postTo }: { postTo?: string }) => {
   const [text, setText] = useState('');
   const { user } = useUser();
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: submitPost,
+    onSuccess: (post) => {
+      queryClient.invalidateQueries(["feed", "infinite"]);
+    }
+  })
 	const handleSubmit = async (event: any) => {
     event.preventDefault();
-    const post = await submitPost(text, postTo ? postTo : user?.id)
-    onSubmit(post);
+    mutation.mutate({ body: text, toUserId: postTo ? postTo : user?.id });
     setText("");
 	};
   return (

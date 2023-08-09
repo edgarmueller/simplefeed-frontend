@@ -10,16 +10,16 @@ const fetchOneComment = fetch<Comment>();
 // TODO pagination
 const fetchManyComments = fetch<Pagination<Comment>>();
 
-export async function submitPost(body: string, toUserId?: string) {
+export async function submitPost(post: any) {
   const res = await fetchOne(`${API_URL}/posts`, {
     headers: createHeaders(),
     method: "POST",
-    body: JSON.stringify({ body, toUserId }),
+    body: JSON.stringify(post)
   });
   return res.body;
 }
 
-export async function fetchFeed(page: number, limit = 50): Promise<Pagination<Post>> {
+export async function fetchFeed(page?: number, limit = 1): Promise<Pagination<Post>> {
   const res = await fetchMany(`${API_URL}/posts?page=${page}&limit=${limit}`, {
     headers: createHeaders(),
   });
