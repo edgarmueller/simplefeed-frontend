@@ -25,12 +25,11 @@ export const updateUserInfo = async (
   if (userInfo.image) {
     data.append("image", userInfo.image);
   }
-  const text = await rawRefreshAwareFetch()(`${API_URL}/users/${id}`, {
+  return await rawRefreshAwareFetch<any>()(`${API_URL}/users/${id}`, {
     method: "PATCH",
     body: data,
     headers: createHeaders(),
   });
-  return JSON.parse(text);
 };
 
 export async function me(): Promise<User> {

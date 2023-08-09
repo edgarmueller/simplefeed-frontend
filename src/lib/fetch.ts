@@ -1,5 +1,5 @@
-import { configureRefreshFetch, fetchJSON as fetchJson } from 'refresh-fetch'
-import { logout, saveAccessToken } from './auth/api/auth'
+import { configureRefreshFetch, fetchJSON as fetchJson } from 'refresh-fetch';
+import { logout, saveAccessToken } from './auth/api/auth';
 import { API_URL } from './auth/api/constants';
 
 
@@ -80,8 +80,8 @@ const wrappedRawFetch = <T>() => async (url: string, options: RequestInit) => {
       ...headers,
     },
   };
-  const res = await fetch(url, opts);
-  return res.clone().text();
+  const res = await fetchRawJSON(url, opts);
+  return res.body as any;
 }
 
 export const createHeaders = () => {
@@ -95,3 +95,58 @@ export const createHeaders = () => {
 };
 
 export default refreshAwareFetch
+
+// copy of refresh-fetch with slight modification --
+
+// the lib hard-codes the content-type header to application/json
+// if options contains a body, hence not allowing us to send form data
+type ResponseBody = Object | null | string
+
+const fetchRawJSON = (url: string | Request | URL, options: Object = {}) => {
+  // The Content-Type header describes the type of the body so should be
+  // omitted when there isn't one.
+  return fetch(url, options)
+    .then((response: Response) => {
+      return getResponseBody(response).then(body => ({
+        response,
+        body
+      }))
+    })
+    .then(checkStatus)
+}
+
+const getResponseBody = (response: Response): Promise<ResponseBody> => {
+  const contentType = response.headers.get('content-type')
+  return contentType && contentType.indexOf('json') >= 0
+    ? response.clone().text().then(tryParseJSON)
+    : response.clone().text()
+}
+
+const tryParseJSON = (json: string): Object | null => {
+  if (!json) {
+    return null
+  }
+
+  try {
+    return JSON.parse(json)
+  } catch (e) {
+    throw new Error(`Failed to parse unexpected JSON response: ${json}`)
+  }
+}
+
+class ResponseError {
+name: string;
+  constructor(status: number, response: Response, body: ResponseBody) {
+    this.name = 'ResponseError'
+  }
+}
+
+const checkStatus = ({ response, body }: any) => {
+  if (response.ok) {
+    return { response, body }
+  } else {
+    throw new ResponseError(response.status, response, body)
+  }
+}
+
+// copy end -- 
