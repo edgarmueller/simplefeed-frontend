@@ -44,7 +44,7 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
     if (lastElement && last(messagesByConversation[conversationId])?.authorId === user?.id ) {
       lastElement.scrollIntoView({ behavior: "smooth", block: "end" });
     }
-  }, [messagesByConversation[conversationId].length, conversationId, user?.id])
+  }, [messagesByConversation[conversationId]?.length, conversationId, user?.id])
   return (
     <Box>
       <VStack spacing={4} align="stretch">

@@ -26,11 +26,13 @@ export async function fetchFeed(page?: number, limit = 1): Promise<Pagination<Po
   return res.body;
 }
 
-export async function fetchPosts(userId: string, page: number, limit = 50): Promise<Pagination<Post>> {
-  const res = await axios.get(`${API_URL}/posts?userId=${userId}&page=${page}&limit=${limit}`, {
-    headers: createHeaders(),
-  });
-  return res.data;
+export function fetchPosts(userId: string) {
+  return async (page?: number, limit = 50): Promise<Pagination<Post>> => {
+    const res = await fetchMany(`${API_URL}/posts?userId=${userId}&page=${page}&limit=${limit}`, {
+      headers: createHeaders(),
+    });
+    return res.body;
+  }
 }
 
 export async function fetchPost(postId: string): Promise<Post> {
