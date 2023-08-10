@@ -1,64 +1,45 @@
-import axios from "axios";
-import { FriendRequest, User } from "../domain.interface";
+import { FriendRequest } from "../domain.interface";
 import { API_URL } from "../lib/auth/api/constants";
-import fetch, { createHeaders } from "../lib/fetch";
+import axios, { createHeaders } from "../lib/axios";
 
-const fetchOneFriendRequest = fetch<FriendRequest>();
-const fetchManyFriendRequest = fetch<FriendRequest[]>();
-const fetchManyUsers = fetch<User[]>();
 
 export const makeFriendRequest = async (username: string) => {
-  await fetchOneFriendRequest(`${API_URL}/friend-requests/${username}`, {
-    headers: {
-      ...createHeaders(),
-    },
-    method: "POST",
+  await axios.post(`${API_URL}/friend-requests/${username}`, {
+    headers: createHeaders()
   });
 };
 
 export const getFriendRequests = async (): Promise<FriendRequest[]> => {
-  const res = await fetchManyFriendRequest(`${API_URL}/friend-requests/pending`, {
-    headers: {
-      ...createHeaders(),
-    },
+  const res = await axios.get(`${API_URL}/friend-requests/pending`, {
+    headers: createHeaders(), 
   });
-  return res.body;
+  return res.data;
 };
 
 export const getSentFriendRequests = async (): Promise<FriendRequest[]> => {
-  const res = await fetchManyFriendRequest(`${API_URL}/friend-requests/sent`, {
-    headers: {
-      ...createHeaders(),
-    },
+  const res = await axios.get(`${API_URL}/friend-requests/sent`, {
+    headers: createHeaders(),
   });
-  console.log('sent friend requests' ,res.body);
-  return res.body;
+  return res.data;
 };
 
 export const cancelFriendRequest = async (friendRequestId: string): Promise<void> => {
   const res = await axios.delete(`${API_URL}/friend-requests/${friendRequestId}`, {
-    headers: {
-      ...createHeaders(),
-    },
+    headers: createHeaders(),
   });
   return res.data;
 };
 
 export const acceptFriendRequest = async (friendRequestId: string): Promise<FriendRequest> => {
-  const res = await fetchOneFriendRequest(`${API_URL}/friend-requests/${friendRequestId}`, {
-    headers: {
-      ...createHeaders(),
-    },
-    method: "PATCH",
+  const res = await axios.patch(`${API_URL}/friend-requests/${friendRequestId}`, {
+    headers: createHeaders(),
   });
-  return res.body;
+  return res.data;
 };
 
 export const declineFriendRequest = async (friendRequestId: string): Promise<FriendRequest> => {
   const res = await axios.delete(`${API_URL}/friend-requests/${friendRequestId}`, {
-    headers: {
-      ...createHeaders(),
-    },
+    headers: createHeaders(),
   });
   return res.data;
 };

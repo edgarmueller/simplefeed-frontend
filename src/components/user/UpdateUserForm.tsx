@@ -64,6 +64,7 @@ export const UpdateUserForm = () => {
       const me = await updateUserInfo(user!.id, { email, firstName, lastName, image, password });
       setSubmitted(true);
       setErrors([]);
+      console.log({ me })
       setUser(me); 
     } catch (error) {
       if (error instanceof Error) {

@@ -1,6 +1,6 @@
 import { User } from "../domain.interface";
 import { API_URL } from "../lib/auth/api/constants";
-import fetch, { createHeaders, rawRefreshAwareFetch } from "../lib/fetch";
+import axios, { createHeaders } from "../lib/axios";
 
 export const updateUserInfo = async (
   id: string,
@@ -25,16 +25,18 @@ export const updateUserInfo = async (
   if (userInfo.image) {
     data.append("image", userInfo.image);
   }
-  return await rawRefreshAwareFetch<any>()(`${API_URL}/users/${id}`, {
-    method: "PATCH",
-    body: data,
-    headers: createHeaders(),
+  const resp = await axios.patch(`${API_URL}/users/${id}`, data, {
+    headers: {
+      ...createHeaders(),
+      "Content-Type": "multipart/form-data",
+    },
   });
+  return resp.data;
 };
 
 export async function me(): Promise<User> {
-  const res = await fetch<User>()(`${API_URL}/users/me`, {
+  const res = await axios.get(`${API_URL}/users/me`, {
     headers: createHeaders(),
   });
-  return res.body;
+  return res.data;
 }

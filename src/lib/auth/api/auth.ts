@@ -1,4 +1,3 @@
-import { createHeaders } from "../../fetch";
 import { API_URL } from "./constants";
 import { writeStorage, deleteFromStorage } from "@rehooks/local-storage";
 

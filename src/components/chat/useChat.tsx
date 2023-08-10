@@ -13,7 +13,7 @@ import { Conversation, Message } from "../../domain.interface";
 import { getAccessToken } from "../../lib/auth/api/auth";
 import { useAuth } from "../../lib/auth/hooks/useAuth";
 import { useUser } from "../../lib/auth/hooks/useUser";
-import { refreshToken } from "../../lib/fetch";
+import { refreshToken } from "../../lib/axios";
 
 type ChatContextProps = {
   conversations: Conversation[];

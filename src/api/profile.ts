@@ -1,34 +1,25 @@
-import { User } from "../domain.interface";
 import { API_URL } from "../lib/auth/api/constants";
-import fetch, { createHeaders } from "../lib/fetch";
-
-const fetchUser = fetch<User>();
+import axios, { createHeaders } from "../lib/axios";
 
 export async function fetchUserProfile(username: string): Promise<any> {
-  const res = await fetchUser(`${API_URL}/users/${username}`, {
+  const res = await axios.get(`${API_URL}/users/${username}`, {
     headers: {
       "Content-Type": "application/json",
     },
   });
-  return res.body;
+  return res.data;
 }
 
 export async function followProfile(username: string) {
-  const res = await fetchUser(`${API_URL}/profiles/${username}/follow`, {
-    headers: {
-      ...createHeaders(),
-    },
-    method: "POST",
+  const res = await axios.post(`${API_URL}/profiles/${username}/follow`, {
+    headers: createHeaders(),
   });
-  return res.body;
+  return res.data;
 }
 
 export async function unfollowProfile(username: string) {
-  const res = await fetchUser(`${API_URL}/profiles/${username}/follow`, {
-    headers: {
-      ...createHeaders(),
-    },
-    method: "DELETE",
+  const res = await axios.delete(`${API_URL}/profiles/${username}/follow`, {
+    headers: createHeaders(),
   });
-  return res.body;
+  return res.data;
 }
