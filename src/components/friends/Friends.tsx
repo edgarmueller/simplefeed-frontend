@@ -14,13 +14,14 @@ import {
   declineFriendRequest,
   getFriendRequests,
   getSentFriendRequests,
-} from "../api/friend-requests";
-import { removeFriend } from "../api/friends";
-import { FriendRequest } from "../domain.interface";
-import { useUser } from "../lib/auth/hooks/useUser";
-import { Layout } from "./Layout";
-import { UserDetailSmall } from "./UserDetailSmall";
-import { useChat } from "./chat/useChat";
+} from "../../api/friend-requests";
+import { removeFriend } from "../../api/friends";
+import { FriendRequest } from "../../domain.interface";
+import { useUser } from "../../lib/auth/hooks/useUser";
+import { Layout } from "../Layout";
+import { UserDetailSmall } from "../UserDetailSmall";
+import { useChat } from "../chat/useChat";
+import { FriendList } from "./FriendList";
 
 export const Friends = () => {
   const { user, refresh: refreshUser } = useUser();
@@ -76,7 +77,9 @@ export const Friends = () => {
                           const conversations = await fetchConversations();
                           const conversationId = conversations.find(
                             (conversation) =>
-                              conversation.participantIds.includes(user?.id || '') &&
+                              conversation.participantIds.includes(
+                                user?.id || ""
+                              ) &&
                               conversation.participantIds.includes(
                                 friendRequest.from.id
                               )
@@ -137,28 +140,26 @@ export const Friends = () => {
           <Heading size="sm" textTransform="uppercase" paddingTop={4}>
             Friends
           </Heading>
-          {user?.friends.length === 0
-            ? "No friends"
-            : user?.friends.map((friend) => (
-                <Flex
-                  key={friend.id}
-                  justify={"space-between"}
-                  align={"center"}
+          <FriendList
+            friends={user?.friends || []}
+            renderFriend={(friend) => (
+              <>
+                <UserDetailSmall user={friend} asLink />
+                <Button
+                  variant="outline"
+                  colorScheme="red"
+                  size="xs"
+                  onClick={async () => {
+                    await removeFriend(friend.id);
+                    await refreshUser();
+                  }}
                 >
-                  <UserDetailSmall user={friend} asLink />
-                  <Button
-                    variant="outline"
-                    colorScheme="red"
-                    size="xs"
-                    onClick={async () => {
-                      await removeFriend(friend.id);
-                      await refreshUser();
-                    }}
-                  >
-                    Remove
-                  </Button>
-                </Flex>
-              ))}
+                  Remove
+                </Button>
+              </>
+            )}
+            ifEmpty={<>No friends</>}
+          />
         </CardBody>
       </Card>
     </Layout>

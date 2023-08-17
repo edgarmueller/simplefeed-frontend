@@ -2,7 +2,7 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
-import { Friends } from './components/Friends';
+import { Friends } from './components/friends/Friends';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { SignIn } from './components/SignIn';
 import { SignUp } from './components/SignUp';
