@@ -1,5 +1,5 @@
 import { Layout } from "../components/Layout";
-import { UpdateUserForm } from "../components/user/UpdateUserForm";
+import { UpdateUserForm } from "../components/users/UpdateUserForm";
 
 function SettingsPage() {
   return (

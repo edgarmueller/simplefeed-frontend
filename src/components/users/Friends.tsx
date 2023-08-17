@@ -137,7 +137,11 @@ export const Friends = () => {
               )}
             </Box>
           </Stack>
-          <Heading size="sm" textTransform="uppercase" paddingTop={4}>
+        </CardBody>
+      </Card>
+      <Card variant="outline" mt={4}>
+        <CardBody>
+          <Heading size="sm" textTransform="uppercase">
             Friends
           </Heading>
           <FriendList

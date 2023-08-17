@@ -12,21 +12,27 @@ import { User } from "../domain.interface";
 import { BefriendButton } from "./BefriendButton";
 import { UserDetailSmall } from "./UserDetailSmall";
 
+export interface UserDetailProps {
+  user: User | null;
+  small?: boolean;
+  hasFriendRequest?: boolean;
+  isFriend?: boolean;
+}
+
 export const UserDetail = ({
   user,
-  username,
-  small,
-  hasFriendRequest,
-  isFriend,
-}: any) => {
+  small = false,
+  hasFriendRequest = false,
+  isFriend = false,
+}: UserDetailProps) => {
   const [userProfile, setUserProfile] = useState<User | null>(user || null);
 
   useEffect(() => {
     setUserProfile(user);
-  }, [username, user]);
+  }, [user]);
 
   if (small) {
-    return <UserDetailSmall user={user} username={username} clickable />;
+    return <UserDetailSmall user={user} clickable />;
   }
 
   return (

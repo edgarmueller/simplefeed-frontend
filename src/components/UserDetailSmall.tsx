@@ -10,7 +10,6 @@ import { User } from "../domain.interface";
 
 export const UserDetailSmall = ({
   user,
-  username,
   asLink,
   bold
 }: any) => {
@@ -18,7 +17,7 @@ export const UserDetailSmall = ({
 
   useEffect(() => {
     setUserProfile(user);
-  }, [username, user]);
+  }, [user]);
 
   return (
     <Stack direction="row" align="center">

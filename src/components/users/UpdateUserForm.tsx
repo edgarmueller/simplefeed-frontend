@@ -65,7 +65,10 @@ export const UpdateUserForm = () => {
       setSubmitted(true);
       setErrors([]);
       console.log({ me })
-      setUser(me); 
+      setUser({
+        ...user,
+        ...me
+      }); 
     } catch (error) {
       if (error instanceof Error) {
         setErrors(error.message.split(",").map(formatError));
