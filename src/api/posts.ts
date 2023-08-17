@@ -11,7 +11,7 @@ export async function submitPost(post: any) {
 
 export async function fetchFeed(
   page?: number,
-  limit = 1
+  limit = 10
 ): Promise<Pagination<Post>> {
   const res = await axios.get(`${API_URL}/posts?page=${page}&limit=${limit}`, {
     headers: createHeaders(),
