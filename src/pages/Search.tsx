@@ -4,6 +4,7 @@ import { SearchBar } from "../components/SearchBar";
 import { useState } from "react";
 import { searchUsers } from "../api/search";
 import { UserDetailSmall } from "../components/UserDetailSmall";
+import { List } from "../components/common/List";
 
 interface UserSearchResult {
   id: string;
@@ -28,10 +29,14 @@ const SearchPage: React.FC<SearchPageProps> = () => {
           setSeachResults(results)
         }}
       />
-      <Box>
-        {searchResults.map((result) => (
-					<UserDetailSmall key={result.id} user={result} asLink />
-        ))}
+      <Box mt={4}>
+        <List 
+          elements={searchResults}
+          renderElement={(user) => (
+            <UserDetailSmall key={user.id} user={user} asLink />
+          )}
+          ifEmpty={<Text>No results</Text>}
+        />
       </Box>
     </Layout>
   );
