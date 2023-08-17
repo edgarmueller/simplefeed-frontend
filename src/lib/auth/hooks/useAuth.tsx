@@ -1,8 +1,10 @@
 import useLocalStorage from "@rehooks/local-storage";
-import { createContext, useCallback, useContext, useMemo } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "../../../domain.interface";
-import { logout as apiLogout } from "../api/auth";
+import { logout as apiLogout, getAccessToken } from "../api/auth";
+import jwtDecode from "jwt-decode";
+import { refreshToken } from "../../axios";
 
 type AuthContextProps = {
 	token: string | null,
@@ -30,6 +32,20 @@ export const AuthProvider = ({ children }: any) => {
     navigate("/sign-in", { replace: true });
   }, [navigate])
 
+  useEffect(() => { 
+    // implement timer
+    setInterval(() => {
+      const accessToken = getAccessToken();
+      if (!accessToken) return;
+      const decoded = jwtDecode(accessToken) as any;
+      // console.log(decoded.exp * 1000 < Date.now())
+      // console.log(decoded.exp, Date.now())
+      // console.log(decoded.exp * 1000 - 30 * 1000 , Date.now())
+      if (decoded.exp * 1000 - 60 * 1000 < Date.now()) {
+        refreshToken();
+      }
+    }, 1000 * 60);
+  }, []);
   const value = useMemo(
     () => ({
       token,

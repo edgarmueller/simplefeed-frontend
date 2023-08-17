@@ -21,6 +21,7 @@ export async function refreshToken() {
 		console.warn("Attempt to refresh without refresh token")
 	}
 	try {
+		console.log("refreshing token")
 		const resp = await axios.post(REFRESH_URL, { refreshToken }, { skipAuthRefresh: true } as any)
 		const accessToken = resp.data.accessToken
 		saveAccessToken(accessToken)
