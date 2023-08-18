@@ -23,13 +23,6 @@ export const getSentFriendRequests = async (): Promise<FriendRequest[]> => {
   return res.data;
 };
 
-export const cancelFriendRequest = async (friendRequestId: string): Promise<void> => {
-  const res = await axios.delete(`${API_URL}/friend-requests/${friendRequestId}`, {
-    headers: createHeaders(),
-  });
-  return res.data;
-};
-
 export const acceptFriendRequest = async (friendRequestId: string): Promise<FriendRequest> => {
   const res = await axios.patch(`${API_URL}/friend-requests/${friendRequestId}`, {
     headers: createHeaders(),
@@ -43,3 +36,6 @@ export const declineFriendRequest = async (friendRequestId: string): Promise<Fri
   });
   return res.data;
 };
+
+// synonym
+export const cancelFriendRequest = declineFriendRequest;

@@ -13,7 +13,6 @@ import {
   acceptFriendRequest,
   declineFriendRequest,
   getFriendRequests,
-  getSentFriendRequests,
 } from "../../api/friend-requests";
 import { removeFriend } from "../../api/friends";
 import { FriendRequest } from "../../domain.interface";
@@ -22,6 +21,7 @@ import { Layout } from "../Layout";
 import { UserDetailSmall } from "../UserDetailSmall";
 import { useChat } from "../chat/useChat";
 import { FriendList } from "./FriendList";
+import { SentFriendRequests } from "./SentFriendRequests";
 
 export const Friends = () => {
   const { user, refresh: refreshUser } = useUser();
@@ -29,15 +29,9 @@ export const Friends = () => {
   const [receivedFriendRequests, setReceivedFriendRequests] = useState<
     FriendRequest[]
   >([]);
-  const [sentFriendRequests, setSentFriendRequests] = useState<FriendRequest[]>(
-    []
-  );
   useEffect(() => {
     getFriendRequests().then((friendRequests) => {
       setReceivedFriendRequests(friendRequests);
-    });
-    getSentFriendRequests().then((friendRequests) => {
-      setSentFriendRequests(friendRequests);
     });
   }, []);
 
@@ -50,7 +44,7 @@ export const Friends = () => {
               Friend Requests
             </Heading>
             <Box>
-              <Heading size="xs">Received</Heading>
+              <Heading size="xs" mb={2}>Received</Heading>
               {receivedFriendRequests.length === 0 ? (
                 <Text size="sm">No friend requests</Text>
               ) : (
@@ -112,30 +106,7 @@ export const Friends = () => {
                 ))
               )}
             </Box>
-            <Box>
-              <Heading size="xs">Sent</Heading>
-              {sentFriendRequests.length === 0 ? (
-                <Text size="sm">No friend requests</Text>
-              ) : (
-                sentFriendRequests.map((friendRequest) => (
-                  <Flex justify="space-between" align="center">
-                    <UserDetailSmall
-                      key={friendRequest.id}
-                      user={friendRequest.to}
-                      small
-                      hasFriendRequest
-                    />
-                    <Button
-                      colorScheme="red"
-                      size="xs"
-                      onClick={() => declineFriendRequest(friendRequest.id)}
-                    >
-                      Cancel
-                    </Button>
-                  </Flex>
-                ))
-              )}
-            </Box>
+            <SentFriendRequests />
           </Stack>
         </CardBody>
       </Card>

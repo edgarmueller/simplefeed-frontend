@@ -23,9 +23,7 @@ const SearchPage: React.FC<SearchPageProps> = () => {
     <Layout>
       <SearchBar
         onSearch={async (searchTerm) => {
-					console.log('searchTerm', searchTerm)
           const results = await searchUsers(searchTerm);
-					console.log({ results })
           setSeachResults(results)
         }}
       />
