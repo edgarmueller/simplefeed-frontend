@@ -1,17 +1,18 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { redirect, useLoaderData, useLocation, useParams } from "react-router-dom";
 import { getSentFriendRequests } from "../api/friend-requests";
 import { fetchUserProfile } from "../api/profile";
 import { Layout } from "../components/Layout";
+import { MyProfile } from "../components/MyProfile";
 import { SubmitForm } from "../components/SubmitForm";
 import { UserDetail } from "../components/UserDetail";
+import Chat from "../components/chat/Chat";
+import { useChat } from "../components/chat/useChat";
 import { PostList } from "../components/posts/PostList";
 import { User } from "../domain.interface";
 import { useUser } from "../lib/auth/hooks/useUser";
-import { MyProfile } from "../components/MyProfile";
-import Chat from "../components/chat/Chat";
-import { useChat } from "../components/chat/useChat";
 
 export async function loader({ params }: any): Promise<User | Response> {
   try {
@@ -27,10 +28,10 @@ const UserProfile = () => {
   const showChat = location.pathname.includes('/chat');
   const { user: myself, incrementPostCount } = useUser();
   const isMyProfile = params.username === myself?.username;
-  const [postRefreshCount, setPostRefreshCount] = useState(0);
   const user = useLoaderData() as User;
   const [isFriend, setIsFriend] = useState(false);
   const [userId, setUserId] = useState("");
+  const queryClient = useQueryClient();
   useEffect(() => {
     const isBefriended =
       isMyProfile || !!myself?.friends?.find(({ id }) => id === user?.id);
@@ -75,13 +76,13 @@ const UserProfile = () => {
           <TabPanels>
             <TabPanel>
               <SubmitForm
-                onSubmit={() => {
-                  setPostRefreshCount((cnt) => cnt + 1);
+                onSubmit={async () => {
                   incrementPostCount();
+                  await queryClient.invalidateQueries(["posts", "infinite", userId]);
                 }}
                 postTo={userId}
               />
-              <PostList key={postRefreshCount} userId={userId} />
+              <PostList userId={userId} />
             </TabPanel>
             <TabPanel>
               {conversationId ? (

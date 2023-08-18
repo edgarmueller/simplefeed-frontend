@@ -12,7 +12,7 @@ export const PostList = ({ userId }: PostListProps) => {
   // TODO: avoid rendering if userId is not set
   if (!userId) return null;
   return (
-    <InfiniteScroll queryKey={["posts", "infinite"]} queryFn={fetchPosts(userId)}>
+    <InfiniteScroll queryKey={["posts", "infinite", `${userId}`]} queryFn={fetchPosts(userId)}>
       {(posts: PostEntity[]) => (
         <>
           {posts.map((post, i) => <Post key={post.id} post={post} />)}
