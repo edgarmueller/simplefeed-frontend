@@ -38,8 +38,8 @@ export const UserDetail = ({
   return (
     <Card variant="outline">
       <CardBody>
-        <Heading>
-          {userProfile?.firstName} {userProfile?.lastName}
+        <Heading mb={2}>
+          {userProfile?.firstName} {userProfile?.lastName} ({userProfile?.username})
         </Heading>
         <Stack direction="row" align="center">
           <Avatar src={userProfile?.imageUrl} size="xl" />

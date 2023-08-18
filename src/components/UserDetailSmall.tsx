@@ -25,7 +25,7 @@ export const UserDetailSmall = ({
       {
         asLink ?
           <Link as={RouterLink} to={`/users/${userProfile?.username}`}>
-            {userProfile?.firstName} {userProfile?.lastName}
+            {userProfile?.firstName} {userProfile?.lastName} ({userProfile?.username})
           </Link> :
           <Text fontWeight={bold ? "bold" : "normal"}>
             {userProfile?.firstName} {userProfile?.lastName}
