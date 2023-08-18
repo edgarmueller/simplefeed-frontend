@@ -1,11 +1,12 @@
 import {
   Avatar,
+  Badge,
   Box,
   Card,
   CardBody,
   Heading,
   Stack,
-  Text
+  Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { User } from "../domain.interface";
@@ -39,7 +40,8 @@ export const UserDetail = ({
     <Card variant="outline">
       <CardBody>
         <Heading mb={2}>
-          {userProfile?.firstName} {userProfile?.lastName} ({userProfile?.username})
+          {userProfile?.firstName} {userProfile?.lastName} (
+          {userProfile?.username})
         </Heading>
         <Stack direction="row" align="center">
           <Avatar src={userProfile?.imageUrl} size="xl" />
@@ -54,15 +56,16 @@ export const UserDetail = ({
               <Text pt="2" fontSize="sm">
                 Friends: {userProfile?.friends.length}
               </Text>
-              {
-                userProfile?.mutualFriendsCount ? 
+              {userProfile?.mutualFriendsCount ? (
                 <Text pt="2" fontSize="sm">
                   Mutual Friends: {userProfile.mutualFriendsCount}
-                </Text> : null
-              }
+                </Text>
+              ) : null}
             </Stack>
             <Box>
-              {isFriend ? null : (
+              {isFriend ? (
+                <Badge colorScheme="green" variant="outline">Friend</Badge>
+              ) : (
                 <BefriendButton
                   hasFriendRequest={hasFriendRequest}
                   username={userProfile?.username!}
