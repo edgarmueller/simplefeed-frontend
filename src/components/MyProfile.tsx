@@ -19,7 +19,7 @@ export const MyProfile = ({
   if (small) {
     return (
       <Stack direction="row" align="center">
-        <Avatar src={userProfile?.imageUrl} borderRadius="lg" />
+        <Avatar src={userProfile?.imageUrl} size="lg"/>
         <Link as={RouterLink} to={`/users/${userProfile?.username}`}>
           {userProfile?.firstName} {userProfile?.lastName}
         </Link>

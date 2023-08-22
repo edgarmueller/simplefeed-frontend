@@ -1,11 +1,18 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Avatar,
   Box,
   Button,
   Flex,
   FormControl,
+  FormHelperText,
   FormLabel,
   Input,
-  Text,
+  InputProps,
+  useMultiStyleConfig
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { updateUserInfo } from "../../api/user";
@@ -14,6 +21,26 @@ import { useUser } from "../../lib/auth/hooks/useUser";
 
 const formatError = (error: string) => {
   return error.replace("user.", "");
+};
+
+export const FileInput = (props: InputProps) => {
+  const styles = useMultiStyleConfig("Button", { variant: "outline" });
+
+  return (
+    <Input
+      type="file"
+      sx={{
+        "::file-selector-button": {
+          border: "none",
+          outline: "none",
+          mr: 2,
+          ml: -6,
+          ...styles,
+        },
+      }}
+      {...props}
+    />
+  );
 };
 
 export const UpdateUserForm = () => {
@@ -93,8 +120,17 @@ export const UpdateUserForm = () => {
   }
 
   return (
-    <Flex alignItems="center" justifyContent="center">
-      <Box maxW="md" w="100%">
+    <Flex>
+      <Box w="100%">
+        {isSubmitted && (
+          <Alert status='success'>
+            <AlertIcon />
+            <AlertTitle>Success!</AlertTitle>
+            <AlertDescription>
+              User information update successful!
+            </AlertDescription>
+          </Alert>
+        )}
         <FormControl onSubmit={handleSubmit} isInvalid={errors.length > 0}>
           <FormLabel>Email address</FormLabel>
           <Input
@@ -121,26 +157,24 @@ export const UpdateUserForm = () => {
             value={userInfo.lastName}
           />
           <FormLabel>Avatar</FormLabel>
-          <Input
-            type="file"
-            placeholder="Last name"
-            onChange={handleUserAvatarUpdated}
-            minW="100%"
-          />
+          <Box alignItems="center" justifyItems={"center"}>
+            <Avatar mb={2} src={userInfo.image ? URL.createObjectURL(userInfo.image) : user.imageUrl} borderRadius="lg" size="xl" />
+            <FileInput
+              placeholder="Avatar"
+              onChange={handleUserAvatarUpdated}
+              minW="100%"
+            />
+          </Box>
         </FormControl>
         {errors.map((error) => (
           <p key={error}>{error}</p>
         ))}
-        {isSubmitted && (
-          <Text>
-            User information update successful!&nbsp;
-          </Text>
-        )}
 				<FormControl
 					onSubmit={handlePasswordSubmit}
 					isInvalid={errors.length > 0}
 				>
 					<FormLabel>Password</FormLabel>
+          <FormHelperText>If left empty, password will not be updated</FormHelperText>
 					<Input
 						type="password"
 						placeholder="Password"
@@ -148,6 +182,7 @@ export const UpdateUserForm = () => {
 						minW="100%"
 					/>
 					<FormLabel>Confirm Password</FormLabel>
+          <FormHelperText>Confirm password, if filled</FormHelperText>
 					<Input
 						type="password"
 						placeholder="Confirm Password"
@@ -164,7 +199,6 @@ export const UpdateUserForm = () => {
           Update Profile
         </Button>
       </Box>
-      <Box maxW="md" w="100%"></Box>
     </Flex>
   );
 };
