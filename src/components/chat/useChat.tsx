@@ -5,7 +5,7 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState
+  useState,
 } from "react";
 import { Socket, io } from "socket.io-client";
 import { JOIN_CONVERSATION, fetchConversations } from "../../api/chat";
@@ -23,9 +23,11 @@ type ChatContextProps = {
   error: string | undefined;
   joinConversation(conversationId: string): void;
   sendMessage(conversationId: string, msg: string): void;
+  requestMessages(conversationId: string, page: number): void;
   requestAllMessages(conversationId: string): void;
   markAsRead(conversationId: string, msg: Message[]): void;
   messagesByConversation: { [conversationId: string]: Message[] };
+  loading: boolean;
 };
 
 const ChatContext = createContext<ChatContextProps>({
@@ -36,15 +38,18 @@ const ChatContext = createContext<ChatContextProps>({
   fetchConversations: async () => [],
   joinConversation: (id) => {},
   sendMessage: () => {},
+  requestMessages: () => {},
   requestAllMessages: () => {},
   markAsRead: () => {},
   messagesByConversation: {},
+  loading: false,
 });
 
 export const ChatProvider = ({ children }: any) => {
   const { user } = useUser();
   const { token } = useAuth();
   const [socket, setSocket] = useState<Socket>();
+  const [loading, setLoading] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [unreadByConversations, setUnreadByConversations] = useState<any>({
     total: 0,
@@ -53,7 +58,6 @@ export const ChatProvider = ({ children }: any) => {
   const [messagesByConversation, setMessagesByConversation] = useState<{
     [conversationId: string]: Message[];
   }>({});
-
   const fetchAllConversations = useCallback(
     () =>
       fetchConversations()
@@ -87,6 +91,17 @@ export const ChatProvider = ({ children }: any) => {
     return getAccessToken();
   }, []);
 
+  const requestMessages = useCallback(
+    async (conversationId: string, page: number) => {
+      socket?.emit("request_messages", {
+        conversationId,
+        page,
+        auth: await validateToken(),
+      });
+      setLoading(true)
+    },
+    [socket]
+  );
   const requestAllMessages = useCallback(
     async (conversationId: string) => {
       socket?.emit("request_all_messages", {
@@ -106,24 +121,30 @@ export const ChatProvider = ({ children }: any) => {
           msg.isRead = true;
         }
       });
-      socket?.emit("mark_as_read", { conversationId, auth: await validateToken() });
+      socket?.emit("mark_as_read", {
+        conversationId,
+        auth: await validateToken(),
+      });
     },
     [socket, user?.id]
   );
-  const sendMessage = useCallback(async (conversationId: string, msg: string) => {
-    if (!msg) return;
+  const sendMessage = useCallback(
+    async (conversationId: string, msg: string) => {
+      if (!msg) return;
 
-    const message: Message = {
-      authorId: user?.id || "",
-      content: msg,
-      conversationId,
-    };
-    socket?.emit("send_message", {
-      message,
-      auth: await validateToken()
-    });
-  }, [validateToken, token, socket, user?.id])
-  
+      const message: Message = {
+        authorId: user?.id || "",
+        content: msg,
+        conversationId,
+      };
+      socket?.emit("send_message", {
+        message,
+        auth: await validateToken(),
+      });
+    },
+    [validateToken, token, socket, user?.id]
+  );
+
   useEffect(() => {
     if (token) {
       fetchAllConversations();
@@ -146,7 +167,7 @@ export const ChatProvider = ({ children }: any) => {
     });
     setSocket(socket);
     return () => {
-      socket.close()
+      socket.close();
     };
   }, [token]);
 
@@ -162,12 +183,15 @@ export const ChatProvider = ({ children }: any) => {
     }
   }, [socket, requestAllMessages]);
 
-  const joinConversation = useCallback((conversationId: string) => {
-    socket?.emit(JOIN_CONVERSATION, {
-      conversationId,
-      auth: token
-    });
-  }, [socket, token]);
+  const joinConversation = useCallback(
+    (conversationId: string) => {
+      socket?.emit(JOIN_CONVERSATION, {
+        conversationId,
+        auth: token,
+      });
+    },
+    [socket, token]
+  );
 
   useEffect(() => {
     const unreadMessagesCountByConversation = Object.entries(
@@ -192,7 +216,7 @@ export const ChatProvider = ({ children }: any) => {
     function onAllMessages(conversation: any) {
       setMessagesByConversation((prev) => ({
         ...prev,
-        [conversation.id]: conversation.messages,
+        [conversation.id]: conversation.messages.reverse(),
       }));
     }
 
@@ -215,6 +239,17 @@ export const ChatProvider = ({ children }: any) => {
       });
     }
 
+    function onNewMessages(conv: Conversation) {
+      const conversationId = conv.id;
+      setLoading(false)
+      setMessagesByConversation((prev) => {
+        return {
+          ...prev,
+          [conversationId]: [...prev[conversationId], ...conv.messages]
+        };
+      });
+    }
+
     function onMessage(msg: Message) {
       setMessagesByConversation((prev) => {
         return {
@@ -229,12 +264,14 @@ export const ChatProvider = ({ children }: any) => {
     }
     socket?.connect();
     socket?.on("send_all_messages", onAllMessages);
+    socket?.on("send_messages", onNewMessages);
     socket?.on("receive_message", onMessage);
     socket?.on("message_read", onMessageRead);
 
     return () => {
       socket?.off("receive_message", onMessage);
       socket?.off("send_all_messages", onAllMessages);
+      socket?.off("send_messages", onNewMessages);
     };
   }, [socket]);
 
@@ -246,11 +283,13 @@ export const ChatProvider = ({ children }: any) => {
       error,
       fetchConversations: fetchAllConversations,
       joinConversation,
+      requestMessages,
       requestAllMessages,
       sendMessage,
       markAsRead,
       messagesByConversation,
       unreadByConversations,
+      loading
     }),
     [
       unreadByConversations,
@@ -258,10 +297,12 @@ export const ChatProvider = ({ children }: any) => {
       error,
       joinConversation,
       fetchAllConversations,
+      requestMessages,
       requestAllMessages,
       sendMessage,
       markAsRead,
       messagesByConversation,
+      loading
     ]
   );
 
