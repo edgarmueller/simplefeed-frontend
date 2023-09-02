@@ -15,7 +15,7 @@ export interface ChatProps {
 
 const formatDate = (dateString: string | undefined) => {
   if (!dateString) return "";
-  new Date(dateString).toLocaleTimeString([], {
+  return new Date(dateString).toLocaleDateString([], {
     hour: "2-digit",
     minute: "2-digit",
   });

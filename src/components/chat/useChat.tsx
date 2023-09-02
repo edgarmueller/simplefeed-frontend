@@ -216,7 +216,7 @@ export const ChatProvider = ({ children }: any) => {
     function onAllMessages(conversation: any) {
       setMessagesByConversation((prev) => ({
         ...prev,
-        [conversation.id]: conversation.messages.reverse(),
+        [conversation.id]: conversation.messages
       }));
     }
 

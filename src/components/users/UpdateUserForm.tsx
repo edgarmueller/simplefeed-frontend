@@ -15,8 +15,9 @@ import {
   useMultiStyleConfig
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { updateUserInfo } from "../../api/user";
+import { closeAccount, updateUserInfo } from "../../api/user";
 import { useUser } from "../../lib/auth/hooks/useUser";
+import { logout } from "../../lib/auth/api/auth";
 
 
 const formatError = (error: string) => {
@@ -81,6 +82,12 @@ export const UpdateUserForm = () => {
         image: event.target.files![0],
       });
     };
+
+  const handleClose = async (event: React.FormEvent) => {
+    event.preventDefault();
+    await closeAccount();
+    await logout();
+  }
 
   const handleSubmit = async (event: React.FormEvent) => {
     // Prevent page reload
@@ -197,6 +204,16 @@ export const UpdateUserForm = () => {
           marginTop={4}
         >
           Update Profile
+        </Button>
+        <Button
+          type="submit"
+          onClick={handleClose}
+          marginTop={4}
+          marginLeft={4}
+          variant={'outline'}
+          colorScheme="red"
+        >
+          Close Account
         </Button>
       </Box>
     </Flex>

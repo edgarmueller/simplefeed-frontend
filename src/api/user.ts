@@ -40,3 +40,9 @@ export async function me(): Promise<User> {
   });
   return res.data;
 }
+
+export async function closeAccount(): Promise<void> {
+  await axios.delete(`${API_URL}/users/me`, {
+    headers: createHeaders(),
+  });
+}
