@@ -16,6 +16,7 @@ import Search from './pages/Search';
 import Notifications from './pages/Notifications';
 import Post from './pages/Post';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import './index.css'
 
 const router = createBrowserRouter(
   createRoutesFromElements(

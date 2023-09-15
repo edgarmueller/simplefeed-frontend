@@ -42,6 +42,7 @@ export interface Post {
 	postedTo: User
 	author: User
 	likes: any[]
+	attachments?: { type: 'video', url: string }[]
 }
 
 export interface Pagination<T> {

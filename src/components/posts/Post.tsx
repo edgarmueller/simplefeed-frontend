@@ -14,6 +14,7 @@ import isEqual from "lodash/isEqual";
 import { memo, useCallback, useEffect, useState } from "react";
 import { BiLike, BiTrash } from "react-icons/bi";
 import { BsArrowDownCircle, BsArrowUpCircle } from "react-icons/bs";
+import YouTube from "react-youtube";
 import {
   CommentNode,
   buildCommentTree,
@@ -93,6 +94,12 @@ const Post = memo(({ post }: { post: PostEntity }) => {
       </Stack>
       <Box bg="white" padding={2} borderRadius="md" marginBottom={4}>
         <Text>{post.body}</Text>
+        {(post.attachments || []).map(attachment => (
+            <YouTube
+              className="youtubeContainer"
+              videoId={attachment.url.substring(attachment.url.indexOf("v=") + 2)}
+            />
+        ))}
       </Box>
       <Stack direction="row" spacing={0} alignItems="center" marginBottom={2}>
         {isOpen ? (
