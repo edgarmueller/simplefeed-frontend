@@ -34,7 +34,9 @@ export const SubmitForm = ({ onSubmit, postTo }: SubmitFormProps) => {
       // remove urls from body
       body: text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, ''),
       toUserId: postTo ? postTo : user?.id,
-      attachments: extractUrls(text).map((url: string) => ({ type: 'video', url })),
+      attachments: extractUrls(text)
+        .filter((url: string) => url.includes("youtube.com"))
+        .map((url: string) => ({ type: 'video', url })),
     });
     setText("");
   };
