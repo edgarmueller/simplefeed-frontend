@@ -94,14 +94,21 @@ const Post = memo(({ post }: { post: PostEntity }) => {
       </Stack>
       <Box bg="white" padding={2} borderRadius="md" marginBottom={4}>
         <Text>{post.body}</Text>
-        {(post.attachments || []).map((attachment) => (
-          <YouTube
-            className="youtubeContainer"
-            videoId={attachment.url
-              .split("&")[0]
-              .substring(attachment.url.indexOf("v=") + 2)}
-          />
-        ))}
+        {(post.attachments || [])
+          .filter((attachment) => attachment.type === "video")
+          .map((attachment) => (
+            <YouTube
+              className="youtubeContainer"
+              videoId={attachment.url
+                ?.split("&")[0]
+                .substring(attachment.url.indexOf("v=") + 2)}
+            />
+          ))}
+        {(post.attachments || [])
+          .filter((attachment) => attachment.type === "image")
+          .map((attachment) => (
+            <img src={attachment.url} />
+          ))}
       </Box>
       <Stack direction="row" spacing={0} alignItems="center" marginBottom={2}>
         {isOpen ? (

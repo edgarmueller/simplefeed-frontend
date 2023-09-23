@@ -3,8 +3,20 @@ import { API_URL } from "../lib/auth/api/constants";
 import axios, { createHeaders } from "../lib/axios";
 
 export async function submitPost(post: any) {
-  const res = await axios.post(`${API_URL}/posts`, post, {
-    headers: createHeaders(),
+  const formData = new FormData();
+  post.attachments
+    .filter(({ type }: any) => type === "image")
+    .forEach(({ image }: any, index: number) => {
+      formData.append(`image_${index}`, image);
+    });
+  formData.append("body", post.body);
+  formData.append("attachments", JSON.stringify(post.attachments));
+  formData.append("toUserId", post.toUserId);
+  const res = await axios.post(`${API_URL}/posts`, formData, {
+    headers: {
+      ...createHeaders(),
+      "Content-Type": "multipart/form-data",
+    },
   });
   return res.data;
 }
