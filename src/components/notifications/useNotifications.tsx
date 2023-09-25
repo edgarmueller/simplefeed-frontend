@@ -4,6 +4,7 @@ import { useAuth } from "../../lib/auth/hooks/useAuth";
 import { Notification } from "../../domain.interface";
 import { useChat } from "../chat/useChat";
 import { useUser } from "../../lib/auth/hooks/useUser";
+import { SOCKET_URL } from "../../lib/auth/api/constants";
 
 type NotificationContextProps = {
   notifications: any[];
@@ -26,8 +27,7 @@ export const NotificationProvider = ({ children }: any) => {
     if (!token) {
       return;
     }
-    // TODO
-    const socket = io("http://localhost:5001", {
+    const socket = io(SOCKET_URL, {
       autoConnect: false,
       extraHeaders: {
         Authorization: `Bearer ${token}`,

@@ -25,7 +25,6 @@ export const SubmitForm = ({ onSubmit, postTo }: SubmitFormProps) => {
     },
   });
   const handleImageAttached = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log({ target: event.target.files });
     setAttachments([
       ...attachments,
       {

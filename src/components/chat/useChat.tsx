@@ -14,6 +14,7 @@ import { getAccessToken } from "../../lib/auth/api/auth";
 import { useAuth } from "../../lib/auth/hooks/useAuth";
 import { useUser } from "../../lib/auth/hooks/useUser";
 import { refreshToken } from "../../lib/axios";
+import { SOCKET_URL } from "../../lib/auth/api/constants";
 
 type ChatContextProps = {
   conversations: Conversation[];
@@ -159,7 +160,7 @@ export const ChatProvider = ({ children }: any) => {
     if (!token) {
       return;
     }
-    const socket = io("http://localhost:5001", {
+    const socket = io(SOCKET_URL, {
       autoConnect: false,
       extraHeaders: {
         Authorization: `Bearer ${token}`,
