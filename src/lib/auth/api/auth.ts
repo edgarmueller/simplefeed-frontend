@@ -1,3 +1,4 @@
+import axios from "axios";
 import { API_URL } from "./constants";
 import { writeStorage, deleteFromStorage } from "@rehooks/local-storage";
 
@@ -31,10 +32,9 @@ export async function register(
     imageUrl: string;
   }
 ) {
-  const headers = new Headers();
-  headers.append("Content-Type", "application/json");
+  const headers = { "Content-Type": "application/json" };
 
-  const raw = JSON.stringify({
+  const raw = {
     user: {
       email,
       password,
@@ -43,51 +43,38 @@ export async function register(
       lastName: userProfile.lastName,
       imageUrl: userProfile.imageUrl,
     },
-  });
-
-  const requestOptions = {
-    method: "POST",
-    headers: headers,
-    body: raw,
-    // redirect: 'follow'
   };
 
-  const response = await fetch(`${API_URL}/auth/register`, requestOptions);
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.message);
+  try {
+    const response = await axios.post(`${API_URL}/auth/register`, raw, { headers });
+    return response.data;
+  } catch (error) {
+    console.log(error);
   }
-  return data;
 }
 
-export async function login(email: string, password: string) {
-  const headers = new Headers();
-  headers.append("Content-Type", "application/json");
+export async function login(email: string, password: string): Promise<any> {
+  const headers = { "Content-Type": "application/json" }
 
-  const raw = JSON.stringify({
+  const raw = {
     user: {
       email,
       password,
     },
-  });
-
-  const requestOptions = {
-    method: "POST",
-    headers: headers,
-    body: raw,
   };
 
-  const response = await fetch(`${API_URL}/auth/login`, requestOptions);
-  if (!response.ok) {
-    throw new Error(response.statusText);
+  try {
+    const response = await axios.post(`${API_URL}/auth/login`, raw, { headers });
+    const { accessToken, refreshToken } = await response.data
+    saveAccessToken(accessToken);
+    saveRefreshToken(refreshToken);
+    return {
+      accessToken,
+      refreshToken,
+    };
+  } catch (error) {
+    console.log(error);
   }
-  const { accessToken, refreshToken } = await response.json();
-  saveAccessToken(accessToken);
-  saveRefreshToken(refreshToken);
-  return {
-    accessToken,
-    refreshToken,
-  };
 }
 
 export function logout() {
