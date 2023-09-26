@@ -208,6 +208,7 @@ export const ChatProvider = ({ children }: any) => {
       extraHeaders: {
         Authorization: `Bearer ${token}`,
       },
+      transports: ["websocket"],
     });
     setSocket(socket);
 

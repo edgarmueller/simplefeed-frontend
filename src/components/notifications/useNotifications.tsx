@@ -34,6 +34,8 @@ export const NotificationProvider = ({ children }: any) => {
       extraHeaders: {
         Authorization: `Bearer ${token}`,
       },
+      transports: ["websocket"],
+
     });
     setSocket(socket);
 
