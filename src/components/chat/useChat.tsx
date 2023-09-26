@@ -205,7 +205,7 @@ export const ChatProvider = ({ children }: any) => {
     }
     const socket = io(`${SOCKET_URL}/chat`, {
       autoConnect: false,
-      extraHeaders: {
+      query: {
         Authorization: `Bearer ${token}`,
       },
       transports: ["websocket"],

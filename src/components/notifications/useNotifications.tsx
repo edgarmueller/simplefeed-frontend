@@ -31,7 +31,7 @@ export const NotificationProvider = ({ children }: any) => {
     setIsConnecting(true)
     const socket = io(`${SOCKET_URL}/notifications`, {
       autoConnect: false,
-      extraHeaders: {
+      query: {
         Authorization: `Bearer ${token}`,
       },
       transports: ["websocket"],
