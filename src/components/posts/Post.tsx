@@ -29,18 +29,17 @@ import { formatTimeAgo } from "../../lib/time-ago";
 import { CommentForm } from "./CommentForm";
 import { CommentItem } from "./CommentItem";
 
+const isPostLiked = (post: PostEntity, byUserId: string | undefined) => {
+  return post.likes?.find(({ userId, unliked }) => userId === byUserId && !unliked) !== undefined;
+}
+
 const Post = memo(({ post }: { post: PostEntity }) => {
   const { user, decrementPostCount } = useUser();
   const [comments, setComments] = useState<Comment[]>();
   const [commentTree, setCommentTree] = useState<CommentNode[]>([]);
-  const [isLiked, setLiked] = useState(
-    post.likes?.find(({ userId }) => userId === user?.id) !== undefined
-  );
-  useEffect(() => {
-    setLiked(
-      post.likes?.find(({ userId }) => userId === user?.id) !== undefined
-    );
-  }, [post, user]);
+  console.log(post.likes)
+  const [isLiked, setLiked] = useState(isPostLiked(post, user?.id));
+  useEffect(() => { setLiked(isPostLiked(post, user?.id)) }, [post, user]);
   const [isVisible, setVisible] = useState(true);
   const { isOpen, onToggle } = useDisclosure();
   const fetchReplies = useCallback(

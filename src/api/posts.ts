@@ -66,7 +66,7 @@ export async function postComment(
 }
 
 export async function likePost(postId: string): Promise<void> {
-  await axios.post(`${API_URL}/posts/${postId}/like`, {
+  await axios.post(`${API_URL}/posts/${postId}/like`, undefined, {
     headers: createHeaders(),
   });
 }
@@ -74,7 +74,6 @@ export async function likePost(postId: string): Promise<void> {
 export async function unlikePost(postId: string): Promise<void> {
   await axios.delete(`${API_URL}/posts/${postId}/like`, {
     headers: createHeaders(),
-    method: "DELETE",
   });
 }
 

@@ -44,7 +44,6 @@ export const NotificationProvider = ({ children }: any) => {
     }
 
     function onNotification(msg: Notification) {
-      console.log('received notification', msg)
       if (msg.type === "friend-request-accepted") {
         refresh()
         fetchConversations().then(() => {
@@ -59,11 +58,8 @@ export const NotificationProvider = ({ children }: any) => {
     }
 
     if (isConnecting || socket?.connected) {
-      console.log('connected socket', socket?.connected)
       return;
     }
-
-    console.log('connecting socket', socket?.connected, isConnecting)
 
     socket?.on("send_all_notifications", onAllNotifications);
     // TODO: in use?
