@@ -59,6 +59,7 @@ export const ChatProvider = ({ children }: any) => {
   const [messagesByConversation, setMessagesByConversation] = useState<{
     [conversationId: string]: Message[];
   }>({});
+
   const fetchAllConversations = useCallback(
     () =>
       fetchConversations()
@@ -103,6 +104,7 @@ export const ChatProvider = ({ children }: any) => {
     },
     [socket]
   );
+
   const requestAllMessages = useCallback(
     async (conversationId: string) => {
       socket?.emit("request_all_messages", {
@@ -157,22 +159,6 @@ export const ChatProvider = ({ children }: any) => {
   }, []);
 
   useEffect(() => {
-    if (!token) {
-      return;
-    }
-    const socket = io(SOCKET_URL, {
-      autoConnect: false,
-      extraHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    setSocket(socket);
-    return () => {
-      socket.close();
-    };
-  }, [token]);
-
-  useEffect(() => {
     if (!socket?.connected) {
       // TODO
       fetchConversations().then((conversations) => {
@@ -214,6 +200,17 @@ export const ChatProvider = ({ children }: any) => {
   }, [messagesByConversation, user?.id]);
 
   useEffect(() => {
+    if (!token) {
+      return;
+    }
+    const socket = io(`${SOCKET_URL}/chat`, {
+      autoConnect: false,
+      extraHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setSocket(socket);
+
     function onAllMessages(conversation: any) {
       setMessagesByConversation((prev) => ({
         ...prev,
@@ -255,7 +252,7 @@ export const ChatProvider = ({ children }: any) => {
       setMessagesByConversation((prev) => {
         return {
           ...prev,
-          [msg.conversationId]: [...(prev[msg.conversationId] || []), msg],
+          [msg.conversationId]: [msg, ...(prev[msg.conversationId] || [])],
         };
       });
     }
@@ -273,8 +270,9 @@ export const ChatProvider = ({ children }: any) => {
       socket?.off("receive_message", onMessage);
       socket?.off("send_all_messages", onAllMessages);
       socket?.off("send_messages", onNewMessages);
+      socket.close();
     };
-  }, [socket]);
+  }, [token]);
 
   // --
   const value = useMemo(

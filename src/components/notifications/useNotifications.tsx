@@ -22,33 +22,20 @@ export const NotificationProvider = ({ children }: any) => {
   const { joinConversation, fetchConversations } = useChat()
   const [socket, setSocket] = useState<Socket>();
   const [notifications, setNotifications] = useState<any[]>([]);
+  const [isConnecting, setIsConnecting] = useState(false)
 
   useEffect(() => {
-    if (!token) {
+    if (!token || isConnecting) {
       return;
     }
-    const socket = io(SOCKET_URL, {
+    setIsConnecting(true)
+    const socket = io(`${SOCKET_URL}/notifications`, {
       autoConnect: false,
       extraHeaders: {
         Authorization: `Bearer ${token}`,
       },
     });
     setSocket(socket);
-    return () => {
-      socket.close();
-    };
-  }, [token]);
-
-  useEffect(() => {
-    if (socket?.connected) {
-      // 
-    }
-  }, [socket?.connected, token]);
-
-  useEffect(() => {
-    function onConnect() {
-      socket?.emit("request_all_notifications");
-    }
 
     function onAllNotifications(notifications: any) {
       setNotifications(notifications);
@@ -69,23 +56,28 @@ export const NotificationProvider = ({ children }: any) => {
       setNotifications((prev) => prev.filter((n) => n.id !== msg.id));
     }
 
-    if (socket?.active) {
+    if (isConnecting || socket?.connected) {
+      console.log('connected socket', socket?.connected)
       return;
     }
-    socket?.connect();
 
-    socket?.on("connect", onConnect);
+    console.log('connecting socket', socket?.connected, isConnecting)
+
     socket?.on("send_all_notifications", onAllNotifications);
+    // TODO: in use?
     socket?.on("receive_notification", onNotification);
     socket?.on("notification_read", onNotificationRead);
 
+    socket?.connect();
+    setIsConnecting(false)
+
     return () => {
-      socket?.off("connect", onConnect);
       socket?.off("send_all_notifications", onAllNotifications);
       socket?.off("receive_notification", onNotification);
       socket?.off("notification_read", onNotificationRead);
+      socket.close()
     };
-  }, []);
+  }, [token]);
 
   const markAsRead = (notificationId: string) => {
     console.log('marking notifcation as read', notificationId)
