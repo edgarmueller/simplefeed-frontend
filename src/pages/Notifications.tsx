@@ -1,14 +1,10 @@
-import { Box, Button, Grid, GridItem, Heading, Link, Text } from "@chakra-ui/react";
+import { Box, Button, Grid, GridItem, Heading, Link } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 import { Layout } from "../components/Layout";
 import { useNotifications } from "../components/notifications/useNotifications";
-import { Link as RouterLink } from "react-router-dom";
 
 const Notifications = () => {
   const { notifications, markAsRead } = useNotifications();
-  console.log(
-    "notifications..",
-    notifications.filter((n) => !n.viewed)
-  );
   const unreadNotificatons = notifications?.filter((n) => !n.viewed);
   return (
     <Layout>

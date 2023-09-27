@@ -16,13 +16,21 @@ export function InfiniteScroll<T>({ children, queryKey, queryFn }: InfiniteScrol
     Pagination<T>
   >({
     queryKey,
-    getNextPageParam: (prevPage) => {
-      if (prevPage.meta.currentPage === prevPage.meta.totalPages - 1) {
+    getNextPageParam: ({ meta }) => {
+      if (meta.currentPage >= meta.totalPages) { 
         return undefined;
       }
-      return prevPage.meta.currentPage + 1;
+      if (meta.currentPage === meta.totalPages - 1) {
+        return undefined;
+      }
+      return meta.currentPage + 1;
     },
-    getPreviousPageParam: (nextPage) => nextPage.meta.currentPage - 1,
+    getPreviousPageParam: ({ meta }) => {
+      if (meta.currentPage <= 1) {
+        return undefined;
+      }
+      return meta.currentPage - 1
+    },
     queryFn: ({ pageParam = 1, meta }) => queryFn(pageParam),
   });
 
