@@ -63,18 +63,14 @@ export async function login(email: string, password: string): Promise<any> {
     },
   };
 
-  try {
-    const response = await axios.post(`${API_URL}/auth/login`, raw, { headers });
-    const { accessToken, refreshToken } = await response.data
-    saveAccessToken(accessToken);
-    saveRefreshToken(refreshToken);
-    return {
-      accessToken,
-      refreshToken,
-    };
-  } catch (error) {
-    console.log(error);
-  }
+  const response = await axios.post(`${API_URL}/auth/login`, raw, { headers });
+  const { accessToken, refreshToken } = await response.data
+  saveAccessToken(accessToken);
+  saveRefreshToken(refreshToken);
+  return {
+    accessToken,
+    refreshToken,
+  };
 }
 
 export function logout() {
