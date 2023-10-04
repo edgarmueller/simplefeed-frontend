@@ -8,6 +8,7 @@ import {
   Button,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormHelperText,
   FormLabel,
   Input,
@@ -172,10 +173,12 @@ export const UpdateUserForm = () => {
               minW="100%"
             />
           </Box>
+          <FormErrorMessage>
+            {errors.map((error) => (
+              <p key={error}>{error}</p>
+            ))}
+          </FormErrorMessage>
         </FormControl>
-        {errors.map((error) => (
-          <p key={error}>{error}</p>
-        ))}
 				<FormControl
 					onSubmit={handlePasswordSubmit}
 					isInvalid={errors.length > 0}

@@ -4,7 +4,6 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import { Socket, io } from "socket.io-client";
@@ -100,9 +99,9 @@ export const ChatProvider = ({ children }: any) => {
         page,
         auth: await validateToken(),
       });
-      setLoading(true)
+      setLoading(true);
     },
-    [socket]
+    [socket, validateToken]
   );
 
   const requestAllMessages = useCallback(
@@ -112,13 +111,12 @@ export const ChatProvider = ({ children }: any) => {
         auth: await validateToken(),
       });
     },
-    [socket]
+    [socket, validateToken]
   );
   const markAsRead = useCallback(
     async (conversationId: string, messages: Message[]) => {
       if (messages.length === 0) return;
       await validateToken();
-      console.log("marking as read", messages);
       messages?.forEach((msg) => {
         if (msg.authorId !== user?.id) {
           msg.isRead = true;
@@ -129,7 +127,7 @@ export const ChatProvider = ({ children }: any) => {
         auth: await validateToken(),
       });
     },
-    [socket, user?.id]
+    [socket, validateToken, user?.id]
   );
   const sendMessage = useCallback(
     async (conversationId: string, msg: string) => {
@@ -145,7 +143,7 @@ export const ChatProvider = ({ children }: any) => {
         auth: await validateToken(),
       });
     },
-    [validateToken, token, socket, user?.id]
+    [validateToken, socket, user?.id]
   );
 
   useEffect(() => {
@@ -171,13 +169,13 @@ export const ChatProvider = ({ children }: any) => {
   }, [socket, requestAllMessages]);
 
   const joinConversation = useCallback(
-    (conversationId: string) => {
+    async (conversationId: string) => {
       socket?.emit(JOIN_CONVERSATION, {
         conversationId,
-        auth: token,
+        auth: await validateToken(),
       });
     },
-    [socket, token]
+    [socket, validateToken]
   );
 
   useEffect(() => {
@@ -203,19 +201,18 @@ export const ChatProvider = ({ children }: any) => {
     if (!token) {
       return;
     }
-    const socket = io(`${SOCKET_URL}/chat`, {
+    const _socket = io(`${SOCKET_URL}/chat`, {
       autoConnect: false,
       query: {
         Authorization: `Bearer ${token}`,
       },
       transports: ["websocket"],
     });
-    setSocket(socket);
 
     function onAllMessages(conversation: any) {
       setMessagesByConversation((prev) => ({
         ...prev,
-        [conversation.id]: conversation.messages
+        [conversation.id]: conversation.messages,
       }));
     }
 
@@ -240,11 +237,11 @@ export const ChatProvider = ({ children }: any) => {
 
     function onNewMessages(conv: Conversation) {
       const conversationId = conv.id;
-      setLoading(false)
+      setLoading(false);
       setMessagesByConversation((prev) => {
         return {
           ...prev,
-          [conversationId]: [...prev[conversationId], ...conv.messages]
+          [conversationId]: [...prev[conversationId], ...conv.messages],
         };
       });
     }
@@ -258,53 +255,38 @@ export const ChatProvider = ({ children }: any) => {
       });
     }
 
-    if (socket?.active) {
-      return;
-    }
-    socket?.connect();
-    socket?.on("send_all_messages", onAllMessages);
-    socket?.on("send_messages", onNewMessages);
-    socket?.on("receive_message", onMessage);
-    socket?.on("message_read", onMessageRead);
+    _socket?.connect();
+    setSocket(_socket);
+    _socket?.on("send_all_messages", onAllMessages);
+    _socket?.on("send_messages", onNewMessages);
+    _socket?.on("receive_message", onMessage);
+    _socket?.on("message_read", onMessageRead);
 
     return () => {
-      socket?.off("receive_message", onMessage);
-      socket?.off("send_all_messages", onAllMessages);
-      socket?.off("send_messages", onNewMessages);
-      socket.close();
+      _socket?.off("receive_message", onMessage);
+      _socket?.off("send_all_messages", onAllMessages);
+      _socket?.off("send_messages", onNewMessages);
+      _socket.close();
+      setSocket(undefined);
     };
   }, [token]);
 
   // --
-  const value = useMemo(
-    () => ({
-      conversations,
-      hasError: error !== undefined,
-      error,
-      fetchConversations: fetchAllConversations,
-      joinConversation,
-      requestMessages,
-      requestAllMessages,
-      sendMessage,
-      markAsRead,
-      messagesByConversation,
-      unreadByConversations,
-      loading
-    }),
-    [
-      unreadByConversations,
-      conversations,
-      error,
-      joinConversation,
-      fetchAllConversations,
-      requestMessages,
-      requestAllMessages,
-      sendMessage,
-      markAsRead,
-      messagesByConversation,
-      loading
-    ]
-  );
+  const value = {
+    conversations,
+    hasError: error !== undefined,
+    error,
+    fetchConversations: fetchAllConversations,
+    joinConversation,
+    requestMessages,
+    requestAllMessages,
+    sendMessage,
+    markAsRead,
+    messagesByConversation,
+    unreadByConversations,
+    loading,
+    socket
+  };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };

@@ -24,7 +24,7 @@ export const getSentFriendRequests = async (): Promise<FriendRequest[]> => {
 };
 
 export const acceptFriendRequest = async (friendRequestId: string): Promise<FriendRequest> => {
-  const res = await axios.patch(`${API_URL}/friend-requests/${friendRequestId}`, {
+  const res = await axios.patch(`${API_URL}/friend-requests/${friendRequestId}`, {}, {
     headers: createHeaders(),
   });
   return res.data;

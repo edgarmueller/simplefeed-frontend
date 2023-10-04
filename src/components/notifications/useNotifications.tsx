@@ -46,8 +46,10 @@ export const NotificationProvider = ({ children }: any) => {
     function onNotification(msg: Notification) {
       if (msg.type === "friend-request-accepted") {
         refresh()
-        fetchConversations().then(() => {
-          joinConversation(msg.resourceId)
+        fetchConversations().then(convos => {
+          for (const convo of convos) {
+            joinConversation(convo.id)
+          }
         });
       }
       setNotifications((prev) => [...prev, msg]);

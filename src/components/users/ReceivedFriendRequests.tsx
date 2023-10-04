@@ -19,7 +19,7 @@ export const ReceivedFriendRequests = () => {
   }, []);
   return (
     <Box>
-      <Heading size="sm" textTransform="uppercase">
+      <Heading size="sm" textTransform="uppercase" mb={2}>
         Friend Requests
       </Heading>
       <Box>
@@ -46,17 +46,18 @@ export const ReceivedFriendRequests = () => {
                     );
                     await refreshUser();
                     const conversations = await fetchConversations();
-                    const conversationId = conversations.find(
+                    const conversation = conversations.find(
                       (conversation) =>
                         conversation.participantIds.includes(user?.id || "") &&
                         conversation.participantIds.includes(
                           friendRequest.from.id
                         )
                     );
-                    if (!conversationId) {
+                    console.log('joining convo', conversation)
+                    if (!conversation) {
                       return;
                     }
-                    await joinConversation(conversationId.id);
+                    await joinConversation(conversation.id);
                   }}
                 >
                   Accept
