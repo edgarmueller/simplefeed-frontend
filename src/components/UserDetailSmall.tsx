@@ -21,7 +21,7 @@ export const UserDetailSmall = ({
 
   return (
     <Stack direction="row" align="center">
-      <Avatar src={userProfile?.imageUrl} borderRadius="lg" />
+      <Avatar name={`${userProfile?.firstName} ${userProfile?.lastName}`} src={userProfile?.imageUrl} borderRadius="lg" />
       {
         asLink ?
           <Link as={RouterLink} to={`/users/${userProfile?.username}`}>

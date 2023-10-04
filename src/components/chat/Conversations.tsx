@@ -26,7 +26,8 @@ export const Conversations = () => {
       <CardBody>
         {conversations.length === 0 && <Text>No conversations</Text>}
         {conversations?.map((conversation) => (
-          <Box
+          <Box 
+            mt={2}
             key={conversation.id}
             _hover={{ bg: "blackAlpha.100", cursor: "pointer" }}
             onClick={() => {
@@ -37,21 +38,20 @@ export const Conversations = () => {
               );
             }}
           >
-            <UserDetailSmall
-              user={lookupUserId(conversation.participantIds)}
-              bold
-              asLink={false}
-            />
-              {
-                unreadByConversations[conversation.id] === 0 ? null :
-                  <Badge colorScheme="red" variant="solid" ml={2}>
-                    {unreadByConversations[conversation.id]}
-                  </Badge>
-              }
-            <Text>
-              {mostRecentMessageAuthor(conversation)}
-              {mostRecentMessage(conversation)?.content}
-            </Text>
+              <UserDetailSmall
+                user={lookupUserId(conversation.participantIds)}
+                bold
+                asLink={false}
+              />
+              {unreadByConversations[conversation.id] === 0 ? null : (
+                <Badge colorScheme="red" variant="solid" ml={2}>
+                  {unreadByConversations[conversation.id]}
+                </Badge>
+              )}
+              <Text fontSize={"sm"}>
+                {mostRecentMessageAuthor(conversation)}
+                {mostRecentMessage(conversation)?.content}
+              </Text>
           </Box>
         ))}
       </CardBody>
