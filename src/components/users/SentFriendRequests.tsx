@@ -1,18 +1,10 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { cancelFriendRequest, getSentFriendRequests } from "../../api/friend-requests";
-import { FriendRequest } from "../../domain.interface";
+import { cancelFriendRequest } from "../../api/friend-requests";
+import { useFriends } from "../../lib/auth/hooks/useFriends";
 import { UserDetailSmall } from "../UserDetailSmall";
 
 export const SentFriendRequests = () => {
-	const [sentFriendRequests, setSentFriendRequests] = useState<FriendRequest[]>([]);
-	const fetchSentFriendRequests = async () => {
-		const requests = await getSentFriendRequests();
-		setSentFriendRequests(requests);
-	}
-  useEffect(() => {
-		fetchSentFriendRequests();
-  }, []);
+  const { sentFriendRequests, fetchSentFriendRequests } = useFriends();
   return (
     <Box>
       <Heading size="xs" mb={2}>Sent</Heading>
@@ -20,7 +12,7 @@ export const SentFriendRequests = () => {
         <Text size="sm">No friend requests</Text>
       ) : (
         sentFriendRequests.map((friendRequest) => (
-          <Flex justify="space-between" align="center">
+          <Flex justify="space-between" align="center" mt={2}>
             <UserDetailSmall
               key={friendRequest.id}
               user={friendRequest.to}

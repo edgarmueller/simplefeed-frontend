@@ -116,7 +116,7 @@ export const ChatProvider = ({ children }: any) => {
   );
   const markAsRead = useCallback(
     async (conversationId: string, messages: Message[]) => {
-      if (messages.length === 0) return;
+      if (messages?.length === 0) return;
       await validateToken();
       messages?.forEach((msg) => {
         if (msg.authorId !== user?.id) {
@@ -189,7 +189,7 @@ export const ChatProvider = ({ children }: any) => {
           .filter((msg) => !msg.isRead).length || 0;
       return acc;
     }, {} as Record<string, number>);
-    console.log({ unreadMessagesCountByConversation })
+    // console.log({ unreadMessagesCountByConversation })
     setUnreadByConversations({
       ...unreadMessagesCountByConversation,
       total: Object.values(unreadMessagesCountByConversation).reduce(

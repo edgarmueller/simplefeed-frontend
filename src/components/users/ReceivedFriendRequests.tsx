@@ -1,22 +1,14 @@
 import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
-import { FriendRequest } from "../../domain.interface";
-import { useEffect, useState } from "react";
-import { acceptFriendRequest, declineFriendRequest, getFriendRequests } from "../../api/friend-requests";
-import { useChat } from "../chat/useChat";
-import { UserDetailSmall } from "../UserDetailSmall";
+import { acceptFriendRequest, declineFriendRequest } from "../../api/friend-requests";
 import { useUser } from "../../lib/auth/hooks/useUser";
+import { UserDetailSmall } from "../UserDetailSmall";
+import { useChat } from "../chat/useChat";
+import { useFriends } from "../../lib/auth/hooks/useFriends";
 
 export const ReceivedFriendRequests = () => {
   const { user, refresh: refreshUser } = useUser();
   const { fetchConversations, joinConversation } = useChat();
-  const [receivedFriendRequests, setReceivedFriendRequests] = useState<
-    FriendRequest[]
-  >([]);
-  useEffect(() => {
-    getFriendRequests().then((friendRequests) => {
-      setReceivedFriendRequests(friendRequests);
-    });
-  }, []);
+  const { receivedFriendRequests, fetchReceivedFriendRequests } = useFriends();
   return (
     <Box>
       <Heading size="sm" textTransform="uppercase" mb={2}>
@@ -30,7 +22,7 @@ export const ReceivedFriendRequests = () => {
           <Text size="sm">No friend requests</Text>
         ) : (
           receivedFriendRequests.map((friendRequest) => (
-            <Flex key={friendRequest.id} justify="space-between" align="center">
+            <Flex key={friendRequest.id} justify="space-between" align="center" mt={2}>
               <UserDetailSmall user={friendRequest.from} />
               <Stack direction="row" spacing={2}>
                 <Button
@@ -39,11 +31,7 @@ export const ReceivedFriendRequests = () => {
                   size="xs"
                   onClick={async () => {
                     await acceptFriendRequest(friendRequest.id);
-                    setReceivedFriendRequests((requests) =>
-                      requests.filter(
-                        (request) => request.id !== friendRequest.id
-                      )
-                    );
+                    fetchReceivedFriendRequests();
                     await refreshUser();
                     const conversations = await fetchConversations();
                     const conversation = conversations.find(
@@ -68,11 +56,7 @@ export const ReceivedFriendRequests = () => {
                   size="xs"
                   onClick={async () => {
                     await declineFriendRequest(friendRequest.id);
-                    setReceivedFriendRequests((requests) =>
-                      requests.filter(
-                        (request) => request.id !== friendRequest.id
-                      )
-                    );
+                    fetchReceivedFriendRequests();
                   }}
                 >
                   Decline

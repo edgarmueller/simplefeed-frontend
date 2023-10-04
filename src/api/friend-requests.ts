@@ -4,7 +4,7 @@ import axios, { createHeaders } from "../lib/axios";
 
 
 export const makeFriendRequest = async (username: string) => {
-  await axios.post(`${API_URL}/friend-requests/${username}`, {
+  await axios.post(`${API_URL}/friend-requests/${username}`, {}, {
     headers: createHeaders()
   });
 };
