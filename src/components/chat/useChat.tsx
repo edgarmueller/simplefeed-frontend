@@ -64,6 +64,7 @@ export const ChatProvider = ({ children }: any) => {
       fetchConversations()
         .then((conversations) => {
           setConversations(conversations);
+          setMessagesByConversation({});
           setError(undefined);
           return conversations;
         })
@@ -188,6 +189,7 @@ export const ChatProvider = ({ children }: any) => {
           .filter((msg) => !msg.isRead).length || 0;
       return acc;
     }, {} as Record<string, number>);
+    console.log({ unreadMessagesCountByConversation })
     setUnreadByConversations({
       ...unreadMessagesCountByConversation,
       total: Object.values(unreadMessagesCountByConversation).reduce(
