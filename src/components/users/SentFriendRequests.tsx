@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { cancelFriendRequest } from "../../api/friend-requests";
-import { useFriends } from "../../lib/auth/hooks/useFriends";
-import { UserDetailSmall } from "../UserDetailSmall";
+import { useFriends } from "../../hooks/useFriends";
+import { UserDetailSmall } from "./UserDetailSmall";
 
 export const SentFriendRequests = () => {
   const { sentFriendRequests, fetchSentFriendRequests } = useFriends();
@@ -15,9 +15,7 @@ export const SentFriendRequests = () => {
           <Flex justify="space-between" align="center" mt={2}>
             <UserDetailSmall
               key={friendRequest.id}
-              user={friendRequest.to}
-              small
-              hasFriendRequest
+              user={friendRequest.to as any}
             />
             <Button
               colorScheme="red"

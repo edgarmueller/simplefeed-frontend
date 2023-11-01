@@ -9,10 +9,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Link, Navigate } from "react-router-dom";
-import { login as loginApi } from "../lib/auth/api/auth";
-import { SignInLogic } from "../lib/auth/components/SignInLogic";
-import { useAuth } from "../lib/auth/hooks/useAuth";
-import { Logo } from "./Logo";
+import { useAuth } from "../../hooks/useAuth";
+import { SignInLogic } from "./SignInLogic";
+import { login as loginApi } from "../../api/auth";
+import { Logo } from "../common/Logo";
 
 export const SignIn = () => {
   const { token, login: loginApp } = useAuth();

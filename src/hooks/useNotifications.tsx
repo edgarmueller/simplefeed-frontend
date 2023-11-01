@@ -1,11 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Socket, io } from "socket.io-client";
-import { useAuth } from "../../lib/auth/hooks/useAuth";
-import { Notification } from "../../domain.interface";
-import { useChat } from "../chat/useChat";
-import { useUser } from "../../lib/auth/hooks/useUser";
-import { SOCKET_URL } from "../../lib/auth/api/constants";
-import { useFriends } from "../../lib/auth/hooks/useFriends";
+import { useAuth } from "./useAuth";
+import { Notification } from "../domain.interface";
+import { useChat } from "./useChat";
+import { useUser } from "./useUser";
+import { useFriends } from "./useFriends";
+import { SOCKET_URL } from "../api/constants";
 
 type NotificationContextProps = {
   notifications: any[];

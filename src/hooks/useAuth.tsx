@@ -1,10 +1,10 @@
 import useLocalStorage from "@rehooks/local-storage";
 import { createContext, useCallback, useContext, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { User } from "../../../domain.interface";
-import { logout as apiLogout, getAccessToken } from "../api/auth";
+import { User } from "../domain.interface";
 import jwtDecode from "jwt-decode";
-import { refreshToken } from "../../axios";
+import { refreshToken } from "../lib/axios";
+import { getAccessToken, logout as logoutApi } from "../api/auth"
 
 type AuthContextProps = {
 	token: string | null,
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }: any) => {
 
   // call this function to sign out logged in user
   const logout = useCallback(() => {
-    apiLogout();
+    logoutApi();
     navigate("/sign-in", { replace: true });
   }, [navigate])
 

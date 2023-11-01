@@ -17,8 +17,8 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { closeAccount, updateUserInfo } from "../../api/user";
-import { useUser } from "../../lib/auth/hooks/useUser";
-import { logout } from "../../lib/auth/api/auth";
+import { useUser } from "../../hooks/useUser";
+import { logout } from "../../api/auth";
 
 
 const formatError = (error: string) => {

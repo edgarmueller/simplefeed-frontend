@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { me } from "../../../api/user";
-import { User } from "../../../domain.interface";
+import { me } from "../api/user";
+import { User } from "../domain.interface";
 import { useAuth } from "./useAuth";
+import _ from "lodash";
 
 type UserContextProps = {
   user: User | null;

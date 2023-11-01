@@ -1,7 +1,6 @@
 import { FriendRequest } from "../domain.interface";
-import { API_URL } from "../lib/auth/api/constants";
 import axios, { createHeaders } from "../lib/axios";
-
+import { API_URL } from "./constants";
 
 export const makeFriendRequest = async (username: string) => {
   await axios.post(`${API_URL}/friend-requests/${username}`, {}, {

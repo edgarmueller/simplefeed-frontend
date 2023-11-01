@@ -1,6 +1,6 @@
 import { User } from "../domain.interface";
-import { API_URL } from "../lib/auth/api/constants";
 import axios, { createHeaders } from "../lib/axios";
+import { API_URL } from "./constants";
 
 export const updateUserInfo = async (
   id: string,

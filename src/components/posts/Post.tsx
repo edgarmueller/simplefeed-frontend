@@ -19,7 +19,7 @@ import {
   fetchComments,
 } from "../../api/posts";
 import { Comment, Post as PostEntity } from "../../domain.interface";
-import { useUser } from "../../lib/auth/hooks/useUser";
+import { useUser } from "../../hooks/useUser";
 import { formatTimeAgo } from "../../lib/time-ago";
 import { Comments } from "./Comments";
 import { LikeButton } from "./LikeButton";

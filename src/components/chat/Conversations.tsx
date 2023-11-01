@@ -1,15 +1,15 @@
 import { Badge, Box, Card, CardBody, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { Conversation } from "../../domain.interface";
-import { useUser } from "../../lib/auth/hooks/useUser";
-import { UserDetailSmall } from "../UserDetailSmall";
-import { useChat } from "./useChat";
+import { useUser } from "../../hooks/useUser";
+import { useChat } from "../../hooks/useChat";
+import { UserDetailSmall } from "../users/UserDetailSmall";
 
 export const Conversations = () => {
   const navigate = useNavigate();
   const { conversations, unreadByConversations } = useChat();
   const { user } = useUser();
-  const lookupUserId = (participantIds: string[]) =>
+  const lookupUserById = (participantIds: string[]) =>
     user?.friends.find((friend) => participantIds.includes(friend.id));
   const mostRecentMessage = (conversation: Conversation) =>
     conversation.messages[conversation.messages.length - 1];
@@ -33,13 +33,13 @@ export const Conversations = () => {
             onClick={() => {
               navigate(
                 `/users/${
-                  lookupUserId(conversation.participantIds)?.username
+                  lookupUserById(conversation.participantIds)?.username
                 }/chat`
               );
             }}
           >
               <UserDetailSmall
-                user={lookupUserId(conversation.participantIds)}
+                user={lookupUserById(conversation.participantIds)}
                 bold
                 asLink={false}
               />

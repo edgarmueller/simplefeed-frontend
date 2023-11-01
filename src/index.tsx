@@ -1,12 +1,10 @@
-// import './wdyr';
+import './wdyr';
 import { ChakraProvider } from '@chakra-ui/react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import { Friends } from './components/users/Friends';
-import { ProtectedRoute } from './components/ProtectedRoute';
-import { SignIn } from './components/SignIn';
-import { SignUp } from './components/SignUp';
-import { AuthOutlet } from './lib/auth/components/AuthOutlet';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { AuthOutlet } from './components/auth/AuthOutlet';
 import Feed from './pages/Feed';
 import UserProfile, { loader as userLoader } from './pages/UserProfile';
 import reportWebVitals from './reportWebVitals';
@@ -17,6 +15,8 @@ import Notifications from './pages/Notifications';
 import Post from './pages/Post';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css'
+import { SignUp } from './components/auth/SignUp';
+import { SignIn } from './components/auth/SignIn';
 
 const router = createBrowserRouter(
   createRoutesFromElements(

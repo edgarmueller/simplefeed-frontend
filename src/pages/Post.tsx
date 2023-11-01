@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchPost } from "../api/posts";
-import { Layout } from "../components/Layout";
+import { Layout } from "../components/common/Layout";
 import { Post as PostEntity } from "../domain.interface";
 import { Post } from "../components/posts/Post";
 

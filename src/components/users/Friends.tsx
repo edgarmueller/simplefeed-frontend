@@ -6,12 +6,12 @@ import {
   Stack
 } from "@chakra-ui/react";
 import { removeFriend } from "../../api/friends";
-import { useUser } from "../../lib/auth/hooks/useUser";
-import { Layout } from "../Layout";
-import { UserDetailSmall } from "../UserDetailSmall";
+import { useUser } from "../../hooks/useUser";
+import { Layout } from "../common/Layout";
 import { FriendList } from "./FriendList";
 import { ReceivedFriendRequests } from "./ReceivedFriendRequests";
 import { SentFriendRequests } from "./SentFriendRequests";
+import { UserDetailSmall } from "./UserDetailSmall";
 
 export const Friends = () => {
   const { user, refresh: refreshUser } = useUser();

@@ -1,6 +1,6 @@
 import { fetchFeed } from "../../api/posts";
 import { Post as PostEntity } from "../../domain.interface";
-import { SubmitForm } from "../SubmitForm";
+import { SubmitForm } from "./SubmitForm";
 import { InfiniteScroll } from "../common/InfiniteScroll";
 import { Post } from "./Post";
 

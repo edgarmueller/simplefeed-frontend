@@ -1,9 +1,9 @@
 import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
 import { acceptFriendRequest, declineFriendRequest } from "../../api/friend-requests";
-import { useUser } from "../../lib/auth/hooks/useUser";
-import { UserDetailSmall } from "../UserDetailSmall";
-import { useChat } from "../chat/useChat";
-import { useFriends } from "../../lib/auth/hooks/useFriends";
+import { useUser } from "../../hooks/useUser";
+import { useChat } from "../../hooks/useChat";
+import { useFriends } from "../../hooks/useFriends";
+import { UserDetailSmall } from "./UserDetailSmall";
 
 export const ReceivedFriendRequests = () => {
   const { user, refresh: refreshUser } = useUser();

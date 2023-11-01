@@ -1,8 +1,5 @@
 import { Link, Navigate } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
-import { register } from "../lib/auth/api/auth";
-import { SignUpLogic } from "../lib/auth/components/SignUpLogic";
-import { useAuth } from "../lib/auth/hooks/useAuth";
 import {
   Box,
   Button,
@@ -12,7 +9,10 @@ import {
   Input,
   Text
 } from "@chakra-ui/react";
-import { Logo } from "./Logo";
+import { useAuth } from "../../hooks/useAuth";
+import { SignUpLogic } from "./SignUpLogic";
+import { register } from "../../api/auth";
+import { Logo } from "../common/Logo";
 
 export const SignUp = () => {
   const { token } = useAuth();

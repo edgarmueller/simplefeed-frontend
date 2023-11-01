@@ -1,5 +1,5 @@
-import { API_URL } from "../lib/auth/api/constants";
 import axios, { createHeaders } from "../lib/axios";
+import { API_URL } from "./constants";
 
 export interface UserSearchResult {
 	id: string;

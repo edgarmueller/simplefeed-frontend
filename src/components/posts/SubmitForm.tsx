@@ -3,9 +3,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 // @ts-ignore
 import extractUrls from "extract-urls";
-import { submitPost } from "../api/posts";
-import { useUser } from "../lib/auth/hooks/useUser";
-import { FileInput } from "./users/UpdateUserForm";
+import { submitPost } from "../../api/posts";
+import { useUser } from "../../hooks/useUser";
+import { FileInput } from "../users/UpdateUserForm";
 
 export interface SubmitFormProps {
   onSubmit?: (post: any) => void;

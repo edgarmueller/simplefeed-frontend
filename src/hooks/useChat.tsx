@@ -7,13 +7,13 @@ import {
   useState,
 } from "react";
 import { Socket, io } from "socket.io-client";
-import { JOIN_CONVERSATION, fetchConversations } from "../../api/chat";
-import { Conversation, Message } from "../../domain.interface";
-import { getAccessToken } from "../../lib/auth/api/auth";
-import { useAuth } from "../../lib/auth/hooks/useAuth";
-import { useUser } from "../../lib/auth/hooks/useUser";
-import { refreshToken } from "../../lib/axios";
-import { SOCKET_URL } from "../../lib/auth/api/constants";
+import { JOIN_CONVERSATION, fetchConversations } from "../api/chat";
+import { Conversation, Message } from "../domain.interface";
+import { getAccessToken } from "../api/auth";
+import { useAuth } from "./useAuth";
+import { useUser } from "./useUser";
+import { refreshToken } from "../lib/axios";
+import { SOCKET_URL } from "../api/constants";
 
 type ChatContextProps = {
   conversations: Conversation[];
@@ -63,6 +63,7 @@ export const ChatProvider = ({ children }: any) => {
     () =>
       fetchConversations()
         .then((conversations) => {
+          console.log('in fetch all conversations')
           setConversations(conversations);
           setMessagesByConversation({});
           setError(undefined);
@@ -161,6 +162,7 @@ export const ChatProvider = ({ children }: any) => {
     if (!socket?.connected) {
       // TODO
       fetchConversations().then((conversations) => {
+        console.log('in fetch conversations')
         setConversations(conversations);
         for (const conversation of conversations) {
           requestAllMessages(conversation.id);
@@ -189,7 +191,6 @@ export const ChatProvider = ({ children }: any) => {
           .filter((msg) => !msg.isRead).length || 0;
       return acc;
     }, {} as Record<string, number>);
-    // console.log({ unreadMessagesCountByConversation })
     setUnreadByConversations({
       ...unreadMessagesCountByConversation,
       total: Object.values(unreadMessagesCountByConversation).reduce(
@@ -285,10 +286,13 @@ export const ChatProvider = ({ children }: any) => {
     sendMessage,
     markAsRead,
     messagesByConversation,
+    // TODO
     unreadByConversations,
     loading,
     socket
   };
+
+  console.log({ value })
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };

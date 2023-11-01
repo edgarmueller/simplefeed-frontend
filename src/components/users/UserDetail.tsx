@@ -9,7 +9,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { User } from "../domain.interface";
+import { User } from "../../domain.interface";
 import { BefriendButton } from "./BefriendButton";
 import { UserDetailSmall } from "./UserDetailSmall";
 
@@ -18,9 +18,11 @@ export interface UserDetailProps {
   small?: boolean;
   hasFriendRequest?: boolean;
   isFriend?: boolean;
+  isMyself?: boolean;
 }
 
 export const UserDetail = ({
+  isMyself = false,
   user,
   small = false,
   hasFriendRequest = false,
@@ -33,7 +35,7 @@ export const UserDetail = ({
   }, [user]);
 
   if (small) {
-    return <UserDetailSmall user={user} clickable />;
+    return <UserDetailSmall user={user || undefined} />;
   }
 
   return (
@@ -44,7 +46,7 @@ export const UserDetail = ({
           {userProfile?.username})
         </Heading>
         <Stack direction="row" align="center">
-          <Avatar src={userProfile?.imageUrl} size="xl" />
+          <Avatar name={`${userProfile?.firstName} ${userProfile?.lastName}`} src={userProfile?.imageUrl} size="xl" />
           <Stack direction="row" justify="space-between" w="100%">
             <Stack direction="column">
               <Text pt="2" fontSize="sm">
@@ -56,15 +58,17 @@ export const UserDetail = ({
               <Text pt="2" fontSize="sm">
                 Friends: {userProfile?.friends.length}
               </Text>
-              {userProfile?.mutualFriendsCount ? (
+              {isMyself ? null : userProfile?.mutualFriendsCount ? (
                 <Text pt="2" fontSize="sm">
                   Mutual Friends: {userProfile.mutualFriendsCount}
                 </Text>
               ) : null}
             </Stack>
             <Box>
-              {isFriend ? (
-                <Badge colorScheme="green" variant="outline">Friend</Badge>
+              {isMyself ? null : isFriend ? (
+                <Badge colorScheme="green" variant="outline">
+                  Friend
+                </Badge>
               ) : (
                 <BefriendButton
                   hasFriendRequest={hasFriendRequest}

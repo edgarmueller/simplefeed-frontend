@@ -1,10 +1,10 @@
 import { Box, Text } from "@chakra-ui/react";
-import { Layout } from "../components/Layout";
-import { SearchBar } from "../components/SearchBar";
+import { Layout } from "../components/common/Layout";
+import { SearchBar } from "../components/search/SearchBar";
 import { useState } from "react";
 import { searchUsers } from "../api/search";
-import { UserDetailSmall } from "../components/UserDetailSmall";
 import { List } from "../components/common/List";
+import { UserDetailSmall } from "../components/users/UserDetailSmall";
 
 interface UserSearchResult {
   id: string;
@@ -31,7 +31,7 @@ const SearchPage: React.FC<SearchPageProps> = () => {
         <List 
           elements={searchResults}
           renderElement={(user) => (
-            <UserDetailSmall key={user.id} user={user} asLink />
+            <UserDetailSmall key={user.id} user={user as any} asLink />
           )}
           ifEmpty={<Text>No results</Text>}
         />

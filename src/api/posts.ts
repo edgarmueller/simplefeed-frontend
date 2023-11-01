@@ -1,6 +1,6 @@
 import { Comment, Pagination, Post } from "../domain.interface";
-import { API_URL } from "../lib/auth/api/constants";
 import axios, { createHeaders } from "../lib/axios";
+import { API_URL } from "./constants";
 
 export async function submitPost(post: any) {
   const formData = new FormData();

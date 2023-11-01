@@ -1,7 +1,7 @@
 import axios from 'axios';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
-import { logout, saveAccessToken } from './auth/api/auth';
-import { API_URL } from './auth/api/constants';
+import { logout, saveAccessToken } from '../api/auth';
+import { API_URL } from '../api/constants';
 
 const REFRESH_URL = `${API_URL}/auth/refresh`;
 

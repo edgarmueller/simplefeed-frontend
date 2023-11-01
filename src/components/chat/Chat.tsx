@@ -1,9 +1,9 @@
 import { Box, Button, Highlight, Input, Text, VStack } from "@chakra-ui/react";
 import { last } from "lodash";
 import { useEffect, useState } from "react";
-import { useUser } from "../../lib/auth/hooks/useUser";
+import { useUser } from "../../hooks/useUser";
 import { ScrollableBox } from "./ScrollableBox";
-import { useChat } from "./useChat";
+import { useChat } from "../../hooks/useChat";
 
 export interface ChatProps {
   conversationId: string;

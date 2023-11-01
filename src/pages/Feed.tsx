@@ -1,4 +1,4 @@
-import { Layout } from "../components/Layout";
+import { Layout } from "../components/common/Layout";
 import { Feed } from "../components/posts/Feed";
 
 function FeedPage() {

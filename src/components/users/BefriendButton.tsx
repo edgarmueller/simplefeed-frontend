@@ -1,5 +1,5 @@
 import { Button } from "@chakra-ui/react";
-import { makeFriendRequest } from "../api/friend-requests";
+import { makeFriendRequest } from "../../api/friend-requests";
 import { useState } from "react";
 
 export interface BefriendButtonProps {

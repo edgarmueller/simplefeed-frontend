@@ -1,4 +1,4 @@
-import { Layout } from "../components/Layout";
+import { Layout } from "../components/common/Layout";
 import { UpdateUserForm } from "../components/users/UpdateUserForm";
 
 function SettingsPage() {

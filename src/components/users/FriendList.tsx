@@ -15,7 +15,7 @@ export const FriendList = ({ friends, renderFriend, ifEmpty }: FriendListProps) 
   return (
     <>
       {friends.map((friend) => (
-        <Box mt={2}>
+        <Box key={friend.id} mt={2}>
           <Flex justify={"space-between"} align={"center"}>
             {renderFriend(friend)}
           </Flex>
