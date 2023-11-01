@@ -96,21 +96,6 @@ const CommentItem = memo(
             >
               {showReplyForm ? "Hide" : "Reply"}
             </Button>
-            {showReplyForm ? (
-              <CommentForm
-                postId={postId}
-                path={commentPath}
-                onSubmit={(postedComment: any) => {
-                  onReply &&
-                    onReply({
-                      ...postedComment,
-                      author: postedComment.author,
-                      postId,
-                    });
-                  setShowReplyForm(false);
-                }}
-              />
-            ) : null}
             {page < totalPages ? (
               <Button
                 onClick={() => setPage(page + 1)}
@@ -129,6 +114,21 @@ const CommentItem = memo(
                 Refetch
               </Button>
             )}
+            {showReplyForm ? (
+              <CommentForm
+                postId={postId}
+                path={commentPath}
+                onSubmit={(postedComment: any) => {
+                  onReply &&
+                    onReply({
+                      ...postedComment,
+                      author: postedComment.author,
+                      postId,
+                    });
+                  setShowReplyForm(false);
+                }}
+              />
+            ) : null}
           </Stack>
         </Flex>
       </Box>

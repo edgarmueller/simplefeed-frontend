@@ -13,3 +13,8 @@
   top: 0;
   left: 0;
 }
+
+code {
+  font-size: small;
+  white-space : pre-wrap !important;
+}

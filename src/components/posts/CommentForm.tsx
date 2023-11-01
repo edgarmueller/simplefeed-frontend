@@ -25,9 +25,10 @@ export const CommentForm = ({ postId, path, onSubmit }: CommentProps) => {
     <Stack direction="row" spacing={4} m={2}>
 			<Textarea
 				className="comment"
-				placeholder="Write a comment..."
+				placeholder={`Write a ${(path?.length || 0) > postId.length ? "reply" : "comment"}...`}
 				onChange={(e) => setComment(e.target.value)}
 				value={comment}
+        rows={1}
 			/>
 			<Button type="submit" onClick={handleSubmit}>
 				Comment

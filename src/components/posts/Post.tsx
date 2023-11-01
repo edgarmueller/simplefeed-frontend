@@ -2,17 +2,14 @@ import {
   Avatar,
   Box,
   Button,
-  Collapse,
   Link,
-  Stack,
-  Text,
-  useDisclosure,
+  Stack
 } from "@chakra-ui/react";
 import { uniqBy } from "lodash";
 import isEqual from "lodash/isEqual";
 import { memo, useCallback, useEffect, useState } from "react";
-import { BiLike, BiTrash } from "react-icons/bi";
-import { BsArrowDownCircle, BsArrowUpCircle } from "react-icons/bs";
+import { BiTrash } from "react-icons/bi";
+import Markdown from 'react-markdown';
 import { Link as RouterLink } from "react-router-dom";
 import YouTube from "react-youtube";
 import {
@@ -20,28 +17,18 @@ import {
   buildCommentTree,
   deletePost,
   fetchComments,
-  likePost,
-  unlikePost,
 } from "../../api/posts";
 import { Comment, Post as PostEntity } from "../../domain.interface";
 import { useUser } from "../../lib/auth/hooks/useUser";
 import { formatTimeAgo } from "../../lib/time-ago";
-import { CommentForm } from "./CommentForm";
-import { CommentItem } from "./CommentItem";
-
-const isPostLiked = (post: PostEntity, byUserId: string | undefined) => {
-  return post.likes?.find(({ userId, unliked }) => userId === byUserId && !unliked) !== undefined;
-}
+import { Comments } from "./Comments";
+import { LikeButton } from "./LikeButton";
 
 const Post = memo(({ post }: { post: PostEntity }) => {
   const { user, decrementPostCount } = useUser();
   const [comments, setComments] = useState<Comment[]>();
   const [commentTree, setCommentTree] = useState<CommentNode[]>([]);
-  console.log(post.likes)
-  const [isLiked, setLiked] = useState(isPostLiked(post, user?.id));
-  useEffect(() => { setLiked(isPostLiked(post, user?.id)) }, [post, user]);
   const [isVisible, setVisible] = useState(true);
-  const { isOpen, onToggle } = useDisclosure();
   const fetchReplies = useCallback(
     (p: number = 1, commentId = post.id) => {
       return fetchComments(post.id, p, commentId).then(
@@ -92,7 +79,7 @@ const Post = memo(({ post }: { post: PostEntity }) => {
         <Box marginBottom={4}>{formatTimeAgo(post.createdAt)}</Box>
       </Stack>
       <Box bg="white" padding={2} borderRadius="md" marginBottom={4}>
-        <Text>{post.body}</Text>
+        <Markdown>{post.body}</Markdown>
         {(post.attachments || [])
           .filter((attachment) => attachment.type === "video")
           .map((attachment) => (
@@ -109,74 +96,13 @@ const Post = memo(({ post }: { post: PostEntity }) => {
             <img src={attachment.url} />
           ))}
       </Box>
-      <Stack direction="row" spacing={0} alignItems="center" marginBottom={2}>
-        {isOpen ? (
-          <Button
-            size="sm"
-            variant="link"
-            rightIcon={<BsArrowUpCircle />}
-            onClick={onToggle}
-          >
-            Comments
-          </Button>
-        ) : (
-          <Button
-            size="sm"
-            variant="link"
-            rightIcon={<BsArrowDownCircle />}
-            onClick={() => {
-              onToggle();
-              fetchReplies();
-            }}
-          >
-            Comments
-          </Button>
-        )}
-      </Stack>
-      <Collapse in={isOpen} animateOpacity>
-        <Box bg="white" p={1} borderRadius="md">
-          {commentTree.length > 0 ? (
-            commentTree?.map((comment) => {
-              return (
-                <CommentItem
-                  postId={post.id}
-                  key={comment.comment.id}
-                  commentNode={comment}
-                  fetchReplies={fetchReplies}
-                  onReply={onReply}
-                />
-              );
-            })
-          ) : (
-            <Text>
-              <i>No comments yet</i>
-            </Text>
-          )}
-          <CommentForm
-            postId={post.id}
-            path=""
-            onSubmit={(comment: Comment) => {
-              onReply(comment);
-              fetchReplies();
-            }}
-          />
-        </Box>
-      </Collapse>
-      <Button
-        size="sm"
-        leftIcon={<BiLike />}
-        onClick={async () => {
-          if (isLiked) {
-            await unlikePost(post.id);
-            setLiked(false);
-          } else {
-            await likePost(post.id);
-            setLiked(true);
-          }
-        }}
-      >
-        {isLiked ? "Unlike" : "Like"}
-      </Button>
+      <Comments 
+        commentTree={commentTree}
+        postId={post.id}
+        onReply={onReply}
+        fetchReplies={fetchReplies}
+      />
+      <LikeButton post={post} userId={user?.id}/> 
       {post.author.id === user?.id && (
         <Button
           size="sm"
