@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { Socket, io } from "socket.io-client";
@@ -14,17 +15,39 @@ import { useAuth } from "./useAuth";
 import { useUser } from "./useUser";
 import { refreshToken } from "../lib/axios";
 import { SOCKET_URL } from "../api/constants";
+import { sortBy } from "lodash";
+
+export const groupUnreadMessagesByConversations = (
+  userId: string,
+  messagesByConversation: { [conversationId: string]: Message[] }
+): any => {
+  const unreadMessagesCountByConversation = Object.entries(
+    messagesByConversation
+  ).reduce((acc, [convId, messages]) => {
+    acc[convId] =
+      messages
+        ?.filter((msg) => msg.authorId !== userId)
+        .filter((msg) => !msg.isRead).length || 0;
+    return acc;
+  }, {} as Record<string, number>);
+
+  return {
+    ...unreadMessagesCountByConversation,
+    total: Object.values(unreadMessagesCountByConversation).reduce(
+      (acc: number, count: number) => acc + count,
+      0
+    ),
+  };
+};
 
 type ChatContextProps = {
   conversations: Conversation[];
-  unreadByConversations: any;
   fetchConversations(): Promise<Conversation[]>;
   hasError: boolean;
   error: string | undefined;
   joinConversation(conversationId: string): void;
   sendMessage(conversationId: string, msg: string): void;
   requestMessages(conversationId: string, page: number): void;
-  requestAllMessages(conversationId: string): void;
   markAsRead(conversationId: string, msg: Message[]): void;
   messagesByConversation: { [conversationId: string]: Message[] };
   loading: boolean;
@@ -32,14 +55,12 @@ type ChatContextProps = {
 
 const ChatContext = createContext<ChatContextProps>({
   conversations: [],
-  unreadByConversations: {},
   hasError: false,
   error: undefined,
   fetchConversations: async () => [],
   joinConversation: (id) => {},
   sendMessage: () => {},
   requestMessages: () => {},
-  requestAllMessages: () => {},
   markAsRead: () => {},
   messagesByConversation: {},
   loading: false,
@@ -51,9 +72,6 @@ export const ChatProvider = ({ children }: any) => {
   const [socket, setSocket] = useState<Socket>();
   const [loading, setLoading] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [unreadByConversations, setUnreadByConversations] = useState<any>({
-    total: 0,
-  });
   const [error, setError] = useState();
   const [messagesByConversation, setMessagesByConversation] = useState<{
     [conversationId: string]: Message[];
@@ -63,9 +81,14 @@ export const ChatProvider = ({ children }: any) => {
     () =>
       fetchConversations()
         .then((conversations) => {
-          console.log('in fetch all conversations')
+          console.log("fetchAllConversations");
           setConversations(conversations);
-          setMessagesByConversation({});
+          const messagesByConversationId = Object.keys(conversations).reduce((acc, convId, idx) => {
+            const conversation = conversations[idx];
+            acc[conversation.id] = conversation.messages;
+            return acc;
+          }, {} as { [conversationId: string]: Message[] })
+          setMessagesByConversation(messagesByConversationId);
           setError(undefined);
           return conversations;
         })
@@ -96,25 +119,17 @@ export const ChatProvider = ({ children }: any) => {
 
   const requestMessages = useCallback(
     async (conversationId: string, page: number) => {
+      console.log("requestingMessages for page", page)
       socket?.emit("request_messages", {
         conversationId,
         page,
         auth: await validateToken(),
       });
-      setLoading(true);
+      // setLoading(true);
     },
     [socket, validateToken]
   );
 
-  const requestAllMessages = useCallback(
-    async (conversationId: string) => {
-      socket?.emit("request_all_messages", {
-        conversationId,
-        auth: await validateToken(),
-      });
-    },
-    [socket, validateToken]
-  );
   const markAsRead = useCallback(
     async (conversationId: string, messages: Message[]) => {
       if (messages?.length === 0) return;
@@ -158,19 +173,6 @@ export const ChatProvider = ({ children }: any) => {
     refreshToken();
   }, []);
 
-  useEffect(() => {
-    if (!socket?.connected) {
-      // TODO
-      fetchConversations().then((conversations) => {
-        console.log('in fetch conversations')
-        setConversations(conversations);
-        for (const conversation of conversations) {
-          requestAllMessages(conversation.id);
-        }
-      });
-    }
-  }, [socket, requestAllMessages]);
-
   const joinConversation = useCallback(
     async (conversationId: string) => {
       socket?.emit(JOIN_CONVERSATION, {
@@ -180,25 +182,6 @@ export const ChatProvider = ({ children }: any) => {
     },
     [socket, validateToken]
   );
-
-  useEffect(() => {
-    const unreadMessagesCountByConversation = Object.entries(
-      messagesByConversation
-    ).reduce((acc, [convId, messages]) => {
-      acc[convId] =
-        messages
-          ?.filter((msg) => msg.authorId !== user?.id)
-          .filter((msg) => !msg.isRead).length || 0;
-      return acc;
-    }, {} as Record<string, number>);
-    setUnreadByConversations({
-      ...unreadMessagesCountByConversation,
-      total: Object.values(unreadMessagesCountByConversation).reduce(
-        (acc: number, count: number) => acc + count,
-        0
-      ),
-    });
-  }, [messagesByConversation, user?.id]);
 
   useEffect(() => {
     if (!token) {
@@ -240,11 +223,11 @@ export const ChatProvider = ({ children }: any) => {
 
     function onNewMessages(conv: Conversation) {
       const conversationId = conv.id;
-      setLoading(false);
+      // setLoading(false);
       setMessagesByConversation((prev) => {
         return {
           ...prev,
-          [conversationId]: [...prev[conversationId], ...conv.messages],
+          [conversationId]: sortBy(prev[conversationId].concat(conv.messages), a => a.createdAt).reverse(),
         };
       });
     }
@@ -275,24 +258,32 @@ export const ChatProvider = ({ children }: any) => {
   }, [token]);
 
   // --
-  const value = {
-    conversations,
-    hasError: error !== undefined,
-    error,
-    fetchConversations: fetchAllConversations,
-    joinConversation,
-    requestMessages,
-    requestAllMessages,
-    sendMessage,
-    markAsRead,
-    messagesByConversation,
-    // TODO
-    unreadByConversations,
-    loading,
-    socket
-  };
-
-  console.log({ value })
+  const value = useMemo(
+    () => ({
+      conversations,
+      hasError: error !== undefined,
+      error,
+      fetchConversations: fetchAllConversations,
+      joinConversation,
+      requestMessages,
+      sendMessage,
+      markAsRead,
+      messagesByConversation,
+      // TODO
+      loading,
+    }),
+    [
+      conversations,
+      error,
+      fetchAllConversations,
+      joinConversation,
+      requestMessages,
+      sendMessage,
+      markAsRead,
+      messagesByConversation,
+      loading,
+    ]
+  );
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };

@@ -25,22 +25,19 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
   const {
     markAsRead,
     sendMessage,
-    requestAllMessages,
     requestMessages,
     messagesByConversation,
     loading
   } = useChat();
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const { user } = useUser();
   const [inputValue, setInputValue] = useState("");
   useEffect(() => {
-    if (conversationId) {
-      requestAllMessages(conversationId);
-    }
-  }, [conversationId, requestAllMessages]);
+    requestMessages(conversationId, page);
+  }, [page, requestMessages, conversationId])
 
+  // TODO: fix this
   let ref: any = undefined;
-
   useEffect(() => {
     const lastElement = ref?.current?.lastElementChild.lastElementChild.firstElementChild
     // only scroll to bottom on our own messages
@@ -68,7 +65,6 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
           overflowY="auto"
           data={messagesByConversation[conversationId]}
           onScrollToTop={() => {
-            requestMessages(conversationId, page + 1);
             setPage(page + 1);
           }}
           onScrollToBottom={() => {

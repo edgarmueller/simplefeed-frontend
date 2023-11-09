@@ -7,12 +7,14 @@ import { useAuth } from "../../hooks/useAuth";
 import { useUser } from "../../hooks/useUser";
 import { Logo } from "./Logo";
 import { UserDetail } from "../users/UserDetail";
-import { useChat } from "../../hooks/useChat";
+import { groupUnreadMessagesByConversations, useChat } from "../../hooks/useChat";
 import { useNotifications } from "../../hooks/useNotifications";
 
 export const Layout = ({ children }: any) => {
   const { user, hasError, error } = useUser();
-  const { unreadByConversations: { total: unreadCount } } = useChat()
+  const { messagesByConversation } = useChat()
+  const unreadByConversations = groupUnreadMessagesByConversations(user?.id!, messagesByConversation)
+  const unreadCount = unreadByConversations?.total || 0
   const { notifications } = useNotifications();
   const unreadNotifications = notifications.filter(n => !n.viewed)
   const { logout } = useAuth();
