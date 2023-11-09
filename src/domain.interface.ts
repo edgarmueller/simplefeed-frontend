@@ -16,7 +16,7 @@ export interface User {
 
 export interface Conversation {
 	id: string
-	participantIds: string[]
+	userIds: string[]
 	messages: Message[]
 }
 

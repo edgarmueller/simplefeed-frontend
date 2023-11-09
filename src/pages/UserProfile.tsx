@@ -42,7 +42,7 @@ const UserProfile = () => {
   const [friendRequestSent, setFriendRequestSent] = useState<boolean>(false);
   const { conversations } = useChat();
    const conversationId = conversations?.find((conversation) =>
-     conversation.participantIds?.some(
+     conversation.userIds?.some(
        (participantId) => participantId === user?.id
      )
    )?.id;

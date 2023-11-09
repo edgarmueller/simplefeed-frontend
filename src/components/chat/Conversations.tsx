@@ -2,15 +2,17 @@ import { Badge, Box, Card, CardBody, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { Conversation } from "../../domain.interface";
 import { useUser } from "../../hooks/useUser";
-import { useChat } from "../../hooks/useChat";
+import { groupUnreadMessagesByConversations, useChat } from "../../hooks/useChat";
 import { UserDetailSmall } from "../users/UserDetailSmall";
 
 export const Conversations = () => {
   const navigate = useNavigate();
-  const { conversations, unreadByConversations } = useChat();
+  const { conversations, messagesByConversation } = useChat();
   const { user } = useUser();
-  const lookupUserById = (participantIds: string[]) =>
-    user?.friends.find((friend) => participantIds.includes(friend.id));
+  const unreadByConversations = groupUnreadMessagesByConversations(user?.id!, messagesByConversation);
+  const lookupUserById = (participantIds: string[]) => {
+    return user?.friends.find((friend) => participantIds.includes(friend.id));
+  }
   const mostRecentMessage = (conversation: Conversation) =>
     conversation.messages[conversation.messages.length - 1];
   const mostRecentMessageAuthor = (conversation: Conversation) => {
@@ -33,13 +35,13 @@ export const Conversations = () => {
             onClick={() => {
               navigate(
                 `/users/${
-                  lookupUserById(conversation.participantIds)?.username
+                  lookupUserById(conversation.userIds)?.username
                 }/chat`
               );
             }}
           >
               <UserDetailSmall
-                user={lookupUserById(conversation.participantIds)}
+                user={lookupUserById(conversation.userIds)}
                 bold
                 asLink={false}
               />

@@ -36,12 +36,12 @@ export const ReceivedFriendRequests = () => {
                     const conversations = await fetchConversations();
                     const conversation = conversations.find(
                       (conversation) =>
-                        conversation.participantIds.includes(user?.id || "") &&
-                        conversation.participantIds.includes(
+                        conversation.userIds.includes(user?.id || "") &&
+                        conversation.userIds.includes(
                           friendRequest.from.id
                         )
                     );
-                    console.log('joining convo', conversation)
+                    console.log('Joining convo', conversation)
                     if (!conversation) {
                       return;
                     }
