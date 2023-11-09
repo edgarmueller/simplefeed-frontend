@@ -46,16 +46,11 @@ const UserProfile = () => {
        (participantId) => participantId === user?.id
      )
    )?.id;
-  const [tabIndex, setTabIndex] = useState(0);
+  // const [tabIndex, setTabIndex] = useState(0);
   const userId = user?.id;
   const isFriend =
     isMyProfile || !!myself?.friends?.find(({ id }) => id === user?.id)
 
-  useEffect(() => {
-    if (tabIndex == 2) {
-      // TODO load conversatins
-    }
-  }, [tabIndex])
   useEffect(() => {
     if (!isMyProfile) {
       getSentFriendRequests().then((friendRequests) => {
@@ -79,7 +74,7 @@ const UserProfile = () => {
         marginTop={4}
         colorScheme="blackAlpha"
         defaultIndex={showChat ? 2 : 0}
-        onChange={(index) => setTabIndex(index)}
+        onChange={(index) => { /* setTabIndex(index) */ }}
       >
         <TabList>
           <Tab>Posts</Tab>

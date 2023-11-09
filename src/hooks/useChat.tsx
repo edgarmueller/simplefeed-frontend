@@ -164,13 +164,10 @@ export const ChatProvider = ({ children }: any) => {
   );
 
   useEffect(() => {
-    if (token) {
+    validateToken().then(() => {
       fetchAllConversations();
-    }
-  }, [token, fetchAllConversations]);
-
-  useEffect(() => {
-    refreshToken();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const joinConversation = useCallback(

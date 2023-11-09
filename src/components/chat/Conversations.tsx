@@ -4,6 +4,7 @@ import { Conversation } from "../../domain.interface";
 import { useUser } from "../../hooks/useUser";
 import { groupUnreadMessagesByConversations, useChat } from "../../hooks/useChat";
 import { UserDetailSmall } from "../users/UserDetailSmall";
+import { sortBy } from "lodash";
 
 export const Conversations = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export const Conversations = () => {
     return user?.friends.find((friend) => participantIds.includes(friend.id));
   }
   const mostRecentMessage = (conversation: Conversation) =>
-    conversation.messages[conversation.messages.length - 1];
+    sortBy(conversation.messages, a => a.createdAt)[conversation.messages.length - 1]
   const mostRecentMessageAuthor = (conversation: Conversation) => {
     const msg = mostRecentMessage(conversation);
     if (msg) {

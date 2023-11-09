@@ -17,6 +17,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css'
 import { SignUp } from './components/auth/SignUp';
 import { SignIn } from './components/auth/SignIn';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -47,6 +48,7 @@ root.render(
     <ChakraProvider>
       <RouterProvider router={router} />
     </ChakraProvider>
+    <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>
 );
 
