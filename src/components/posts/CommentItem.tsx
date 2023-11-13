@@ -2,8 +2,8 @@ import { Avatar, Box, Button, Flex, Stack, Text } from "@chakra-ui/react";
 import { memo, useEffect, useState } from "react";
 import { CommentNode } from "../../api/posts";
 import { Comment, Pagination } from "../../domain.interface";
-import { CommentForm } from "./CommentForm";
 import { formatTimeAgo } from "../../lib/time-ago";
+import { CommentForm } from "./CommentForm";
 
 export interface CommentItemProps {
   postId: string;
@@ -11,12 +11,32 @@ export interface CommentItemProps {
   path?: string;
   level?: number;
   initialPage?: number;
+  initialTotalItems?: number;
   fetchReplies?: (
     page: number,
     commentId: string
   ) => Promise<Pagination<Comment>>;
   onReply?: (comment: Comment) => void;
   onRepliesFetched?: (page: Pagination<Comment>) => void;
+}
+
+type LoadedItemsProps = {
+  loaded: boolean;
+  totalItems: number;
+  unloadedItems: number;
+  loadedItems: number;
+}
+
+function LoadedItems({ loaded, totalItems, unloadedItems, loadedItems }: LoadedItemsProps) {
+  if (totalItems === 0 && loaded) {
+    return <></>
+  } else if (totalItems > 0) {
+    if (loadedItems === totalItems) {
+      return <>{loadedItems} out of {totalItems} loaded</>
+    }
+    return <>{unloadedItems} left. ({loadedItems} out of {totalItems} loaded)</>
+  }
+  return <>Load more replies</>
 }
 
 const CommentItem = memo(
@@ -30,27 +50,30 @@ const CommentItem = memo(
     level = 0,
     initialPage = 0,
   }: CommentItemProps) => {
-    const [page, setPage] = useState(initialPage);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalItems, setTotalItems] = useState(0);
-    const [showReplyForm, setShowReplyForm] = useState(false);
-    const commentPath = `${path ? `${path}/` : ""}${commentNode.comment.id}`;
-    const onRepliesFetchedDefault = (page: Pagination<Comment>) => {
-      setTotalItems(totalItems => totalItems - page.items.length)
-    };
+    const [loaded, setLoaded] = useState(false)
+    const [page, setPage] = useState(initialPage)
+    const [totalPages, setTotalPages] = useState(1)
+    const [totalItems, setTotalItems] = useState(0)
+    const [showReplyForm, setShowReplyForm] = useState(false)
+    const commentPath = `${path ? `${path}.` : ""}${commentNode.comment.id}`
+    const loadedItems = commentNode.children.length
+    const unloadedItems = totalItems - loadedItems
+
     useEffect(() => {
+      if (page > totalPages) {
+        return;
+      }
       if (page > 0) {
         fetchReplies &&
           fetchReplies(page, commentNode.comment.id).then(
             (resp: Pagination<Comment>) => {
-              setTotalPages(resp.meta.totalPages);
-              setTotalItems(resp.meta.totalItems);
-              onRepliesFetched ? onRepliesFetched(resp) : onRepliesFetchedDefault(resp);
+              setTotalPages(resp.meta.totalPages)
+              setTotalItems(resp.meta.totalItems)
+              onRepliesFetched && onRepliesFetched(resp)
             }
           );
       }
-    }, [page, fetchReplies, commentNode.comment.id]);
-    // recursively render children nodes
+    }, [page, fetchReplies, commentNode.comment.id, totalPages]);
 
     return (
       <Box
@@ -85,7 +108,7 @@ const CommentItem = memo(
               path={commentPath}
               fetchReplies={fetchReplies}
               onReply={onReply}
-              onRepliesFetched={onRepliesFetched || onRepliesFetchedDefault}
+              onRepliesFetched={onRepliesFetched}
             />
           ))}
           <Stack direction="row" spacing={4} align="center">
@@ -96,24 +119,16 @@ const CommentItem = memo(
             >
               {showReplyForm ? "Hide" : "Reply"}
             </Button>
-            {page < totalPages ? (
-              <Button
-                onClick={() => setPage(page + 1)}
-                size="xs"
-                variant="link"
-              >
-                {/* TODO: hard coded pag limit */}
-                {totalItems > 0 ? `Show ${totalItems - page * 3} more replies` : 'Load more replies'}
-              </Button>
-            ) : (
-              <Button
-                onClick={() => fetchReplies && fetchReplies(page, commentNode.comment.id)}
-                size="xs"
-                variant="link"
-              >
-                Refetch
-              </Button>
-            )}
+            <Button
+              onClick={() => {
+                setLoaded(true)
+                setPage(page + 1)
+              }}
+              size="xs"
+              variant="link"
+            >
+              <LoadedItems loaded={loaded} totalItems={totalItems} unloadedItems={unloadedItems} loadedItems={loadedItems} />
+            </Button>
             {showReplyForm ? (
               <CommentForm
                 postId={postId}
