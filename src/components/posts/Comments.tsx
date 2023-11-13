@@ -1,16 +1,17 @@
 import { Box, Button, Collapse, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import { BsArrowDownCircle, BsArrowUpCircle } from "react-icons/bs";
 // TODO
-import { CommentNode } from "../../api/posts";
+import { COMMENTS_FETCH_LIMIT, CommentNode } from "../../api/posts";
 import { CommentItem } from "./CommentItem";
 import { CommentForm } from "./CommentForm";
 import { Comment, Pagination } from "../../domain.interface";
+import { useEffect, useState } from "react";
 
 export interface CommentProps {
   commentTree: CommentNode[];
   postId: string;
   onReply: (comment: Comment) => void;
-  fetchReplies: (
+  fetchComments: (
     page: number,
     commentId: string
   ) => Promise<Pagination<Comment>>;
@@ -19,10 +20,23 @@ export interface CommentProps {
 export const Comments = ({
   commentTree,
   postId,
-  fetchReplies,
+  fetchComments,
   onReply,
 }: CommentProps) => {
-  const { isOpen, onToggle } = useDisclosure();
+  const [page, setPage] = useState(0);
+  const [loadedItems, setLoadedItems] = useState<number>(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const { isOpen, onToggle } = useDisclosure()
+  useEffect(() => {
+    async function fetch() {
+      if (page > 0) {
+        const fetchedPaged = await fetchComments(page, postId);
+        setTotalItems(fetchedPaged.meta.totalItems);
+        setLoadedItems(loadedItems => loadedItems + fetchedPaged.items.length)
+      }
+    }
+    fetch()
+  }, [page, postId])
   return (
     <>
       <Stack direction="row" spacing={0} alignItems="center" marginBottom={2}>
@@ -40,9 +54,9 @@ export const Comments = ({
             size="sm"
             variant="link"
             rightIcon={<BsArrowDownCircle />}
-            onClick={() => {
+            onClick={async () => {
               onToggle();
-              fetchReplies(1, postId);
+              setPage(1 )
             }}
           >
             Comments
@@ -58,7 +72,7 @@ export const Comments = ({
                   postId={postId}
                   key={comment.comment.id}
                   commentNode={comment}
-                  fetchReplies={fetchReplies}
+                  fetchReplies={fetchComments}
                   onReply={onReply}
                 />
               );
@@ -68,12 +82,22 @@ export const Comments = ({
               <i>No comments yet</i>
             </Text>
           )}
+            <Button
+              onClick={() => {
+                setPage(page + 1)
+              }}
+              size="xs"
+              variant="link"
+            >
+              {/* TODO: hard coded pag limit */}
+              {totalItems > 0 ? `${loadedItems} out of ${totalItems} loaded` : 'Load more replies'}
+            </Button>
           <CommentForm
             postId={postId}
             path=""
             onSubmit={(comment: Comment) => {
               onReply(comment);
-              fetchReplies(1, postId);
+              fetchComments(1, postId);
             }}
           />
         </Box>
