@@ -168,7 +168,7 @@ export const ChatProvider = ({ children }: any) => {
       fetchAllConversations();
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user?.id]);
 
   const joinConversation = useCallback(
     async (conversationId: string) => {

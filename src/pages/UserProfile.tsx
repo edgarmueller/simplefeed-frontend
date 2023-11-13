@@ -59,8 +59,6 @@ const UserProfile = () => {
     }
   }, [isMyProfile, userId]);
 
-  console.log({ friends: user.friends  })
-
   return (
     <Layout>
       <UserDetail

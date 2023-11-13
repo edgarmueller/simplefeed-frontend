@@ -23,7 +23,7 @@ export const NotificationProvider = ({ children }: any) => {
   const { fetchReceivedFriendRequests, fetchSentFriendRequests } = useFriends();
   const { joinConversation, fetchConversations } = useChat()
   const [socket, setSocket] = useState<Socket>();
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isConnecting, setIsConnecting] = useState(false)
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export const NotificationProvider = ({ children }: any) => {
     });
     setSocket(socket);
 
-    function onAllNotifications(notifications: any) {
+    function onAllNotifications(notifications: Notification[]) {
       setNotifications(notifications);
     }
 
