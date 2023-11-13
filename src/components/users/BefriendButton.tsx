@@ -1,6 +1,7 @@
 import { Button } from "@chakra-ui/react";
-import { makeFriendRequest } from "../../api/friend-requests";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import { makeFriendRequest as makeFriendRequestApi } from "../../api/friend-requests";
 
 export interface BefriendButtonProps {
   username: string;
@@ -12,6 +13,10 @@ export const BefriendButton = ({
   hasFriendRequest,
 }: BefriendButtonProps) => {
 	const [friendRequestSent, setFriendRequestSent] = useState<boolean>(hasFriendRequest);
+  const makeFriendRequest = useMutation({
+    mutationFn: (username: string) => makeFriendRequestApi(username)
+  }) 
+
   if (hasFriendRequest || friendRequestSent) {
     return (
       <Button variant="outline" size="sm" isDisabled>
@@ -19,13 +24,14 @@ export const BefriendButton = ({
       </Button>
     );
   }
+
   return (
     <>
       <Button
         variant="outline"
         size="sm"
         onClick={async () => {
-					await makeFriendRequest(username)
+					await makeFriendRequest.mutate(username)
 					setFriendRequestSent(true)
 				}}>
         Befriend
