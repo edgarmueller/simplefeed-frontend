@@ -10,17 +10,3 @@ export async function fetchUserProfile(username: string): Promise<any> {
   });
   return res.data;
 }
-
-export async function followProfile(username: string) {
-  const res = await axios.post(`${API_URL}/profiles/${username}/follow`, {
-    headers: createHeaders(),
-  });
-  return res.data;
-}
-
-export async function unfollowProfile(username: string) {
-  const res = await axios.delete(`${API_URL}/profiles/${username}/follow`, {
-    headers: createHeaders(),
-  });
-  return res.data;
-}
