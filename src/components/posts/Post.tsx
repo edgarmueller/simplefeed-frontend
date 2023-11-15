@@ -6,12 +6,12 @@ import {
   Stack
 } from "@chakra-ui/react";
 import { uniqBy } from "lodash";
-import isEqual from "lodash/isEqual";
 import { memo, useCallback, useEffect, useState } from "react";
 import { BiTrash } from "react-icons/bi";
 import Markdown from 'react-markdown';
 import { Link as RouterLink } from "react-router-dom";
 import YouTube from "react-youtube";
+import { isEqual } from "lodash";
 import {
   CommentNode,
   buildCommentTree,
@@ -64,7 +64,7 @@ function PostHeader({ createdAt, author, postedTo }: PostHeaderProps) {
 }
 
 const Post = memo(({ post }: { post: PostEntity }) => {
-  const { user, decrementPostCount } = useUser();
+  const { user, setUser } = useUser();
   const [comments, setComments] = useState<Pagination<Comment>>({
     items: [],
     meta: {
@@ -100,51 +100,51 @@ const Post = memo(({ post }: { post: PostEntity }) => {
   }, [comments, commentTree]);
   const onReply = useCallback((comment: Comment) => {
     setComments((prevComments) => ({ ...prevComments, items: [...(prevComments.items || []), comment] }));
-}, []);
+  }, []);
 
-return isVisible ? (
-  <Box key={post.id} bg="gray.100" p={3} borderRadius="md" marginBottom={3}>
-    <PostHeader author={post.author} postedTo={post.postedTo} createdAt={post.createdAt} />
-    <Box bg="white" padding={2} borderRadius="md" marginBottom={4}>
-      <Markdown>{post.body}</Markdown>
-      {(post.attachments || [])
-        .filter((attachment) => attachment.type === "video")
-        .map((attachment) => (
-          <YouTube
-            className="youtubeContainer"
-            videoId={attachment.url
-              ?.split("&")[0]
-              .substring(attachment.url.indexOf("v=") + 2)}
-          />
-        ))}
-      {(post.attachments || [])
-        .filter((attachment) => attachment.type === "image")
-        .map((attachment) => (
-          <img src={attachment.url} />
-        ))}
+  return isVisible ? (
+    <Box key={post.id} bg="gray.100" p={3} borderRadius="md" marginBottom={3}>
+      <PostHeader author={post.author} postedTo={post.postedTo} createdAt={post.createdAt} />
+      <Box bg="white" padding={2} borderRadius="md" marginBottom={4}>
+        <Markdown>{post.body}</Markdown>
+        {(post.attachments || [])
+          .filter((attachment) => attachment.type === "video")
+          .map((attachment) => (
+            <YouTube
+              className="youtubeContainer"
+              videoId={attachment.url
+                ?.split("&")[0]
+                .substring(attachment.url.indexOf("v=") + 2)}
+            />
+          ))}
+        {(post.attachments || [])
+          .filter((attachment) => attachment.type === "image")
+          .map((attachment) => (
+            <img src={attachment.url} />
+          ))}
+      </Box>
+      <Comments
+        commentTree={commentTree}
+        postId={post.id}
+        onReply={onReply}
+        fetchComments={fetchComments}
+      />
+      <LikeButton post={post} userId={user?.id} />
+      {post.author.id === user?.id && (
+        <Button
+          size="sm"
+          leftIcon={<BiTrash />}
+          onClick={async () => {
+            await deletePost(post.id);
+            setVisible(false);
+            setUser({ ...user, nrOfPosts: user.nrOfPosts - 1 });
+          }}
+        >
+          Delete
+        </Button>
+      )}
     </Box>
-    <Comments
-      commentTree={commentTree}
-      postId={post.id}
-      onReply={onReply}
-      fetchComments={fetchComments}
-    />
-    <LikeButton post={post} userId={user?.id} />
-    {post.author.id === user?.id && (
-      <Button
-        size="sm"
-        leftIcon={<BiTrash />}
-        onClick={async () => {
-          await deletePost(post.id);
-          setVisible(false);
-          decrementPostCount();
-        }}
-      >
-        Delete
-      </Button>
-    )}
-  </Box>
-) : null;
-});
+  ) : null;
+}, isEqual);
 Post.displayName = "Post";
 export { Post };
