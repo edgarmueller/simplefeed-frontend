@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { Layout } from "../components/common/Layout";
 import { useNotifications } from "../hooks/useNotifications";
 
-const Notifications = () => {
+const NotificationsPage = () => {
   const { notifications, markAsRead } = useNotifications();
   const unreadNotificatons = notifications?.filter((n) => !n.viewed);
   return (
@@ -59,4 +59,4 @@ const Notifications = () => {
   );
 };
 
-export default Notifications;
+export default NotificationsPage;

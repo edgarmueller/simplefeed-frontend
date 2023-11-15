@@ -5,14 +5,14 @@ import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } 
 import { Friends } from './components/users/Friends';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { AuthOutlet } from './components/auth/AuthOutlet';
-import Feed from './pages/Feed';
-import UserProfile, { loader as userLoader } from './pages/UserProfile';
+import Feed from './pages/FeedPage';
+import UserProfile, { loader as userLoader } from './pages/UserProfilePage';
 import reportWebVitals from './reportWebVitals';
-import Settings from './pages/Settings';
-import Chat from './pages/Chat';
-import Search from './pages/Search';
-import Notifications from './pages/Notifications';
-import Post from './pages/Post';
+import Settings from './pages/SettingsPage';
+import Chat from './pages/ChatPage';
+import Search from './pages/SearchPage';
+import NotificationsPage from './pages/NotificationsPage';
+import Post from './pages/PostPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css'
 import { SignUp } from './components/auth/SignUp';
@@ -32,7 +32,7 @@ const router = createBrowserRouter(
       <Route path='/sign-in' element={<SignIn />} />
       <Route path='/friends' element={<ProtectedRoute><Friends /></ProtectedRoute>} />
       <Route path='/chat' element={<ProtectedRoute><Chat/></ProtectedRoute>} />
-      <Route path='/notifications' element={<ProtectedRoute><Notifications/></ProtectedRoute>} />
+      <Route path='/notifications' element={<ProtectedRoute><NotificationsPage/></ProtectedRoute>} />
       <Route path='/posts/:id' element={<ProtectedRoute><Post/></ProtectedRoute>} />
     </Route>
   )

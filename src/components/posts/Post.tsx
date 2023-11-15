@@ -101,7 +101,7 @@ const Post = memo(({ post }: { post: PostEntity }) => {
   const onReply = useCallback((comment: Comment) => {
     setComments((prevComments) => ({ ...prevComments, items: [...(prevComments.items || []), comment] }));
 }, []);
-console.log({ post })
+
 return isVisible ? (
   <Box key={post.id} bg="gray.100" p={3} borderRadius="md" marginBottom={3}>
     <PostHeader author={post.author} postedTo={post.postedTo} createdAt={post.createdAt} />
