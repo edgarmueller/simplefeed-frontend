@@ -46,7 +46,7 @@ export const FileInput = (props: InputProps) => {
 };
 
 export const UpdateUserForm = () => {
-  const { user, setUser, hasError } = useUser();
+  const { user, setUser } = useUser();
   const [userInfo, setUserInfo] = useState({
     email: user?.email || "",
     firstName: user?.firstName || "",
@@ -99,7 +99,6 @@ export const UpdateUserForm = () => {
       const me = await updateUserInfo(user!.id, { email, firstName, lastName, image, password });
       setSubmitted(true);
       setErrors([]);
-      console.log({ me })
       setUser({
         ...user,
         ...me

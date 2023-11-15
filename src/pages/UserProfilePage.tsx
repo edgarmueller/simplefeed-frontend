@@ -33,11 +33,9 @@ const UserProfile = () => {
   const params = useParams();
   const location = useLocation();
   const showChat = location.pathname.includes("/chat");
-  const { user: myself, incrementPostCount } = useUser();
+  const { user: myself, setUser: setMyUser } = useUser();
   const isMyProfile = params.username === myself?.username;
   const user = useLoaderData() as User;
-  // const [isFriend, setIsFriend] = useState(false);
-  // const [userId, setUserId] = useState("");
   const queryClient = useQueryClient();
   const [friendRequestSent, setFriendRequestSent] = useState<boolean>(false);
   const { conversations } = useChat();
@@ -46,7 +44,6 @@ const UserProfile = () => {
        (participantId) => participantId === user?.id
      )
    )?.id;
-  // const [tabIndex, setTabIndex] = useState(0);
   const userId = user?.id;
   const isFriend =
     isMyProfile || !!myself?.friends?.find(({ id }) => id === user?.id)
@@ -63,7 +60,7 @@ const UserProfile = () => {
     <Layout>
       <UserDetail
         isMyself={isMyProfile}
-        user={user}
+        user={isMyProfile ? myself : user}
         isFriend={isFriend}
         hasFriendRequest={friendRequestSent}
       />
@@ -83,12 +80,12 @@ const UserProfile = () => {
           <TabPanel>
             <SubmitForm
               onSubmit={async () => {
-                incrementPostCount();
-                await queryClient.invalidateQueries([
+                setMyUser({ ...user, nrOfPosts: user.nrOfPosts + 1 });
+                await queryClient.refetchQueries([
                   "posts",
                   "infinite",
                   userId,
-                ]);
+                ])
               }}
               postTo={userId}
             />

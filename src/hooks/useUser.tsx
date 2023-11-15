@@ -1,8 +1,8 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { isEqual } from "lodash";
 import { me } from "../api/user";
 import { User } from "../domain.interface";
 import { useAuth } from "./useAuth";
-import _ from "lodash";
 
 type UserContextProps = {
   user: User | null;
@@ -10,19 +10,14 @@ type UserContextProps = {
   hasError: boolean;
   error: string | undefined;
   refresh: () => Promise<void>;
-  // TODO: remove these
-  incrementPostCount: () => void;
-  decrementPostCount: () => void;
 };
 
 const UserContext = createContext<UserContextProps>({
   user: null,
-  setUser: () => {},
+  setUser: (updatedUser: User) => { },
   hasError: false,
   error: undefined,
-  refresh: async () => {},
-  incrementPostCount: () => {},
-  decrementPostCount: () => {},
+  refresh: async () => { },
 });
 
 export const UserProvider = ({ children }: any) => {
@@ -33,22 +28,26 @@ export const UserProvider = ({ children }: any) => {
     if (token) {
       me()
         .then((me) => {
-          setUser(me);
-          setError(undefined);
+          if (!isEqual(user, me)) {
+            setUser(me);
+          }
+          if (error !== undefined) {
+            setError(undefined);
+          }
         })
         .catch((error) => {
           setError(error.message);
         });
     }
-  }, [token]);
-  const refresh = () => me()
+  }, [token, user, error]);
+  const refresh = useCallback(() => me()
     .then((me) => {
       setUser(me);
       setError(undefined);
     })
     .catch((error) => {
       setError(error.message);
-    });
+    }), []);
   const value = useMemo(
     () => ({
       user,
@@ -56,30 +55,8 @@ export const UserProvider = ({ children }: any) => {
       refresh,
       hasError: error !== undefined,
       error,
-      incrementPostCount: () => {
-        setUser((prevUser) => {
-          if (prevUser) {
-            return {
-              ...prevUser,
-              nrOfPosts: prevUser.nrOfPosts + 1,
-            };
-          }
-          return prevUser;
-        });
-      },
-      decrementPostCount: () => {
-        setUser((prevUser) => {
-          if (prevUser) {
-            return {
-              ...prevUser,
-              nrOfPosts: prevUser.nrOfPosts - 1,
-            };
-          }
-          return prevUser;
-        });
-      },
     }),
-    [user, error]
+    [user, error, refresh]
   );
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

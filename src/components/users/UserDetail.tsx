@@ -8,7 +8,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
 import { User } from "../../domain.interface";
 import { BefriendButton } from "./BefriendButton";
 import { UserDetailSmall } from "./UserDetailSmall";
@@ -23,19 +22,14 @@ export interface UserDetailProps {
 
 export const UserDetail = ({
   isMyself = false,
-  user,
+  user: userProfile,
   small = false,
   hasFriendRequest = false,
   isFriend = false,
 }: UserDetailProps) => {
-  const [userProfile, setUserProfile] = useState<User | null>(user || null);
-
-  useEffect(() => {
-    setUserProfile(user);
-  }, [user]);
 
   if (small) {
-    return <UserDetailSmall user={user || undefined} />;
+    return <UserDetailSmall user={userProfile || undefined} />;
   }
 
   return (
