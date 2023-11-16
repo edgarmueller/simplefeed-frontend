@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, Stack, Textarea } from "@chakra-ui/react";
+import { Box, Button, FormControl, Stack, Text, Textarea } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 // @ts-ignore
@@ -51,28 +51,28 @@ export const SubmitForm = ({ onSubmit, postTo }: SubmitFormProps) => {
     setText("");
   };
   return (
-    <FormControl id="post_form" onSubmit={handleSubmit}>
-      <Box marginBottom={4}>
-        <Stack direction="column">
-          <Stack direction="row">
-            <Textarea
-              value={text}
-              name="postContent"
-              id="post_text"
-              placeholder="What's on your mind?"
-              onChange={(e) => setText(e.target.value)}
+    <Box alignItems="center" justifyItems={"center"} border={"1px"} borderColor={"gray.200"} borderRadius={"lg"} p={2} mb={2}>
+      <FormControl id="post_form" onSubmit={handleSubmit}>
+          <Stack direction="column">
+            <Stack direction="row">
+              <Textarea
+                value={text}
+                name="postContent"
+                id="post_text"
+                placeholder="What's on your mind?"
+                onChange={(e) => setText(e.target.value)}
+              />
+              <Button onClick={handleSubmit} color="black" id="post_button">
+                Post
+              </Button>
+            </Stack>
+            <Text fontSize="xs" as="span"><b>Add attachments</b></Text>
+            <FileInput
+              onChange={handleImageAttached}
+              minW="100%"
             />
-            <Button onClick={handleSubmit} color="black" id="post_button">
-              Post
-            </Button>
           </Stack>
-          <FileInput
-            placeholder="Avatar"
-            onChange={handleImageAttached}
-            minW="100%"
-          />
-        </Stack>
-      </Box>
-    </FormControl>
+      </FormControl>
+    </Box>
   );
 };

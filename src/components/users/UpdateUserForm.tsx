@@ -20,6 +20,13 @@ import { closeAccount, updateUserInfo } from "../../api/user";
 import { useUser } from "../../hooks/useUser";
 import { logout } from "../../api/auth";
 
+const OutlinedBox = ({ children }: any) => {
+  return (
+    <Box alignItems="center" justifyItems={"center"} border={"1px"} borderColor={"gray.200"} borderRadius={"lg"} p={2} mt={2}>
+    {children}
+    </Box>
+  )
+}
 
 const formatError = (error: string) => {
   return error.replace("user.", "");
@@ -29,19 +36,22 @@ export const FileInput = (props: InputProps) => {
   const styles = useMultiStyleConfig("Button", { variant: "outline" });
 
   return (
-    <Input
-      type="file"
-      sx={{
-        "::file-selector-button": {
-          border: "none",
-          outline: "none",
-          mr: 2,
-          ml: -6,
-          ...styles,
-        },
-      }}
-      {...props}
-    />
+    <Box>
+      <Input
+        id="files"
+        type="file"
+        sx={{
+          "::file-selector-button": {
+            border: "none",
+            outline: "none",
+            mr: 2,
+            ml: -6,
+            ...styles,
+          },
+        }}
+        {...props}
+      />
+    </Box>
   );
 };
 
@@ -163,42 +173,44 @@ export const UpdateUserForm = () => {
             minW="100%"
             value={userInfo.lastName}
           />
-          <FormLabel>Avatar</FormLabel>
-          <Box alignItems="center" justifyItems={"center"}>
+          <OutlinedBox>
+            <FormLabel>Avatar</FormLabel>
             <Avatar mb={2} src={userInfo.image ? URL.createObjectURL(userInfo.image) : user.imageUrl} borderRadius="lg" size="xl" />
             <FileInput
               placeholder="Avatar"
               onChange={handleUserAvatarUpdated}
               minW="100%"
             />
-          </Box>
+          </OutlinedBox>
           <FormErrorMessage>
             {errors.map((error) => (
               <p key={error}>{error}</p>
             ))}
           </FormErrorMessage>
         </FormControl>
-				<FormControl
-					onSubmit={handlePasswordSubmit}
-					isInvalid={errors.length > 0}
-				>
-					<FormLabel>Password</FormLabel>
-          <FormHelperText>If left empty, password will not be updated</FormHelperText>
-					<Input
-						type="password"
-						placeholder="Password"
-						onChange={handleUserInfoUpdated('password')}
-						minW="100%"
-					/>
-					<FormLabel>Confirm Password</FormLabel>
-          <FormHelperText>Confirm password, if filled</FormHelperText>
-					<Input
-						type="password"
-						placeholder="Confirm Password"
-						onChange={handleUserInfoUpdated('confirmPassword')}
-						minW="100%"
-					/>
-				</FormControl>
+        <OutlinedBox>
+          <FormControl
+            onSubmit={handlePasswordSubmit}
+            isInvalid={errors.length > 0}
+          >
+            <FormLabel>Password</FormLabel>
+            <FormHelperText>If left empty, password will not be updated</FormHelperText>
+            <Input
+              type="password"
+              placeholder="Password"
+              onChange={handleUserInfoUpdated('password')}
+              minW="100%"
+            />
+            <FormLabel>Confirm Password</FormLabel>
+            <FormHelperText>Confirm password, if filled</FormHelperText>
+            <Input
+              type="password"
+              placeholder="Confirm Password"
+              onChange={handleUserInfoUpdated('confirmPassword')}
+              minW="100%"
+            />
+          </FormControl>
+        </OutlinedBox>
         <Button
           type="submit"
           disabled={!canSubmit}
