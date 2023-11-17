@@ -46,3 +46,13 @@ export async function closeAccount(): Promise<void> {
     headers: createHeaders(),
   });
 }
+
+export async function fetchUser(username: string): Promise<any> {
+  const res = await axios.get(`${API_URL}/users/${username}`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...createHeaders(),
+    },
+  });
+  return res.data;
+}

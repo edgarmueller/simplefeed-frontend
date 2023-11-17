@@ -1,14 +1,48 @@
 import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
-import { acceptFriendRequest, declineFriendRequest } from "../../api/friend-requests";
+import { acceptFriendRequest as acceptFriendRequestApi, declineFriendRequest as declineFriendRequestApi } from "../../api/friends";
 import { useUser } from "../../hooks/useUser";
 import { useChat } from "../../hooks/useChat";
 import { useFriends } from "../../hooks/useFriends";
 import { UserDetailSmall } from "./UserDetailSmall";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 export const ReceivedFriendRequests = () => {
   const { user, refresh: refreshUser } = useUser();
   const { fetchConversations, joinConversation } = useChat();
   const { receivedFriendRequests, fetchReceivedFriendRequests } = useFriends();
+
+  useEffect(() => {
+    fetchReceivedFriendRequests();
+  }, []);
+
+  const acceptFriendRequest = useMutation({
+    mutationFn: (friendRequestId: string) => acceptFriendRequestApi(friendRequestId),
+    onSuccess: async (data, vars) => {
+      console.log({ data })
+      fetchReceivedFriendRequests();
+      // refresh user to fetch friends
+      await refreshUser();
+      const conversations = await fetchConversations();
+      const conversation = conversations.find(
+        (conversation) =>
+          conversation.userIds.includes(user?.id || "") &&
+          conversation.userIds.includes(data.from.id)
+      );
+      console.log('Joining convo', conversation)
+      if (!conversation) {
+        return;
+      }
+      await joinConversation(conversation.id);
+    }
+  })
+  const declineFriendRequest = useMutation({
+    mutationFn: (friendRequestId: string) => declineFriendRequestApi(friendRequestId),
+    onSuccess: async (data, vars) => {
+      fetchReceivedFriendRequests();
+    }
+  });
+
   return (
     <Box>
       <Heading size="sm" textTransform="uppercase" mb={2}>
@@ -30,22 +64,7 @@ export const ReceivedFriendRequests = () => {
                   colorScheme="green"
                   size="xs"
                   onClick={async () => {
-                    await acceptFriendRequest(friendRequest.id);
-                    fetchReceivedFriendRequests();
-                    await refreshUser();
-                    const conversations = await fetchConversations();
-                    const conversation = conversations.find(
-                      (conversation) =>
-                        conversation.userIds.includes(user?.id || "") &&
-                        conversation.userIds.includes(
-                          friendRequest.from.id
-                        )
-                    );
-                    console.log('Joining convo', conversation)
-                    if (!conversation) {
-                      return;
-                    }
-                    await joinConversation(conversation.id);
+                    await acceptFriendRequest.mutate(friendRequest.id);
                   }}
                 >
                   Accept
@@ -55,8 +74,7 @@ export const ReceivedFriendRequests = () => {
                   colorScheme="red"
                   size="xs"
                   onClick={async () => {
-                    await declineFriendRequest(friendRequest.id);
-                    fetchReceivedFriendRequests();
+                    await declineFriendRequest.mutate(friendRequest.id);
                   }}
                 >
                   Decline

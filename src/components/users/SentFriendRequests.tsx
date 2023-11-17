@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
-import { cancelFriendRequest } from "../../api/friend-requests";
+import { cancelFriendRequest } from "../../api/friends";
 import { useFriends } from "../../hooks/useFriends";
 import { UserDetailSmall } from "./UserDetailSmall";
 

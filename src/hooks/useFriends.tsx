@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getFriendRequests, getSentFriendRequests } from "../api/friend-requests";
+import { getFriendRequests, getSentFriendRequests } from "../api/friends";
 import { FriendRequest, User } from "../domain.interface";
 import { useAuth } from "./useAuth";
 import { useUser } from "./useUser";

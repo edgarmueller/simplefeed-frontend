@@ -7,8 +7,8 @@ import {
   useLocation,
   useParams,
 } from "react-router-dom";
-import { getSentFriendRequests } from "../api/friend-requests";
-import { fetchUserProfile } from "../api/profile";
+import { getSentFriendRequests } from "../api/friends";
+import { fetchUser } from "../api/user";
 import { Layout } from "../components/common/Layout";
 import { SubmitForm } from "../components/posts/SubmitForm";
 import { UserDetail } from "../components/users/UserDetail";
@@ -22,8 +22,7 @@ import { UserDetailSmall } from "../components/users/UserDetailSmall";
 
 export async function loader({ params }: any): Promise<User | Response> {
   try {
-    console.log('loading user profile')
-    return await fetchUserProfile(params.username);
+    return await fetchUser(params.username);
   } catch (error) {
     return redirect("/sign-in");
   }

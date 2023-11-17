@@ -1,7 +1,7 @@
 import { Button } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { makeFriendRequest as makeFriendRequestApi } from "../../api/friend-requests";
+import { makeFriendRequest as makeFriendRequestApi } from "../../api/friends";
 
 export interface BefriendButtonProps {
   username: string;
