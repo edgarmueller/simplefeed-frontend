@@ -4,7 +4,7 @@ import { useUser } from "../../hooks/useUser";
 import { useChat } from "../../hooks/useChat";
 import { useFriends } from "../../hooks/useFriends";
 import { UserDetailSmall } from "./UserDetailSmall";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 export const ReceivedFriendRequests = () => {
@@ -18,8 +18,7 @@ export const ReceivedFriendRequests = () => {
 
   const acceptFriendRequest = useMutation({
     mutationFn: (friendRequestId: string) => acceptFriendRequestApi(friendRequestId),
-    onSuccess: async (data, vars) => {
-      console.log({ data })
+    onSuccess: async (data) => {
       fetchReceivedFriendRequests();
       // refresh user to fetch friends
       await refreshUser();
@@ -29,7 +28,6 @@ export const ReceivedFriendRequests = () => {
           conversation.userIds.includes(user?.id || "") &&
           conversation.userIds.includes(data.from.id)
       );
-      console.log('Joining convo', conversation)
       if (!conversation) {
         return;
       }
@@ -38,7 +36,7 @@ export const ReceivedFriendRequests = () => {
   })
   const declineFriendRequest = useMutation({
     mutationFn: (friendRequestId: string) => declineFriendRequestApi(friendRequestId),
-    onSuccess: async (data, vars) => {
+    onSuccess: async () => {
       fetchReceivedFriendRequests();
     }
   });

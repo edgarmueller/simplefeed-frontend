@@ -1,10 +1,17 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
-import { cancelFriendRequest } from "../../api/friends";
+import { cancelFriendRequest as cancelFriendRequestApi } from "../../api/friends";
 import { useFriends } from "../../hooks/useFriends";
 import { UserDetailSmall } from "./UserDetailSmall";
+import { useMutation } from "@tanstack/react-query";
 
 export const SentFriendRequests = () => {
   const { sentFriendRequests, fetchSentFriendRequests } = useFriends();
+  const cancelFriendRequest = useMutation({
+    mutationFn: (friendRequestId: string) => cancelFriendRequestApi(friendRequestId),
+    onSuccess: async () => {
+      fetchSentFriendRequests();
+    }
+  });
   return (
     <Box>
       <Heading size="xs" mb={2}>Sent</Heading>
@@ -21,8 +28,7 @@ export const SentFriendRequests = () => {
               colorScheme="red"
               size="xs"
               onClick={async () => {
-								await cancelFriendRequest(friendRequest.id)
-								await fetchSentFriendRequests();
+								cancelFriendRequest.mutate(friendRequest.id)
 							}}
             >
               Cancel

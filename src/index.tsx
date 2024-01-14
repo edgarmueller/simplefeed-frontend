@@ -2,7 +2,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
-import { Friends } from './components/users/Friends';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { AuthOutlet } from './components/auth/AuthOutlet';
 import Feed from './pages/FeedPage';
@@ -18,6 +17,7 @@ import './index.css'
 import { SignUp } from './components/auth/SignUp';
 import { SignIn } from './components/auth/SignIn';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { FriendsPage } from './pages/FriendsPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,7 +30,7 @@ const router = createBrowserRouter(
       <Route path='/users/:username' element={<ProtectedRoute><UserProfile/></ProtectedRoute>} loader={userLoader}/>
       <Route path="/sign-up" element={<SignUp />} />
       <Route path='/sign-in' element={<SignIn />} />
-      <Route path='/friends' element={<ProtectedRoute><Friends /></ProtectedRoute>} />
+      <Route path='/friends' element={<ProtectedRoute><FriendsPage /></ProtectedRoute>} />
       <Route path='/chat' element={<ProtectedRoute><Chat/></ProtectedRoute>} />
       <Route path='/notifications' element={<ProtectedRoute><NotificationsPage/></ProtectedRoute>} />
       <Route path='/posts/:id' element={<ProtectedRoute><Post/></ProtectedRoute>} />

@@ -5,16 +5,21 @@ import {
   Heading,
   Stack
 } from "@chakra-ui/react";
-import { removeFriend } from "../../api/friends";
-import { useUser } from "../../hooks/useUser";
-import { Layout } from "../common/Layout";
-import { FriendList } from "./FriendList";
-import { ReceivedFriendRequests } from "./ReceivedFriendRequests";
-import { SentFriendRequests } from "./SentFriendRequests";
-import { UserDetailSmall } from "./UserDetailSmall";
+import { useMutation } from "@tanstack/react-query";
+import { removeFriend as removeFriendApi } from "../api/friends";
+import { useUser } from "../hooks/useUser";
+import { Layout } from "../components/common/Layout";
+import { FriendList } from "../components/users/FriendList";
+import { UserDetailSmall } from "../components/users/UserDetailSmall";
+import { ReceivedFriendRequests } from "../components/users/ReceivedFriendRequests";
+import { SentFriendRequests } from "../components/users/SentFriendRequests";
 
-export const Friends = () => {
+export const FriendsPage = () => {
   const { user, refresh: refreshUser } = useUser();
+  const removeFriend = useMutation({
+    mutationFn: (friendId: string) => removeFriendApi(friendId),
+    onSuccess: refreshUser
+  }) 
   return (
     <Layout>
       <Card variant="outline">
@@ -39,9 +44,8 @@ export const Friends = () => {
                   variant="outline"
                   colorScheme="red"
                   size="xs"
-                  onClick={async () => {
-                    await removeFriend(friend.id);
-                    await refreshUser();
+                  onClick={() => {
+                    removeFriend.mutate(friend.id);
                   }}
                 >
                   Remove
