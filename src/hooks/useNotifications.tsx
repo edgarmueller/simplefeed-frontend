@@ -6,6 +6,7 @@ import { useChat } from "./useChat";
 import { useUser } from "./useUser";
 import { useFriends } from "./useFriends";
 import { SOCKET_URL } from "../api/constants";
+import { validateToken } from "../api/validateToken";
 
 type NotificationContextProps = {
   notifications: any[];
@@ -14,7 +15,7 @@ type NotificationContextProps = {
 
 const NotificationContext = createContext<NotificationContextProps>({
   notifications: [],
-  markAsRead: (id: string) => {},
+  markAsRead: (id: string) => { },
 });
 
 export const NotificationProvider = ({ children }: any) => {
@@ -83,9 +84,10 @@ export const NotificationProvider = ({ children }: any) => {
     };
   }, [token]);
 
-  const markAsRead = (notificationId: string) => {
+  const markAsRead = async (notificationId: string) => {
     console.log('marking notifcation as read', notificationId)
-    socket?.emit("mark_notification_as_read", { notificationId });
+    const token = await validateToken()
+    socket?.emit("mark_notification_as_read", { notificationId, auth: token });
   };
 
   const value = useMemo(

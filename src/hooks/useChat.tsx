@@ -1,4 +1,3 @@
-import decodeToken from "jwt-decode";
 import {
   createContext,
   useCallback,
@@ -10,12 +9,11 @@ import {
 import { Socket, io } from "socket.io-client";
 import { JOIN_CONVERSATION, fetchConversations } from "../api/chat";
 import { Conversation, Message } from "../domain.interface";
-import { getAccessToken } from "../api/auth";
 import { useAuth } from "./useAuth";
 import { useUser } from "./useUser";
-import { refreshToken } from "../lib/axios";
 import { SOCKET_URL } from "../api/constants";
 import { sortBy } from "lodash";
+import { validateToken } from "../api/validateToken";
 
 export const groupUnreadMessagesByConversations = (
   userId: string,
@@ -99,24 +97,6 @@ export const ChatProvider = ({ children }: any) => {
     []
   );
 
-  const validateToken = useCallback(async () => {
-    const existingToken = getAccessToken();
-    if (!existingToken) {
-      return;
-    }
-    // Perform your token validation logic here
-    // You can use a library like jwt-decode to decode the token and check its expiration
-    const decodedToken = decodeToken<{ exp: number }>(existingToken);
-
-    if (decodedToken && decodedToken.exp * 1000 < Date.now()) {
-      // Token has expired
-      // You can trigger the token refresh process here
-      await refreshToken();
-      console.log("token refreshed");
-    }
-    return getAccessToken();
-  }, []);
-
   const requestMessages = useCallback(
     async (conversationId: string, page: number) => {
       console.log("requestingMessages for page", page)
@@ -127,7 +107,7 @@ export const ChatProvider = ({ children }: any) => {
       });
       // setLoading(true);
     },
-    [socket, validateToken]
+    [socket]
   );
 
   const markAsRead = useCallback(
@@ -144,7 +124,7 @@ export const ChatProvider = ({ children }: any) => {
         auth: await validateToken(),
       });
     },
-    [socket, validateToken, user?.id]
+    [socket, user?.id]
   );
   const sendMessage = useCallback(
     async (conversationId: string, msg: string) => {
@@ -160,7 +140,7 @@ export const ChatProvider = ({ children }: any) => {
         auth: await validateToken(),
       });
     },
-    [validateToken, socket, user?.id]
+    [socket, user?.id]
   );
 
   useEffect(() => {
@@ -177,7 +157,7 @@ export const ChatProvider = ({ children }: any) => {
         auth: await validateToken(),
       });
     },
-    [socket, validateToken]
+    [socket]
   );
 
   useEffect(() => {
