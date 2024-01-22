@@ -1,3 +1,4 @@
+import { sortBy, uniqBy } from "lodash";
 import {
   createContext,
   useCallback,
@@ -7,13 +8,16 @@ import {
   useState,
 } from "react";
 import { Socket, io } from "socket.io-client";
-import { JOIN_CONVERSATION, fetchConversations } from "../api/chat";
+import { fetchConversations } from "../api/chat";
+import { SOCKET_URL } from "../api/constants";
+import { validateToken } from "../api/validateToken";
 import { Conversation, Message } from "../domain.interface";
 import { useAuth } from "./useAuth";
 import { useUser } from "./useUser";
-import { SOCKET_URL } from "../api/constants";
-import { sortBy } from "lodash";
-import { validateToken } from "../api/validateToken";
+
+const SEND_MESSAGE = "send_message";
+const MARK_AS_READ = "mark_as_read"
+const JOIN_CONVERSATION = "join_conversation"
 
 export const groupUnreadMessagesByConversations = (
   userId: string,
@@ -56,10 +60,10 @@ const ChatContext = createContext<ChatContextProps>({
   hasError: false,
   error: undefined,
   fetchConversations: async () => [],
-  joinConversation: (id) => {},
-  sendMessage: () => {},
-  requestMessages: () => {},
-  markAsRead: () => {},
+  joinConversation: (id) => { },
+  sendMessage: () => { },
+  requestMessages: () => { },
+  markAsRead: () => { },
   messagesByConversation: {},
   loading: false,
 });
@@ -70,42 +74,42 @@ export const ChatProvider = ({ children }: any) => {
   const [socket, setSocket] = useState<Socket>();
   const [loading, setLoading] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [error, setError] = useState();
+  const [error, setError] = useState<string>();
   const [messagesByConversation, setMessagesByConversation] = useState<{
     [conversationId: string]: Message[];
   }>({});
 
   const fetchAllConversations = useCallback(
-    () =>
-      fetchConversations()
-        .then((conversations) => {
-          console.log("fetchAllConversations");
-          setConversations(conversations);
-          const messagesByConversationId = Object.keys(conversations).reduce((acc, convId, idx) => {
-            const conversation = conversations[idx];
-            acc[conversation.id] = conversation.messages;
-            return acc;
-          }, {} as { [conversationId: string]: Message[] })
-          setMessagesByConversation(messagesByConversationId);
-          setError(undefined);
-          return conversations;
-        })
-        .catch((error) => {
+    async () => {
+      setLoading(true);
+      try {
+        const conversations = await fetchConversations()
+        setConversations(conversations);
+        const messagesByConversationId = conversations.reduce((acc, conversation) => {
+          acc[conversation.id] = conversation.messages;
+          return acc;
+        }, {} as { [conversationId: string]: Message[] })
+        setMessagesByConversation(messagesByConversationId);
+        setError(undefined);
+        setLoading(false);
+        return conversations;
+      } catch (error) {
+        setLoading(false);
+        if (error instanceof Error) {
           setError(error.message);
-          return [];
-        }),
-    []
-  );
+        }
+        return [];
+      }
+    }, []);
 
   const requestMessages = useCallback(
     async (conversationId: string, page: number) => {
-      console.log("requestingMessages for page", page)
       socket?.emit("request_messages", {
         conversationId,
         page,
         auth: await validateToken(),
       });
-      // setLoading(true);
+      setLoading(true);
     },
     [socket]
   );
@@ -113,13 +117,12 @@ export const ChatProvider = ({ children }: any) => {
   const markAsRead = useCallback(
     async (conversationId: string, messages: Message[]) => {
       if (messages?.length === 0) return;
-      await validateToken();
       messages?.forEach((msg) => {
         if (msg.authorId !== user?.id) {
           msg.isRead = true;
         }
       });
-      socket?.emit("mark_as_read", {
+      socket?.emit(MARK_AS_READ, {
         conversationId,
         auth: await validateToken(),
       });
@@ -135,7 +138,7 @@ export const ChatProvider = ({ children }: any) => {
         content: msg,
         conversationId,
       };
-      socket?.emit("send_message", {
+      socket?.emit(SEND_MESSAGE, {
         message,
         auth: await validateToken(),
       });
@@ -144,11 +147,13 @@ export const ChatProvider = ({ children }: any) => {
   );
 
   useEffect(() => {
-    validateToken().then(() => {
-      fetchAllConversations();
+    validateToken().then((t) => {
+      if (t) {
+        fetchAllConversations();
+      }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
+  }, []);
 
   const joinConversation = useCallback(
     async (conversationId: string) => {
@@ -172,13 +177,6 @@ export const ChatProvider = ({ children }: any) => {
       transports: ["websocket"],
     });
 
-    function onAllMessages(conversation: any) {
-      setMessagesByConversation((prev) => ({
-        ...prev,
-        [conversation.id]: conversation.messages,
-      }));
-    }
-
     function onMessageRead(confirmation: any) {
       const conversationId = confirmation.conversationId;
       const userId = confirmation.userId;
@@ -199,17 +197,18 @@ export const ChatProvider = ({ children }: any) => {
     }
 
     function onNewMessages(conv: Conversation) {
+      setLoading(false);
       const conversationId = conv.id;
-      // setLoading(false);
-      setMessagesByConversation((prev) => {
+      setMessagesByConversation(s => {
+        const messages = uniqBy((s[conversationId] || []).concat(conv.messages), 'id');
         return {
-          ...prev,
-          [conversationId]: sortBy(prev[conversationId].concat(conv.messages), a => a.createdAt).reverse(),
+          ...s,
+          [conversationId]: sortBy(messages, a => a.createdAt).reverse(),
         };
       });
     }
 
-    function onMessage(msg: Message) {
+    function onReceiveMessage(msg: Message) {
       setMessagesByConversation((prev) => {
         return {
           ...prev,
@@ -220,14 +219,13 @@ export const ChatProvider = ({ children }: any) => {
 
     _socket?.connect();
     setSocket(_socket);
-    _socket?.on("send_all_messages", onAllMessages);
     _socket?.on("send_messages", onNewMessages);
-    _socket?.on("receive_message", onMessage);
+    _socket?.on("receive_message", onReceiveMessage);
     _socket?.on("message_read", onMessageRead);
 
     return () => {
-      _socket?.off("receive_message", onMessage);
-      _socket?.off("send_all_messages", onAllMessages);
+      _socket?.off("receive_message", onReceiveMessage);
+      // _socket?.off("send_all_messages", onAllMessages);
       _socket?.off("send_messages", onNewMessages);
       _socket.close();
       setSocket(undefined);

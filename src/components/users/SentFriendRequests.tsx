@@ -3,6 +3,7 @@ import { cancelFriendRequest as cancelFriendRequestApi } from "../../api/friends
 import { useFriends } from "../../hooks/useFriends";
 import { UserDetailSmall } from "./UserDetailSmall";
 import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 export const SentFriendRequests = () => {
   const { sentFriendRequests, fetchSentFriendRequests } = useFriends();
@@ -12,6 +13,10 @@ export const SentFriendRequests = () => {
       fetchSentFriendRequests();
     }
   });
+  useEffect(() => {
+    fetchSentFriendRequests();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <Box>
       <Heading size="xs" mb={2}>Sent</Heading>

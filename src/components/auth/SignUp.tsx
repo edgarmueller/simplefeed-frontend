@@ -35,6 +35,7 @@ export const SignUp = () => {
             <FormControl onSubmit={handleSubmit} isInvalid={errors.length > 0}>
               <FormLabel>Email address</FormLabel>
               <Input
+                id="input-email"
                 type="email"
                 placeholder="Email address"
                 onChange={handleEmailUpdated}
@@ -42,6 +43,7 @@ export const SignUp = () => {
               />
               <FormLabel>Username</FormLabel>
               <Input
+                id="input-username"
                 type="text"
                 placeholder="Username"
                 onChange={handleSignUpInfoUpdated("username")}
@@ -49,6 +51,7 @@ export const SignUp = () => {
               />
               <FormLabel>First Name</FormLabel>
               <Input
+                id="input-first-name"
                 type="text"
                 placeholder="First name"
                 onChange={handleSignUpInfoUpdated("firstName")}
@@ -56,6 +59,7 @@ export const SignUp = () => {
               />
               <FormLabel>Last Name</FormLabel>
               <Input
+                id="input-last-name"
                 type="text"
                 placeholder="Last name"
                 onChange={handleSignUpInfoUpdated("lastName")}
@@ -63,13 +67,15 @@ export const SignUp = () => {
               />
               <FormLabel>Avatar</FormLabel>
               <Input
+                id='input-avatar-url'
                 type="text"
-                placeholder="Last name"
+                placeholder="Avatar URL"
                 onChange={handleSignUpInfoUpdated("imageUrl")}
                 minW="100%"
               />
               <FormLabel>Password</FormLabel>
               <Input
+                id="input-password"
                 type="password"
                 placeholder="Password"
                 onChange={handlePasswordUpdated}
@@ -77,6 +83,7 @@ export const SignUp = () => {
               />
               <FormLabel>Confirm Password</FormLabel>
               <Input
+                id="input-confirm-password"
                 type="password"
                 placeholder="Confirm Password"
                 onChange={handlePasswordConfirmUpdated}
@@ -88,6 +95,7 @@ export const SignUp = () => {
             ))}
             <Flex justifyContent="flex-end" marginTop={4}>
               <Button
+                id="btn-sign-up"
                 type="submit"
                 disabled={!canSubmit}
                 onClick={handleSubmit}
