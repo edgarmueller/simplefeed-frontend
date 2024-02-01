@@ -13,12 +13,12 @@ import { Layout } from "../components/common/Layout";
 import { SubmitForm } from "../components/posts/SubmitForm";
 import { UserDetail } from "../components/users/UserDetail";
 import Chat from "../components/chat/Chat";
-import { useChat } from "../hooks/useChat";
 import { PostList } from "../components/posts/PostList";
-import { User } from "../domain.interface";
+import { Conversation, User } from "../domain.interface";
 import { useUser } from "../hooks/useUser";
 import { FriendList } from "../components/users/FriendList";
 import { UserDetailSmall } from "../components/users/UserDetailSmall";
+import { useChatStore } from "../hooks/useChatStore";
 
 export async function loader({ params }: any): Promise<User | Response> {
   try {
@@ -26,6 +26,14 @@ export async function loader({ params }: any): Promise<User | Response> {
   } catch (error) {
     return redirect("/sign-in");
   }
+}
+
+const findConversationId = (conversations: Conversation[], userId: string) => {
+  return conversations?.find((conversation) =>
+    conversation.userIds?.some(
+      (participantId) => participantId === userId
+    )
+  )?.id;
 }
 
 const UserProfile = () => {
@@ -37,12 +45,8 @@ const UserProfile = () => {
   const user = useLoaderData() as User;
   const queryClient = useQueryClient();
   const [friendRequestSent, setFriendRequestSent] = useState<boolean>(false);
-  const { conversations } = useChat();
-   const conversationId = conversations?.find((conversation) =>
-     conversation.userIds?.some(
-       (participantId) => participantId === user?.id
-     )
-   )?.id;
+  const conversations = useChatStore(s => s.conversations);
+  const conversationId = findConversationId(conversations, user?.id);
   const userId = user?.id;
   const isFriend =
     isMyProfile || !!myself?.friends?.find(({ id }) => id === user?.id)

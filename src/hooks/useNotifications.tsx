@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import { useAuth } from "./useAuth";
 import { Notification } from "../domain.interface";
@@ -7,14 +7,13 @@ import { useUser } from "./useUser";
 import { useFriends } from "./useFriends";
 import { SOCKET_URL } from "../api/constants";
 import { validateToken } from "../api/validateToken";
+import { NotificationState, useNotificationsStore } from "./useNotificationsStore";
 
 type NotificationContextProps = {
-  notifications: any[];
   markAsRead: (id: string) => void;
 };
 
 const NotificationContext = createContext<NotificationContextProps>({
-  notifications: [],
   markAsRead: (id: string) => { },
 });
 
@@ -24,7 +23,9 @@ export const NotificationProvider = ({ children }: any) => {
   const { fetchReceivedFriendRequests, fetchSentFriendRequests } = useFriends();
   const { joinConversation, fetchConversations } = useChat()
   const [socket, setSocket] = useState<Socket>();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const setNotifications = useNotificationsStore((state: NotificationState) => state.setNotifications)
+  const markNotificationAsRead = useNotificationsStore((state: NotificationState) => state.markNotificationAsRead)
+  const addNotification = useNotificationsStore((state: NotificationState) => state.addNewNotification)
   const [isConnecting, setIsConnecting] = useState(false)
 
   useEffect(() => {
@@ -57,11 +58,11 @@ export const NotificationProvider = ({ children }: any) => {
           }
         });
       }
-      setNotifications((prev) => [...prev, msg]);
+      addNotification(msg)
     }
 
-    function onNotificationRead(msg: Notification) {
-      setNotifications((prev) => prev.filter((n) => n.id !== msg.id));
+    function onNotificationRead(n: Notification) {
+      markNotificationAsRead(n)
     }
 
     if (isConnecting || socket?.connected) {
@@ -84,19 +85,13 @@ export const NotificationProvider = ({ children }: any) => {
     };
   }, [token]);
 
-  const markAsRead = async (notificationId: string) => {
+  const markAsRead = useCallback(async (notificationId: string) => {
     console.log('marking notifcation as read', notificationId)
     const token = await validateToken()
     socket?.emit("mark_notification_as_read", { notificationId, auth: token });
-  };
+  }, [socket?.id]);
 
-  const value = useMemo(
-    () => ({
-      notifications,
-      markAsRead
-    }),
-    [notifications]
-  );
+  const value = { markAsRead}
 
   return (
     <NotificationContext.Provider value={value}>

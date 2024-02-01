@@ -17,10 +17,12 @@ export interface User {
 export interface Conversation {
 	id: string
 	userIds: string[]
+	// TODO: can we hide this? or rename to mostRecentMessages?
 	messages: Message[]
 }
 
 export interface Message {
+	id?: string
 	conversationId: string
 	content: string
 	authorId: string
@@ -34,6 +36,8 @@ export interface Notification {
 	viewed: boolean
 	type: string
 	resourceId: string
+	link: string
+	message: string
 }
 export interface Post {
 	id: string;

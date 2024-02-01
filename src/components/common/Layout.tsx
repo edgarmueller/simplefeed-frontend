@@ -7,17 +7,18 @@ import { useAuth } from "../../hooks/useAuth";
 import { useUser } from "../../hooks/useUser";
 import { Logo } from "./Logo";
 import { UserDetail } from "../users/UserDetail";
-import { groupUnreadMessagesByConversations, useChat } from "../../hooks/useChat";
-import { useNotifications } from "../../hooks/useNotifications";
+import { getUnreadMessagesByConversation, useChatStore } from "../../hooks/useChatStore";
+import { useNotificationsStore } from "../../hooks/useNotificationsStore";
 
 export const Layout = ({ children }: any) => {
+  // 4 expected render initially
   const { user, hasError, error } = useUser();
-  const { messagesByConversation } = useChat()
-  const unreadByConversations = groupUnreadMessagesByConversations(user?.id!, messagesByConversation)
-  const unreadCount = unreadByConversations?.total || 0
-  const { notifications } = useNotifications();
-  const unreadNotifications = notifications.filter(n => !n.viewed)
+  const getUnreadByConversation  = useChatStore(getUnreadMessagesByConversation)
+  const unreadByConversation = getUnreadByConversation(user?.id)
+  const notifications = useNotificationsStore(s => s.notifications);
   const { logout } = useAuth();
+  const unreadCount = Object.values(unreadByConversation!).reduce((acc, msgs) => acc + msgs, 0)
+  const unreadNotifications = notifications.filter(n => !n.viewed)
   return (
     <Grid
       templateColumns="20% 1fr"

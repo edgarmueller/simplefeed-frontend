@@ -2,16 +2,16 @@ import { Badge, Box, Card, CardBody, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { Conversation } from "../../domain.interface";
 import { useUser } from "../../hooks/useUser";
-import { groupUnreadMessagesByConversations, useChat } from "../../hooks/useChat";
 import { UserDetailSmall } from "../users/UserDetailSmall";
-import { sortBy } from "lodash";
+import { head } from "lodash";
+import { getUnreadMessagesByConversation, useChatStore } from "../../hooks/useChatStore";
 
 interface UnreadMessageCountProps {
   unreadMessages: number;
 }
 
 function UnreadMessageCount({ unreadMessages }: UnreadMessageCountProps) {
-  if (unreadMessages === 0) {
+  if (!unreadMessages) {
     return null;
   }
   return (
@@ -23,14 +23,15 @@ function UnreadMessageCount({ unreadMessages }: UnreadMessageCountProps) {
 
 export const Conversations = () => {
   const navigate = useNavigate();
-  const { conversations, messagesByConversation } = useChat();
   const { user } = useUser();
-  const unreadByConversations = groupUnreadMessagesByConversations(user?.id!, messagesByConversation);
+  const conversations = useChatStore((state) => state.conversations);
+  const messagesByConversation = useChatStore((state) => state.messagesByConversation);
+  const getUnreadByConversation = useChatStore(getUnreadMessagesByConversation)
+  const unreadByConversation = getUnreadByConversation(user?.id)
   const lookupUserById = (participantIds: string[]) => {
     return user?.friends.find((friend) => participantIds.includes(friend.id));
   }
-  const mostRecentMessage = (conversation: Conversation) =>
-    sortBy(conversation.messages, a => a.createdAt)[conversation.messages.length - 1]
+  const mostRecentMessage = (conversation: Conversation) => head(messagesByConversation[conversation.id])
   const mostRecentMessageAuthor = (conversation: Conversation) => {
     const msg = mostRecentMessage(conversation);
     if (msg) {
@@ -44,7 +45,7 @@ export const Conversations = () => {
       <CardBody>
         {conversations.length === 0 && <Text>No conversations</Text>}
         {conversations?.map((conversation) => {
-          const messageCount = unreadByConversations[conversation.id]
+          const messageCount = unreadByConversation![conversation.id]
           return (
             <Box
               mt={2}

@@ -56,7 +56,7 @@ export const UserProvider = ({ children }: any) => {
       hasError: error !== undefined,
       error,
     }),
-    [user, error, refresh]
+    [user?.id, error, refresh]
   );
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

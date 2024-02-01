@@ -1,9 +1,10 @@
 import { Box, Button, Highlight, Input, Text, VStack } from "@chakra-ui/react";
-import { last } from "lodash";
+import { head } from "lodash";
 import { useEffect, useState } from "react";
 import { useUser } from "../../hooks/useUser";
 import { ScrollableBox } from "./ScrollableBox";
 import { useChat } from "../../hooks/useChat";
+import { useChatStore } from "../../hooks/useChatStore";
 
 export interface ChatProps {
   conversationId: string;
@@ -23,12 +24,12 @@ const formatDate = (dateString: string | undefined) => {
 
 const Chat = ({ friend, conversationId }: ChatProps) => {
   const {
-    markAsRead,
     sendMessage,
     requestMessages,
-    messagesByConversation,
+    markAsRead,
     loading
   } = useChat();
+  const messagesByConversation = useChatStore(s => s.messagesByConversation)
   const [page, setPage] = useState(1);
   const { user } = useUser();
   const [inputValue, setInputValue] = useState("");
@@ -36,19 +37,22 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
     requestMessages(conversationId, page);
   }, [page, requestMessages, conversationId])
 
+  // TODO: sorted in reverse order, provide convenience?
+  const lastMessage = head(messagesByConversation[conversationId]) 
+  const lastMessageFromOtherUser = lastMessage?.authorId !== user?.id;
+  const nbOfMessages = messagesByConversation[conversationId]?.length
   // TODO: fix this
   let ref: any = undefined;
   useEffect(() => {
+    if (lastMessage?.isRead) return;
     const lastElement = ref?.current?.lastElementChild.lastElementChild.firstElementChild
-    // only scroll to bottom on our own messages
-    if (
-      lastElement &&
-      last(messagesByConversation[conversationId])?.authorId === user?.id
-    ) {
-      lastElement.scrollIntoView({ behavior: "smooth", block: "end" });
+    lastElement.scrollIntoView({ behavior: "smooth", block: "end" })
+    if (lastMessageFromOtherUser) {
+      markAsRead(conversationId)
     }
   }, [
-    messagesByConversation[conversationId]?.length,
+    nbOfMessages,
+    lastMessageFromOtherUser,
     conversationId,
     user?.id,
   ]);
@@ -68,12 +72,7 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
             setPage(page + 1);
           }}
           onScrollToBottom={() => {
-            markAsRead(
-              conversationId,
-              messagesByConversation[conversationId]?.filter(
-                ({ isRead }) => !isRead
-              )
-            );
+            markAsRead(conversationId);
           }}
         >
           {(scrollRef: any) => {
