@@ -42,3 +42,5 @@ export const useNotificationsStore = create<NotificationState>((set) => ({
     return newState
   })
 }))
+
+export const getUnreadNotifications = (s: NotificationState) => s.notifications.filter(n => !n.viewed)

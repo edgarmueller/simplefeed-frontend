@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "../../hooks/useUser";
 import { ScrollableBox } from "./ScrollableBox";
 import { useChat } from "../../hooks/useChat";
-import { useChatStore } from "../../hooks/useChatStore";
+import { useChatStore } from "../../stores/useChatStore";
 
 export interface ChatProps {
   conversationId: string;

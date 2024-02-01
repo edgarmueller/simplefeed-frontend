@@ -42,7 +42,7 @@ export function ScrollableBox({
         next={onScrollToTop}
         style={{ display: "flex", flexDirection: "column-reverse" }} //To put endMessage and loader to the top.
         scrollableTarget="scrollableDiv"
-        loader={<>loading</>}
+        loader={<>loading..</>}
       >
         <div id="bottom-marker" ref={ref as any}>
           &nbsp;

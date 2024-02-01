@@ -7,18 +7,16 @@ import { useAuth } from "../../hooks/useAuth";
 import { useUser } from "../../hooks/useUser";
 import { Logo } from "./Logo";
 import { UserDetail } from "../users/UserDetail";
-import { getUnreadMessagesByConversation, useChatStore } from "../../hooks/useChatStore";
-import { useNotificationsStore } from "../../hooks/useNotificationsStore";
+import { getUnreadCount, useChatStore } from "../../stores/useChatStore";
+import { getUnreadNotifications, useNotificationsStore } from "../../stores/useNotificationsStore";
 
 export const Layout = ({ children }: any) => {
   // 4 expected render initially
   const { user, hasError, error } = useUser();
-  const getUnreadByConversation  = useChatStore(getUnreadMessagesByConversation)
-  const unreadByConversation = getUnreadByConversation(user?.id)
-  const notifications = useNotificationsStore(s => s.notifications);
+  const getUnreadMessages  = useChatStore(getUnreadCount)
+  const unreadChatMessages = getUnreadMessages(user?.id)
+  const unreadNotifications = useNotificationsStore(getUnreadNotifications)
   const { logout } = useAuth();
-  const unreadCount = Object.values(unreadByConversation!).reduce((acc, msgs) => acc + msgs, 0)
-  const unreadNotifications = notifications.filter(n => !n.viewed)
   return (
     <Grid
       templateColumns="20% 1fr"
@@ -48,9 +46,9 @@ export const Layout = ({ children }: any) => {
             <Button variant="link" leftIcon={<BiChat />}>
               Chat
               {
-                unreadCount === 0 ? null :
+                unreadChatMessages === 0 ? null :
                   <Badge colorScheme="red" variant="solid" ml={2}>
-                    {unreadCount}
+                    {" " + unreadChatMessages}
                   </Badge>
               }
             </Button>

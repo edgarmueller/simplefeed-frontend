@@ -18,7 +18,7 @@ import { Conversation, User } from "../domain.interface";
 import { useUser } from "../hooks/useUser";
 import { FriendList } from "../components/users/FriendList";
 import { UserDetailSmall } from "../components/users/UserDetailSmall";
-import { useChatStore } from "../hooks/useChatStore";
+import { useChatStore } from "../stores/useChatStore";
 
 export async function loader({ params }: any): Promise<User | Response> {
   try {

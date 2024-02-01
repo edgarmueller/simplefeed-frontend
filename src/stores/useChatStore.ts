@@ -12,6 +12,7 @@ export interface ChatState {
 }
 
 export type GroupedMessages = { [conversationId: string]: Message[] }
+  
 
 // TODO: replace uniqBy and sortBy 
 const mergeAndSortMessages = (messages: Message[], moreMessages: Message[]) =>
@@ -24,7 +25,6 @@ const groupMessagesByConversation = (conversations: Conversation[], groupedMessa
   }, {} as Record<string, Message[]>);
   return messagesByConversation
 };
-
 
 const countUnreadMessagesByConversation = (
   userId: string,
@@ -87,7 +87,14 @@ export const useChatStore = create<ChatState>((set) => ({
 
 
 export const getUnreadMessagesByConversation = (s: ChatState) => (userId: string | undefined) => {
-  if (!userId) return {}
+  if (!userId) {
+    return {}
+  }
   const count = countUnreadMessagesByConversation(userId, s.messagesByConversation)
   return count
+}
+
+export const getUnreadCount = (s: ChatState) => (userId: string | undefined) => {
+  const unreadMessagesByConversation = getUnreadMessagesByConversation(s)(userId)
+  return Object.values(unreadMessagesByConversation).reduce((acc, cnt) => acc + cnt, 0)
 }

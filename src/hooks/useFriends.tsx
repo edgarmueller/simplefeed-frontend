@@ -1,11 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getFriendRequests, getSentFriendRequests } from "../api/friends";
-import { FriendRequest, User } from "../domain.interface";
+import { FriendRequest } from "../domain.interface";
 import { useAuth } from "./useAuth";
-import { useUser } from "./useUser";
 
 type FriendsContextProps = {
-  friends: any[];
   receivedFriendRequests: FriendRequest[]
   sentFriendRequests: FriendRequest[]
   fetchReceivedFriendRequests(): Promise<void>
@@ -13,7 +11,6 @@ type FriendsContextProps = {
 };
 
 const FriendsContext = createContext<FriendsContextProps>({
-  friends: [],
   receivedFriendRequests: [],
   sentFriendRequests: [],
   fetchReceivedFriendRequests: async () => {},
@@ -22,9 +19,6 @@ const FriendsContext = createContext<FriendsContextProps>({
 
 export const FriendsProvider = ({ children }: any) => {
   const { token } = useAuth();
-  const { user } = useUser();
-  // const { refresh } = useUser();
-  const [friends, setFriends] = useState<User[]>(user?.friends || []);
   const [receivedFriendRequests, setReceivedFriendRequests] = useState<FriendRequest[]>([]);
   const [sentFriendRequests, setSentFriendRequests] = useState<FriendRequest[]>([]);
   const fetchReceivedFriendRequests = async () => {
@@ -47,7 +41,6 @@ export const FriendsProvider = ({ children }: any) => {
   }, [token]);
 
   const value = {
-    friends,
     receivedFriendRequests,
     sentFriendRequests,
     fetchReceivedFriendRequests,

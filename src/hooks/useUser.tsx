@@ -12,7 +12,7 @@ type UserContextProps = {
   refresh: () => Promise<void>;
 };
 
-const UserContext = createContext<UserContextProps>({
+export const UserContext = createContext<UserContextProps>({
   user: null,
   setUser: (updatedUser: User) => { },
   hasError: false,

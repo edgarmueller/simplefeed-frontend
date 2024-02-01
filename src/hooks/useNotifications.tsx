@@ -7,7 +7,7 @@ import { useUser } from "./useUser";
 import { useFriends } from "./useFriends";
 import { SOCKET_URL } from "../api/constants";
 import { validateToken } from "../api/validateToken";
-import { NotificationState, useNotificationsStore } from "./useNotificationsStore";
+import { NotificationState, useNotificationsStore } from "../stores/useNotificationsStore";
 
 type NotificationContextProps = {
   markAsRead: (id: string) => void;

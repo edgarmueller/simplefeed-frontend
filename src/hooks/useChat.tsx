@@ -14,7 +14,7 @@ import { validateToken } from "../api/validateToken";
 import { Conversation, Message } from "../domain.interface";
 import { useAuth } from "./useAuth";
 import { useUser } from "./useUser";
-import { ChatState, useChatStore } from "./useChatStore";
+import { ChatState, useChatStore } from "../stores/useChatStore";
 
 const SEND_MESSAGE = "send_message";
 const MARK_AS_READ = "mark_as_read"
