@@ -11,7 +11,7 @@ import Settings from './pages/SettingsPage';
 import Chat from './pages/ChatPage';
 import Search from './pages/SearchPage';
 import NotificationsPage from './pages/NotificationsPage';
-import Post from './pages/PostPage';
+import Post, { loader as postLoader } from './pages/PostPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './index.css'
 import { SignUp } from './components/auth/SignUp';
@@ -33,7 +33,7 @@ const router = createBrowserRouter(
       <Route path='/friends' element={<ProtectedRoute><FriendsPage /></ProtectedRoute>} />
       <Route path='/chat' element={<ProtectedRoute><Chat/></ProtectedRoute>} />
       <Route path='/notifications' element={<ProtectedRoute><NotificationsPage/></ProtectedRoute>} />
-      <Route path='/posts/:id' element={<ProtectedRoute><Post/></ProtectedRoute>} />
+      <Route path='/posts/:postId' element={<ProtectedRoute><Post/></ProtectedRoute>} loader={postLoader} />
     </Route>
   )
 )

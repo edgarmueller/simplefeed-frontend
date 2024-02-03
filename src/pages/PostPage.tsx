@@ -26,7 +26,7 @@ const PostPage = () => {
 						<p>Error loading post!</p>
 					}
 				>
-					{(post) => <Post post={post} />}
+					{(post) => <Post post={post} showComments />}
 				</Await>
 			</React.Suspense>
 		</Layout>

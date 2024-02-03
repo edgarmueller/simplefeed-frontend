@@ -15,6 +15,7 @@ export interface CommentProps {
     page: number,
     commentId: string
   ) => Promise<Pagination<Comment>>;
+  isExpanded: boolean;
 }
 
 export const Comments = ({
@@ -22,11 +23,17 @@ export const Comments = ({
   postId,
   fetchComments,
   onReply,
+  isExpanded
 }: CommentProps) => {
   const [page, setPage] = useState(0);
   const [loadedItems, setLoadedItems] = useState<number>(0);
   const [totalItems, setTotalItems] = useState(0);
-  const { isOpen, onToggle } = useDisclosure()
+  const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: isExpanded })
+  useEffect(() => {
+    if (isOpen) {
+      setPage(1)
+    }
+  }, [])
   useEffect(() => {
     async function fetch() {
       if (page > 0) {

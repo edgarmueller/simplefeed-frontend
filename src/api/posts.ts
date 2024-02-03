@@ -126,7 +126,7 @@ export function buildCommentTree(comments: Comment[]): CommentNode[] {
   });
 }
 
-export const COMMENTS_FETCH_LIMIT = 1;
+export const COMMENTS_FETCH_LIMIT = 20;
 export async function fetchComments(
   postId: string,
   page = 1,

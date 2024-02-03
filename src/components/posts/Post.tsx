@@ -63,7 +63,7 @@ function PostHeader({ createdAt, author, postedTo }: PostHeaderProps) {
   )
 }
 
-const Post = memo(({ post }: { post: PostEntity }) => {
+const Post = memo(({ post, showComments = false }: { post: PostEntity, showComments: boolean }) => {
   const { user, setUser } = useUserStore();
   const [comments, setComments] = useState<Pagination<Comment>>({
     items: [],
@@ -128,6 +128,7 @@ const Post = memo(({ post }: { post: PostEntity }) => {
         postId={post.id}
         onReply={onReply}
         fetchComments={fetchComments}
+        isExpanded={showComments}
       />
       <LikeButton post={post} userId={user?.id} />
       {post.author.id === user?.id && (
