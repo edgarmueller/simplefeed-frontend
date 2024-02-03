@@ -120,7 +120,7 @@ const Post = memo(({ post }: { post: PostEntity }) => {
         {(post.attachments || [])
           .filter((attachment) => attachment.type === "image")
           .map((attachment) => (
-            <img src={attachment.url} />
+            <img key={attachment.url} src={attachment.url} />
           ))}
       </Box>
       <Comments

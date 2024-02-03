@@ -85,6 +85,7 @@ export const Conversations = () => {
           const messageCount = unreadByConversation![conversation.id]
           const mostRecentMessage = getMostRecentMessage(conversation);
           return <ConversationItem
+            key={conversation.id}
             user={user || undefined}
             conversation={conversation}
             unreadCount={messageCount}
