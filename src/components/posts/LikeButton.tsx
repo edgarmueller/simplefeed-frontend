@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Button } from "@chakra-ui/react";
-import { BiLike, BiTrash } from "react-icons/bi";
+import { BiLike } from "react-icons/bi";
 import { Post } from "../../domain.interface";
 import {
   likePost,
   unlikePost,
 } from "../../api/posts";
+import { useMutation } from "@tanstack/react-query";
+import { useUser } from "../../hooks/useUser";
 
 const isPostLiked = (post: Post, byUserId: string | undefined) => {
   return post.likes?.find(({ userId, unliked }) => userId === byUserId && !unliked) !== undefined;
@@ -17,19 +19,32 @@ export interface LikeButtonProps {
 }
 
 export const LikeButton = ({ post, userId }: LikeButtonProps) => {
+  const { refresh: refreshUser } = useUser();
   const [isLiked, setLiked] = useState(isPostLiked(post, userId));
   useEffect(() => { setLiked(isPostLiked(post, userId)) }, [post, userId]);
+  const likePostMutation = useMutation({
+    mutationFn: likePost,
+    onSuccess: () => {
+      refreshUser()
+      setLiked(true);
+    }
+  });
+  const unlikePostMutation = useMutation({
+    mutationFn: unlikePost,
+    onSuccess: () => {
+      refreshUser()
+      setLiked(false);
+    }
+  });
   return (
     <Button
       size="sm"
       leftIcon={<BiLike />}
       onClick={async () => {
         if (isLiked) {
-          await unlikePost(post.id);
-          setLiked(false);
+          unlikePostMutation.mutate(post.id);
         } else {
-          await likePost(post.id);
-          setLiked(true);
+          likePostMutation.mutate(post.id);
         }
       }}
     >

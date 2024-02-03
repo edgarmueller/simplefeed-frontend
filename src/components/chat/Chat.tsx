@@ -1,10 +1,10 @@
 import { Box, Button, Highlight, Input, Text, VStack } from "@chakra-ui/react";
 import { head } from "lodash";
 import { useEffect, useState } from "react";
-import { useUser } from "../../hooks/useUser";
 import { ScrollableBox } from "./ScrollableBox";
 import { useChat } from "../../hooks/useChat";
 import { useChatStore } from "../../stores/useChatStore";
+import { useUserStore } from "../../stores/useUserStore";
 
 export interface ChatProps {
   conversationId: string;
@@ -31,7 +31,7 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
   } = useChat();
   const messagesByConversation = useChatStore(s => s.messagesByConversation)
   const [page, setPage] = useState(1);
-  const { user } = useUser();
+  const { user } = useUserStore();
   const [inputValue, setInputValue] = useState("");
   useEffect(() => {
     requestMessages(conversationId, page);

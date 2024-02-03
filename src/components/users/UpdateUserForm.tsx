@@ -19,6 +19,7 @@ import React, { useEffect, useState } from "react";
 import { closeAccount, updateUserInfo } from "../../api/user";
 import { useUser } from "../../hooks/useUser";
 import { logout } from "../../api/auth";
+import { useUserStore } from "../../stores/useUserStore";
 
 const OutlinedBox = ({ children }: any) => {
   return (
@@ -56,7 +57,7 @@ export const FileInput = (props: InputProps) => {
 };
 
 export const UpdateUserForm = () => {
-  const { user, setUser } = useUser();
+  const { user, setUser } = useUserStore();
   const [userInfo, setUserInfo] = useState({
     email: user?.email || "",
     firstName: user?.firstName || "",

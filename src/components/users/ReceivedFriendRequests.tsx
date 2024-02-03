@@ -6,9 +6,11 @@ import { useFriends } from "../../hooks/useFriends";
 import { UserDetailSmall } from "./UserDetailSmall";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { useUserStore } from "../../stores/useUserStore";
 
 export const ReceivedFriendRequests = () => {
-  const { user, refresh: refreshUser } = useUser();
+  const { refresh: refreshUser } = useUser();
+  const { user } = useUserStore();
   const { fetchConversations, joinConversation } = useChat();
   const { receivedFriendRequests, fetchReceivedFriendRequests } = useFriends();
 

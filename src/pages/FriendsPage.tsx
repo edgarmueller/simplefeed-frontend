@@ -13,9 +13,11 @@ import { FriendList } from "../components/users/FriendList";
 import { UserDetailSmall } from "../components/users/UserDetailSmall";
 import { ReceivedFriendRequests } from "../components/users/ReceivedFriendRequests";
 import { SentFriendRequests } from "../components/users/SentFriendRequests";
+import { useUserStore } from "../stores/useUserStore";
 
 export const FriendsPage = () => {
-  const { user, refresh: refreshUser } = useUser();
+  const { refresh: refreshUser } = useUser();
+  const { friends } = useUserStore()
   const removeFriend = useMutation({
     mutationFn: (friendId: string) => removeFriendApi(friendId),
     onSuccess: refreshUser
@@ -36,7 +38,7 @@ export const FriendsPage = () => {
             Friends
           </Heading>
           <FriendList
-            friends={user?.friends || []}
+            friends={friends || []}
             renderFriend={(friend) => (
               <>
                 <UserDetailSmall user={friend} asLink />

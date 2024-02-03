@@ -9,10 +9,12 @@ import { Logo } from "./Logo";
 import { UserDetail } from "../users/UserDetail";
 import { getUnreadCount, useChatStore } from "../../stores/useChatStore";
 import { getUnreadNotifications, useNotificationsStore } from "../../stores/useNotificationsStore";
+import { useUserStore } from "../../stores/useUserStore";
 
 export const Layout = ({ children }: any) => {
   // 4 expected render initially
-  const { user, hasError, error } = useUser();
+  const { hasError, error } = useUser();
+  const { user } = useUserStore();
   const getUnreadMessages  = useChatStore(getUnreadCount)
   const unreadChatMessages = getUnreadMessages(user?.id)
   const unreadNotifications = useNotificationsStore(getUnreadNotifications)

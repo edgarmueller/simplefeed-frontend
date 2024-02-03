@@ -19,10 +19,10 @@ import {
   fetchComments as fetchCommentsApi,
 } from "../../api/posts";
 import { Comment, Pagination, Post as PostEntity } from "../../domain.interface";
-import { useUser } from "../../hooks/useUser";
 import { formatTimeAgo } from "../../lib/time-ago";
 import { Comments } from "./Comments";
 import { LikeButton } from "./LikeButton";
+import { useUserStore } from "../../stores/useUserStore";
 
 type PostHeaderProps = {
   author: {
@@ -64,7 +64,7 @@ function PostHeader({ createdAt, author, postedTo }: PostHeaderProps) {
 }
 
 const Post = memo(({ post }: { post: PostEntity }) => {
-  const { user, setUser } = useUser();
+  const { user, setUser } = useUserStore();
   const [comments, setComments] = useState<Pagination<Comment>>({
     items: [],
     meta: {

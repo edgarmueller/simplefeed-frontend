@@ -15,10 +15,10 @@ import { UserDetail } from "../components/users/UserDetail";
 import Chat from "../components/chat/Chat";
 import { PostList } from "../components/posts/PostList";
 import { Conversation, User } from "../domain.interface";
-import { useUser } from "../hooks/useUser";
 import { FriendList } from "../components/users/FriendList";
 import { UserDetailSmall } from "../components/users/UserDetailSmall";
 import { useChatStore } from "../stores/useChatStore";
+import { useUserStore } from "../stores/useUserStore";
 
 export async function loader({ params }: any): Promise<User | Response> {
   try {
@@ -40,7 +40,7 @@ const UserProfile = () => {
   const params = useParams();
   const location = useLocation();
   const showChat = location.pathname.includes("/chat");
-  const { user: myself, setUser: setMyUser } = useUser();
+  const { user: myself, setUser } = useUserStore();
   const isMyProfile = params.username === myself?.username;
   const user = useLoaderData() as User;
   const queryClient = useQueryClient();
@@ -83,7 +83,7 @@ const UserProfile = () => {
           <TabPanel>
             <SubmitForm
               onSubmit={async () => {
-                setMyUser({ ...user, nrOfPosts: user.nrOfPosts + 1 });
+                setUser({ ...user, nrOfPosts: user.nrOfPosts + 1 });
                 await queryClient.refetchQueries([
                   "posts",
                   "infinite",

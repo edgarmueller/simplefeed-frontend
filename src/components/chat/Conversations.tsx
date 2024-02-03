@@ -3,9 +3,9 @@ import { head } from "lodash";
 import { useNavigate } from "react-router-dom";
 import { Conversation, Message, User } from "../../domain.interface";
 import { useChat } from "../../hooks/useChat";
-import { useUser } from "../../hooks/useUser";
 import { getUnreadMessagesByConversation, useChatStore } from "../../stores/useChatStore";
 import { UserDetailSmall } from "../users/UserDetailSmall";
+import { useUserStore } from "../../stores/useUserStore";
 
 interface UnreadMessageCountProps {
   unreadMessages: number;
@@ -65,7 +65,7 @@ const ConversationItem = ({ user, conversation, unreadCount, mostRecentMessage }
 }
 
 export const Conversations = () => {
-  const { user } = useUser();
+  const { user } = useUserStore();
   const { error } = useChat();
   const conversations = useChatStore((state) => state.conversations);
   const messagesByConversation = useChatStore((state) => state.messagesByConversation);

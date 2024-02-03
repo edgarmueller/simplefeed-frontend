@@ -11,7 +11,6 @@ export interface User {
 	nrOfLikes: number
 	// TODO: split dtos?
 	mutualFriendsCount?: number
-	conversations: Conversation[]
 }
 
 export interface Conversation {

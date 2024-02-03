@@ -3,10 +3,10 @@ import { isEqual } from "lodash";
 import { me } from "../api/user";
 import { User } from "../domain.interface";
 import { useAuth } from "./useAuth";
+import { useUserStore } from "../stores/useUserStore";
 
 type UserContextProps = {
   user: User | null;
-  setUser: (user: User) => void;
   hasError: boolean;
   error: string | undefined;
   refresh: () => Promise<void>;
@@ -14,16 +14,15 @@ type UserContextProps = {
 
 export const UserContext = createContext<UserContextProps>({
   user: null,
-  setUser: (updatedUser: User) => { },
   hasError: false,
   error: undefined,
   refresh: async () => { },
 });
 
 export const UserProvider = ({ children }: any) => {
-  const { token } = useAuth();
-  const [user, setUser] = useState<User | null>(null);
-  const [error, setError] = useState();
+  const { token } = useAuth()
+  const { user, setUser, setFriends} = useUserStore()
+  const [error, setError] = useState()
   useEffect(() => {
     if (token) {
       me()
@@ -31,6 +30,7 @@ export const UserProvider = ({ children }: any) => {
           if (!isEqual(user, me)) {
             setUser(me);
           }
+          setFriends(user?.friends || [])
           if (error !== undefined) {
             setError(undefined);
           }
@@ -51,7 +51,6 @@ export const UserProvider = ({ children }: any) => {
   const value = useMemo(
     () => ({
       user,
-      setUser,
       refresh,
       hasError: error !== undefined,
       error,

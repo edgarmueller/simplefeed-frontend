@@ -4,7 +4,7 @@ import { useState } from "react";
 // @ts-ignore
 import extractUrls from "extract-urls";
 import { submitPost } from "../../api/posts";
-import { useUser } from "../../hooks/useUser";
+import { useUserStore } from "../../stores/useUserStore";
 import { FileInput } from "../users/UpdateUserForm";
 
 export interface SubmitFormProps {
@@ -15,7 +15,7 @@ export interface SubmitFormProps {
 export const SubmitForm = ({ onSubmit, postTo }: SubmitFormProps) => {
   const [text, setText] = useState("");
   const [attachments, setAttachments] = useState<any[]>([]);
-  const { user } = useUser();
+  const { user } = useUserStore();
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: submitPost,
