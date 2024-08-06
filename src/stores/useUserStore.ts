@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { User } from '../domain.interface';
+import { User } from '../model/domain.interface';
 
 export interface UserState {
   user: User | null

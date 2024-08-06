@@ -1,4 +1,4 @@
-import { User } from "../domain.interface";
+import { User } from "../model/domain.interface";
 import axios, { createHeaders } from "../lib/axios";
 import { API_URL } from "./constants";
 

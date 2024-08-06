@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { isEqual } from "lodash";
 import { me } from "../api/user";
-import { User } from "../domain.interface";
+import { User } from "../model/domain.interface";
 import { useAuth } from "./useAuth";
 import { useUserStore } from "../stores/useUserStore";
 

@@ -152,6 +152,7 @@ export const UpdateUserForm = () => {
         <FormControl onSubmit={handleSubmit} isInvalid={errors.length > 0}>
           <FormLabel>Email address</FormLabel>
           <Input
+            id="email"
             type="email"
             placeholder="Email address"
             onChange={handleUserInfoUpdated("email")}
@@ -160,6 +161,7 @@ export const UpdateUserForm = () => {
           />
           <FormLabel>First Name</FormLabel>
           <Input
+            id="first_name"
             type="text"
             placeholder="First name"
             onChange={handleUserInfoUpdated("firstName")}
@@ -168,6 +170,7 @@ export const UpdateUserForm = () => {
           />
           <FormLabel>Last Name</FormLabel>
           <Input
+            id="last_name"
             type="text"
             placeholder="Last name"
             onChange={handleUserInfoUpdated("lastName")}
@@ -197,6 +200,7 @@ export const UpdateUserForm = () => {
             <FormLabel>Password</FormLabel>
             <FormHelperText>If left empty, password will not be updated</FormHelperText>
             <Input
+              id="password"
               type="password"
               placeholder="Password"
               onChange={handleUserInfoUpdated('password')}
@@ -205,6 +209,7 @@ export const UpdateUserForm = () => {
             <FormLabel>Confirm Password</FormLabel>
             <FormHelperText>Confirm password, if filled</FormHelperText>
             <Input
+              id="confirm_password"
               type="password"
               placeholder="Confirm Password"
               onChange={handleUserInfoUpdated('confirmPassword')}

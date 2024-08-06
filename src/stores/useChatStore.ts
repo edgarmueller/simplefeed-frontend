@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Conversation, Message } from '../domain.interface';
+import { Conversation, Message } from '../model/domain.interface';
 import { sortBy, uniqBy } from 'lodash';
 
 export interface ChatState {
@@ -12,7 +12,6 @@ export interface ChatState {
 }
 
 export type GroupedMessages = { [conversationId: string]: Message[] }
-  
 
 // TODO: replace uniqBy and sortBy 
 const mergeAndSortMessages = (messages: Message[], moreMessages: Message[]) =>
@@ -47,32 +46,32 @@ export const useChatStore = create<ChatState>((set) => ({
   conversations: [],
   messagesByConversation: {},
   clearConversations: () => set({ conversations: [] }),
-  setConversations: (conversations: Conversation[]) => set(s => {
+  setConversations: (conversations: Conversation[]) => set(chatState => {
     const newState = {
-      ...s,
+      ...chatState,
       conversations,
-      messagesByConversation: groupMessagesByConversation(conversations, s.messagesByConversation),
+      messagesByConversation: groupMessagesByConversation(conversations, chatState.messagesByConversation),
     }
     return newState
   }),
-  addNewMessages: (conversationId: string, newMessages: Message[]) => set((state: ChatState) => {
-    const messagesByConversation = { ...state.messagesByConversation };
+  addNewMessages: (conversationId: string, newMessages: Message[]) => set(chatState => {
+    const messagesByConversation = { ...chatState.messagesByConversation };
     const messages = messagesByConversation[conversationId];
-    if (!messages) return state;
+    if (!messages) return chatState;
     return {
-      ...state,
+      ...chatState,
       messagesByConversation: {
         ...messagesByConversation,
         [conversationId]: mergeAndSortMessages(messages, newMessages)
       },
     };
   }),
-  markMessagesAsRead: (conversationId: string, readerUserId: string | undefined) => set((state: ChatState) => {
-    const messagesByConversation = { ...state.messagesByConversation };
+  markMessagesAsRead: (conversationId: string, readerUserId: string | undefined) => set(chatState => {
+    const messagesByConversation = { ...chatState.messagesByConversation };
     const messages = messagesByConversation[conversationId];
-    if (!messages || !readerUserId) return state;
+    if (!messages || !readerUserId) return chatState;
     return {
-      ...state,
+      ...chatState,
       messagesByConversation: {
         ...messagesByConversation,
         [conversationId]: messages.map((msg: Message) => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@chakra-ui/react";
 import { BiLike } from "react-icons/bi";
-import { Post } from "../../domain.interface";
+import { Post } from "../../model/domain.interface";
 import {
   likePost,
   unlikePost,
@@ -19,20 +19,20 @@ export interface LikeButtonProps {
 }
 
 export const LikeButton = ({ post, userId }: LikeButtonProps) => {
-  const { refresh: refreshUser } = useUser();
+  const { refresh: refreshUserProfile } = useUser();
   const [isLiked, setLiked] = useState(isPostLiked(post, userId));
   useEffect(() => { setLiked(isPostLiked(post, userId)) }, [post, userId]);
   const likePostMutation = useMutation({
     mutationFn: likePost,
     onSuccess: () => {
-      refreshUser()
+      refreshUserProfile()
       setLiked(true);
     }
   });
   const unlikePostMutation = useMutation({
     mutationFn: unlikePost,
     onSuccess: () => {
-      refreshUser()
+      refreshUserProfile()
       setLiked(false);
     }
   });

@@ -8,7 +8,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { User } from "../../domain.interface";
+import { User } from "../../model/domain.interface";
 import { BefriendButton } from "./BefriendButton";
 import { UserDetailSmall } from "./UserDetailSmall";
 

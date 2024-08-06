@@ -1,10 +1,10 @@
 import { Box, Button, Collapse, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import { BsArrowDownCircle, BsArrowUpCircle } from "react-icons/bs";
 // TODO
-import { COMMENTS_FETCH_LIMIT, CommentNode } from "../../api/posts";
+import { CommentNode } from "../../model/comments";
 import { CommentItem } from "./CommentItem";
 import { CommentForm } from "./CommentForm";
-import { Comment, Pagination } from "../../domain.interface";
+import { Comment, Pagination } from "../../model/domain.interface";
 import { useEffect, useState } from "react";
 
 export interface CommentProps {

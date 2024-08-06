@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getFriendRequests, getSentFriendRequests } from "../api/friends";
-import { FriendRequest } from "../domain.interface";
+import { FriendRequest } from "../model/domain.interface";
 import { useAuth } from "./useAuth";
 
 type FriendsContextProps = {

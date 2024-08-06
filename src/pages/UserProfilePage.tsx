@@ -14,7 +14,7 @@ import { SubmitForm } from "../components/posts/SubmitForm";
 import { UserDetail } from "../components/users/UserDetail";
 import Chat from "../components/chat/Chat";
 import { PostList } from "../components/posts/PostList";
-import { Conversation, User } from "../domain.interface";
+import { Conversation, User } from "../model/domain.interface";
 import { FriendList } from "../components/users/FriendList";
 import { UserDetailSmall } from "../components/users/UserDetailSmall";
 import { useChatStore } from "../stores/useChatStore";
@@ -84,11 +84,9 @@ const UserProfile = () => {
             <SubmitForm
               onSubmit={async () => {
                 setUser({ ...user, nrOfPosts: user.nrOfPosts + 1 });
-                await queryClient.refetchQueries([
-                  "posts",
-                  "infinite",
-                  userId,
-                ])
+                await queryClient.refetchQueries({
+                  queryKey: ["posts", "infinite", userId ]
+                });
               }}
               postTo={userId}
             />

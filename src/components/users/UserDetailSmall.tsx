@@ -1,6 +1,6 @@
 import { Avatar, Link, Stack, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { User } from "../../domain.interface";
+import { User } from "../../model/domain.interface";
 
 export interface UserDetailSmallProps {
   user?: User;

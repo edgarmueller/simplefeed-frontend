@@ -1,6 +1,6 @@
 import axios, { createHeaders } from "../lib/axios";
 import { API_URL } from "./constants";
-import { FriendRequest } from "../domain.interface";
+import { FriendRequest } from "../model/domain.interface";
 
 export const removeFriend = async (friendId: string) => {
   await axios.delete(`${API_URL}/friends/${friendId}`, {

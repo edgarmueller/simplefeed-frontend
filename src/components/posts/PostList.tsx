@@ -1,5 +1,5 @@
 import { fetchPosts } from "../../api/posts";
-import { Post as PostEntity } from "../../domain.interface";
+import { Post as PostEntity } from "../../model/domain.interface";
 import { InfiniteScroll } from "../common/InfiniteScroll";
 import { Post } from "./Post";
 import "./PostList.css";
@@ -15,7 +15,7 @@ export const PostList = ({ userId }: PostListProps) => {
     <InfiniteScroll queryKey={["posts", "infinite", `${userId}`]} queryFn={fetchPosts(userId)}>
       {(posts: PostEntity[]) => (
         <>
-          {posts.map((post, i) => <Post key={post.id} post={post} />)}
+          {posts.map((post, i) => <Post key={post.id} post={post} showComments={false} />)}
         </>
       )}
     </InfiniteScroll>

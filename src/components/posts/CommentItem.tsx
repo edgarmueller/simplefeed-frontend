@@ -1,9 +1,9 @@
 import { Avatar, Box, Button, Flex, Stack, Text } from "@chakra-ui/react";
 import { memo, useEffect, useState } from "react";
-import { CommentNode } from "../../api/posts";
-import { Comment, Pagination } from "../../domain.interface";
+import { Comment, Pagination } from "../../model/domain.interface";
 import { formatTimeAgo } from "../../lib/time-ago";
 import { CommentForm } from "./CommentForm";
+import { CommentNode } from "../../model/comments";
 
 export interface CommentItemProps {
   postId: string;

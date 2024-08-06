@@ -1,7 +1,7 @@
 import { Alert, AlertDescription, AlertIcon, Badge, Box, Card, CardBody, Text } from "@chakra-ui/react";
 import { head } from "lodash";
 import { useNavigate } from "react-router-dom";
-import { Conversation, Message, User } from "../../domain.interface";
+import { Conversation, Message, User } from "../../model/domain.interface";
 import { useChat } from "../../hooks/useChat";
 import { getUnreadMessagesByConversation, useChatStore } from "../../stores/useChatStore";
 import { UserDetailSmall } from "../users/UserDetailSmall";

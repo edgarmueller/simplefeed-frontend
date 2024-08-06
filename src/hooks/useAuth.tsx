@@ -1,7 +1,7 @@
 import useLocalStorage from "@rehooks/local-storage";
 import { createContext, useCallback, useContext, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { User } from "../domain.interface";
+import { User } from "../model/domain.interface";
 import jwtDecode from "jwt-decode";
 import { refreshToken } from "../lib/axios";
 import { getAccessToken, logout as logoutApi } from "../api/auth"
@@ -33,14 +33,12 @@ export const AuthProvider = ({ children }: any) => {
   }, [navigate])
 
   useEffect(() => { 
+    // run every minute
     // implement timer
     setInterval(() => {
       const accessToken = getAccessToken();
       if (!accessToken) return;
       const decoded = jwtDecode(accessToken) as any;
-      // console.log(decoded.exp * 1000 < Date.now())
-      // console.log(decoded.exp, Date.now())
-      // console.log(decoded.exp * 1000 - 30 * 1000 , Date.now())
       if (decoded.exp * 1000 - 60 * 1000 < Date.now()) {
         refreshToken();
       }

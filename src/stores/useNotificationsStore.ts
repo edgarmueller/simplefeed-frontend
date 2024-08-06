@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Notification } from '../domain.interface';
+import { Notification } from '../model/domain.interface';
 
 export interface NotificationState {
   notifications: Notification[]

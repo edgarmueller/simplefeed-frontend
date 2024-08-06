@@ -1,4 +1,4 @@
-import { Conversation } from "../domain.interface";
+import { Conversation } from "../model/domain.interface";
 import axios, { createHeaders } from "../lib/axios";
 import { API_URL } from "./constants";
 

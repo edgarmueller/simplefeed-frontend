@@ -1,25 +1,12 @@
-import { Comment, Pagination, Post } from "../domain.interface";
+import { Pagination, Post } from "../model/domain.interface";
 import axios, { createHeaders } from "../lib/axios";
 import { API_URL } from "./constants";
 
-export async function submitPost(post: any) {
-  const formData = new FormData();
-  post.attachments
-    .filter(({ type }: any) => type === "image")
-    .forEach(({ image }: any, index: number) => {
-      formData.append(`image_${index}`, image);
-    });
-  formData.append("body", post.body);
-  formData.append("attachments", JSON.stringify(post.attachments));
-  formData.append("toUserId", post.toUserId);
-  const res = await axios.post(`${API_URL}/posts`, formData, {
-    headers: {
-      ...createHeaders(),
-      "Content-Type": "multipart/form-data",
-    },
-  });
-  return res.data;
-}
+export type SubmitPostDto = {
+  body: string;
+  toUserId: string | undefined;
+  attachments: any[];
+};
 
 export async function fetchFeed(
   page?: number,
@@ -50,18 +37,24 @@ export async function fetchPost(postId: string): Promise<Post> {
   return res.data;
 }
 
-export async function postComment(
-  postId: string,
-  content: string,
-  path: string | undefined
-): Promise<Comment> {
-  const res = await axios.post(
-    `${API_URL}/posts/${postId}/comments`,
-    { content, path: `${postId}/${path}` },
-    {
-      headers: createHeaders(),
-    }
-  );
+export async function submitPost(post: SubmitPostDto): Promise<Post> {
+  const formData = new FormData();
+  post.attachments
+    .filter(({ type }: any) => type === "image")
+    .forEach(({ image }: any, index: number) => {
+      formData.append(`image_${index}`, image);
+    });
+  formData.append("body", post.body);
+  formData.append("attachments", JSON.stringify(post.attachments));
+  if (post.toUserId) {
+    formData.append("toUserId", post.toUserId);
+  }
+  const res = await axios.post(`${API_URL}/posts`, formData, {
+    headers: {
+      ...createHeaders(),
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return res.data;
 }
 
@@ -81,64 +74,4 @@ export async function deletePost(postId: string): Promise<void> {
   await axios.delete(`${API_URL}/posts/${postId}`, {
     headers: createHeaders(),
   });
-}
-
-export interface CommentNode {
-  comment: Comment;
-  children: CommentNode[];
-}
-
-function escape(path: string) {
-  // console.log({ path })
-  const ret = path.replace(/-/g, "_").replace(/\//gi, '.');
-  // console.log( { ret })
-  return ret
-}
-
-export function buildCommentTree(comments: Comment[]): CommentNode[] {
-  const commentMap = new Map<string, CommentNode>();
-
-
-  // First pass: create a CommentNode for each comment
-  for (const comment of comments) {
-    commentMap.set(escape(comment.id), {
-      comment,
-      children: [],
-    });
-  }
-
-  // Second pass: link CommentNodes based on their paths
-  for (const comment of comments) {
-    const path = escape(comment.path).split(".");
-    if (path.length > 1) {
-      const parentId = escape(path[path.length - 1]);
-      const parent = commentMap.get(parentId);
-      if (parent) {
-        parent.children.push(commentMap.get(escape(comment.id))!);
-      }
-    }
-  }
-
-  // Return the root nodes (comments with no parents)
-  return Array.from(commentMap.values()).filter((node) => {
-    const path = node.comment.path?.split(".");
-    return path.length === 1;
-  });
-}
-
-export const COMMENTS_FETCH_LIMIT = 20;
-export async function fetchComments(
-  postId: string,
-  page = 1,
-  commentId = postId
-): Promise<Pagination<Comment>> {
-  // TODO: hard coded limit
-  const limit = COMMENTS_FETCH_LIMIT;
-  const url = commentId
-    ? `${API_URL}/posts/${postId}/comments/${commentId}?page=${page}&limit=${limit}`
-    : `${API_URL}/posts/${postId}/comments?page=${page}&limit=${limit}`;
-  const res = await axios.get(url, {
-    headers: createHeaders(),
-  });
-  return res.data;
 }

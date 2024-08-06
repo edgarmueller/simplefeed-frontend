@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import { useAuth } from "./useAuth";
-import { Notification } from "../domain.interface";
+import { Notification } from "../model/domain.interface";
 import { useChat } from "./useChat";
 import { useUser } from "./useUser";
 import { useFriends } from "./useFriends";

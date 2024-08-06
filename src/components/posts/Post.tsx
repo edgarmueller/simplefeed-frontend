@@ -13,16 +13,16 @@ import { Link as RouterLink } from "react-router-dom";
 import YouTube from "react-youtube";
 import { isEqual } from "lodash";
 import {
-  CommentNode,
-  buildCommentTree,
   deletePost,
-  fetchComments as fetchCommentsApi,
 } from "../../api/posts";
-import { Comment, Pagination, Post as PostEntity } from "../../domain.interface";
+import { fetchComments as fetchCommentsApi } from "../../api/comments";
+import { Comment, Pagination, Post as PostEntity } from "../../model/domain.interface";
 import { formatTimeAgo } from "../../lib/time-ago";
 import { Comments } from "./Comments";
 import { LikeButton } from "./LikeButton";
 import { useUserStore } from "../../stores/useUserStore";
+import { CommentNode, buildCommentTree } from "../../model/comments";
+import { useMutation } from "@tanstack/react-query";
 
 type PostHeaderProps = {
   author: {
@@ -65,6 +65,15 @@ function PostHeader({ createdAt, author, postedTo }: PostHeaderProps) {
 
 const Post = memo(({ post, showComments = false }: { post: PostEntity, showComments: boolean }) => {
   const { user, setUser } = useUserStore();
+  const deletePostMutation = useMutation({
+    mutationFn: deletePost,
+    onSuccess: () => {
+      setVisible(false);
+      if (user) {
+        setUser({ ...user, nrOfPosts: user?.nrOfPosts - 1 });
+      }
+    }
+  });
   const [comments, setComments] = useState<Pagination<Comment>>({
     items: [],
     meta: {
@@ -136,9 +145,7 @@ const Post = memo(({ post, showComments = false }: { post: PostEntity, showComme
           size="sm"
           leftIcon={<BiTrash />}
           onClick={async () => {
-            await deletePost(post.id);
-            setVisible(false);
-            setUser({ ...user, nrOfPosts: user.nrOfPosts - 1 });
+            await deletePostMutation.mutate(post.id);
           }}
         >
           Delete

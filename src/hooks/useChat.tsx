@@ -11,7 +11,7 @@ import { Socket, io } from "socket.io-client";
 import { fetchConversations } from "../api/chat";
 import { SOCKET_URL } from "../api/constants";
 import { validateToken } from "../api/validateToken";
-import { Conversation, Message } from "../domain.interface";
+import { Conversation, Message } from "../model/domain.interface";
 import { useAuth } from "./useAuth";
 import { useUser } from "./useUser";
 import { ChatState, useChatStore } from "../stores/useChatStore";

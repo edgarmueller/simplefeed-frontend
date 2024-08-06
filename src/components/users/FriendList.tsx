@@ -1,6 +1,6 @@
 import { Box, Flex } from "@chakra-ui/react";
 import React from "react";
-import { User } from "../../domain.interface";
+import { User } from "../../model/domain.interface";
 
 export interface FriendListProps {
   friends: User[];
