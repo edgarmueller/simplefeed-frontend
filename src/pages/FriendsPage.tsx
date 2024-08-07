@@ -3,10 +3,11 @@ import {
   Card,
   CardBody,
   Heading,
-  Stack
+  Stack,
+  useToast
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
-import { removeFriend as removeFriendApi } from "../api/friends";
+import { removeFriend } from "../api/friends";
 import { useUser } from "../hooks/useUser";
 import { Layout } from "../components/common/Layout";
 import { FriendList } from "../components/users/FriendList";
@@ -16,11 +17,28 @@ import { SentFriendRequests } from "../components/users/SentFriendRequests";
 import { useUserStore } from "../stores/useUserStore";
 
 export const FriendsPage = () => {
+  const toast = useToast();
   const { refresh: refreshUser } = useUser();
   const { friends } = useUserStore()
-  const removeFriend = useMutation({
-    mutationFn: (friendId: string) => removeFriendApi(friendId),
-    onSuccess: refreshUser
+  const removeFriendMutation = useMutation({
+    mutationFn: (friendId: string) => removeFriend(friendId),
+    onSuccess: async () => {
+      await refreshUser();
+      toast({
+        title: "Friend removed",
+        status: "success",
+        duration: 5000,
+        isClosable: true
+      })
+    },
+    onError: (error: Error) => {
+      toast({
+        title: `Remove friend request failed: ${error.message}. Please try again later.`,
+        status: "error",
+        duration: 5000,
+        isClosable: true
+      })
+    }
   }) 
   return (
     <Layout>
@@ -47,7 +65,7 @@ export const FriendsPage = () => {
                   colorScheme="red"
                   size="xs"
                   onClick={() => {
-                    removeFriend.mutate(friend.id);
+                    removeFriendMutation.mutate(friend.id);
                   }}
                 >
                   Remove

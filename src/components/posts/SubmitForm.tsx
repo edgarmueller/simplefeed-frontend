@@ -20,8 +20,12 @@ export const SubmitForm = ({ onSubmit, postTo }: SubmitFormProps) => {
   const mutation = useMutation({
     mutationFn: submitPost,
     onSuccess: (post) => {
-      if (onSubmit) onSubmit(post);
-      queryClient.invalidateQueries(["feed", "infinite"]);
+      if (onSubmit) {
+        onSubmit(post);
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["feed", "infinite"]
+      });
     },
   });
   const handleImageAttached = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,8 +43,10 @@ export const SubmitForm = ({ onSubmit, postTo }: SubmitFormProps) => {
     event.preventDefault();
     mutation.mutate({
       // remove urls from body
-      body: text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, ""),
-      toUserId: postTo ? postTo : user?.id,
+      // text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, ""),
+      body: text,
+      toUserId: postTo || user?.id,
+      // map to attachments
       attachments: [
         ...attachments,
         ...(extractUrls(text) || [])

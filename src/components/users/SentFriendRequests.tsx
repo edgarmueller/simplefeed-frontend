@@ -1,17 +1,33 @@
-import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
-import { cancelFriendRequest as cancelFriendRequestApi } from "../../api/friends";
+import { Box, Button, Flex, Heading, Text, useToast } from "@chakra-ui/react";
+import { cancelFriendRequest } from "../../api/friends";
 import { useFriends } from "../../hooks/useFriends";
 import { UserDetailSmall } from "./UserDetailSmall";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 export const SentFriendRequests = () => {
+  const toast = useToast();
   const { sentFriendRequests, fetchSentFriendRequests } = useFriends();
-  const cancelFriendRequest = useMutation({
-    mutationFn: (friendRequestId: string) => cancelFriendRequestApi(friendRequestId),
+  const cancelFriendRequestMutation = useMutation({
+    mutationFn: (friendRequestId: string) => cancelFriendRequest(friendRequestId),
     onSuccess: async () => {
-      fetchSentFriendRequests();
-    }
+      // refetch sent friend requests
+      await fetchSentFriendRequests();
+      toast({
+        title: "Friend request cancelled",
+        status: "success",
+        duration: 5000,
+        isClosable: true
+      })
+    },
+    onError: (error: Error) => {
+      toast({
+        title: `Cancel friend request failed: ${error.message}. Please try again later.`,
+        status: "error",
+        duration: 5000,
+        isClosable: true
+      })
+    } 
   });
   useEffect(() => {
     fetchSentFriendRequests();
@@ -33,7 +49,7 @@ export const SentFriendRequests = () => {
               colorScheme="red"
               size="xs"
               onClick={async () => {
-								cancelFriendRequest.mutate(friendRequest.id)
+								cancelFriendRequestMutation.mutate(friendRequest.id)
 							}}
             >
               Cancel

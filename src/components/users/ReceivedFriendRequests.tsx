@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Stack, Text, useToast } from "@chakra-ui/react";
 import { acceptFriendRequest as acceptFriendRequestApi, declineFriendRequest as declineFriendRequestApi } from "../../api/friends";
 import { useUser } from "../../hooks/useUser";
 import { useChat } from "../../hooks/useChat";
@@ -9,7 +9,8 @@ import { useEffect } from "react";
 import { useUserStore } from "../../stores/useUserStore";
 
 export const ReceivedFriendRequests = () => {
-  const { refresh: refreshUser } = useUser();
+  const { refresh: refreshUserProfile } = useUser();
+  const toast = useToast();
   const { user } = useUserStore();
   const { fetchConversations, joinConversation } = useChat();
   const { receivedFriendRequests, fetchReceivedFriendRequests } = useFriends();
@@ -18,12 +19,15 @@ export const ReceivedFriendRequests = () => {
     fetchReceivedFriendRequests();
   }, []);
 
-  const acceptFriendRequest = useMutation({
+  const acceptFriendRequestMutation = useMutation({
     mutationFn: (friendRequestId: string) => acceptFriendRequestApi(friendRequestId),
     onSuccess: async (data) => {
-      fetchReceivedFriendRequests();
-      // refresh user to fetch friends
-      await refreshUser();
+      await Promise.all([
+        // refresh user to fetch friends
+        fetchReceivedFriendRequests(),
+        // refresh user profile
+        refreshUserProfile()
+      ]);
       const conversations = await fetchConversations();
       const conversation = conversations.find(
         (conversation) =>
@@ -34,12 +38,34 @@ export const ReceivedFriendRequests = () => {
         return;
       }
       await joinConversation(conversation.id);
+      toast({
+        title: "Friend request accepted",
+        status: "success",
+        duration: 5000,
+        isClosable: true
+      })
+    },
+    onError: (error: Error) => {
+      toast({
+        title: `Accept friend request failed: ${error.message}. Please try again later.`,
+        status: "error",
+        duration: 5000,
+        isClosable: true
+      })
     }
   })
   const declineFriendRequest = useMutation({
     mutationFn: (friendRequestId: string) => declineFriendRequestApi(friendRequestId),
     onSuccess: async () => {
-      fetchReceivedFriendRequests();
+      await fetchReceivedFriendRequests();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: `Decline friend request failed: ${error.message}. Please try again later.`,
+        status: "error",
+        duration: 5000,
+        isClosable: true
+      })
     }
   });
 
@@ -64,7 +90,7 @@ export const ReceivedFriendRequests = () => {
                   colorScheme="green"
                   size="xs"
                   onClick={async () => {
-                    await acceptFriendRequest.mutate(friendRequest.id);
+                    await acceptFriendRequestMutation.mutate(friendRequest.id);
                   }}
                 >
                   Accept

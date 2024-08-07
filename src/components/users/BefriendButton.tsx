@@ -16,8 +16,8 @@ export const BefriendButton = ({
   const [friendRequestSent, setFriendRequestSent] = useState<boolean>(hasFriendRequest);
   const makeFriendRequestMutation = useMutation({
     mutationFn: (username: string) => makeFriendRequest(username),
-    onSuccess: () => {
-      setFriendRequestSent(true);
+    onSuccess: async () => {
+      await setFriendRequestSent(true);
       toast({
         title: "Friend request sent",
         status: "success",

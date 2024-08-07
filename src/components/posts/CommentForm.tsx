@@ -1,6 +1,7 @@
 import {
   Button, Stack,
-  Textarea
+  Textarea,
+  useToast
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { submitComment } from "../../api/comments";
@@ -16,6 +17,7 @@ export interface CommentProps {
 
 export const CommentForm = ({ postId, path, onSubmit }: CommentProps) => {
   const [comment, setComment] = useState("");
+  const toast = useToast();
   const mutation = useMutation({
     mutationFn: submitComment,
     onSuccess: (comment: Comment) => {
@@ -24,6 +26,14 @@ export const CommentForm = ({ postId, path, onSubmit }: CommentProps) => {
       }
       setComment("");
     },
+    onError: (error: Error) => {
+      toast({
+        title: `Post comment failed: ${error.message}. Please try again later.`,
+        status: "error",
+        duration: 5000,
+        isClosable: true
+      })
+    }
   });
   const handleSubmit = (event: any) => {
     event.preventDefault();
