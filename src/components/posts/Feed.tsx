@@ -7,7 +7,7 @@ export const Feed = () => {
   return (
     <>
       <SubmitForm />
-      <InfiniteScroll queryKey={["feed", "infinite"]} fetchPage={fetchFeed}>
+      <InfiniteScroll queryKey={["feed"]} fetchPage={fetchFeed}>
         {(posts) => (
           <>
             {posts.map((post, i) => <Post key={post.id} post={post} showComments={false}/>)}
