@@ -1,9 +1,9 @@
 import { Box } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useBottomScrollListener } from "react-bottom-scroll-listener";
+import { useIntersectionObserver } from "@uidotdev/usehooks";
 
 import InfiniteScroll from "react-infinite-scroll-component";
-import { useInView } from "react-intersection-observer";
 
 export function ScrollableBox({
   children,
@@ -16,13 +16,13 @@ export function ScrollableBox({
     onScrollToBottom();
   });
 
-  const [ref, inView] = useInView();
+  const [ref, entry] = useIntersectionObserver();
 
   useEffect(() => {
-    if (inView) {
+    if (entry?.isIntersecting) {
       onScrollToBottom();
     }
-  }, [inView]);
+  }, [entry?.isIntersecting]);
 
   return (
     <Box
