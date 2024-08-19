@@ -24,7 +24,7 @@ export const SubmitForm = ({ onSubmit, postTo }: SubmitFormProps) => {
         onSubmit(post);
       }
       queryClient.invalidateQueries({
-        queryKey: ["feed", "infinite"]
+        queryKey: ["feed"]
       });
     },
   });
