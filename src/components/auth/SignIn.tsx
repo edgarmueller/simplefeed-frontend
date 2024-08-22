@@ -8,7 +8,7 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import { Link, Navigate } from "react-router-dom";
+import { Link as RouterLink, Navigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { SignInLogic } from "./SignInLogic";
 import { login as loginApi } from "../../api/auth";
@@ -37,7 +37,10 @@ export const SignIn = () => {
           <Flex alignItems="center" justifyContent="center" minHeight="100vh">
             <Box maxW="md" w="100%">
               <Logo />
-              <FormControl onSubmit={handleSubmit} isInvalid={errors.length > 0}>
+              <FormControl
+                onSubmit={handleSubmit}
+                isInvalid={errors.length > 0}
+              >
                 <FormLabel>Email address</FormLabel>
                 <Input
                   type="email"
@@ -69,7 +72,9 @@ export const SignIn = () => {
               <Box p={4}>
                 <Text>
                   Don't have an account?{" "}
-                  <Link to="/sign-up">Sign up here!</Link>
+                  <RouterLink to="/sign-up">
+                    <Button variant="link">Sign up here!</Button>
+                  </RouterLink>
                 </Text>
               </Box>
             </Box>
