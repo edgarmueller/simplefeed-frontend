@@ -13,21 +13,31 @@ import {
   FormLabel,
   Input,
   InputProps,
-  useMultiStyleConfig
+  useMultiStyleConfig,
+  useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { closeAccount, updateUserInfo } from "../../api/user";
-import { useUser } from "../../hooks/useUser";
 import { logout } from "../../api/auth";
 import { useUserStore } from "../../stores/useUserStore";
+import { useMutation } from "@tanstack/react-query";
+import { User } from "../../model/domain.interface";
 
 const OutlinedBox = ({ children }: any) => {
   return (
-    <Box alignItems="center" justifyItems={"center"} border={"1px"} borderColor={"gray.200"} borderRadius={"lg"} p={2} mt={2}>
-    {children}
+    <Box
+      alignItems="center"
+      justifyItems={"center"}
+      border={"1px"}
+      borderColor={"gray.200"}
+      borderRadius={"lg"}
+      p={2}
+      mt={2}
+    >
+      {children}
     </Box>
-  )
-}
+  );
+};
 
 const formatError = (error: string) => {
   return error.replace("user.", "");
@@ -67,17 +77,17 @@ export const UpdateUserForm = () => {
     confirmPassword: "",
   });
   useEffect(() => {
-    setUserInfo(info => ({
+    setUserInfo((info) => ({
       ...info,
       email: user?.email || "",
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
-    }))
-  }, [user])
+    }));
+  }, [user]);
 
-  const [canSubmit, setCanSubmit] = useState<boolean>(true);
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitted, setSubmitted] = useState<boolean>(false);
+  const toast = useToast();
 
   const handleUserInfoUpdated =
     (fieldName: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,43 +95,58 @@ export const UpdateUserForm = () => {
         ...userInfo,
         [fieldName]: event.target.value,
       });
-   
     };
-  const handleUserAvatarUpdated =
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setUserInfo({
-        ...userInfo,
-        image: event.target.files![0],
-      });
-    };
+  const handleUserAvatarUpdated = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setUserInfo({
+      ...userInfo,
+      image: event.target.files![0],
+    });
+  };
 
   const handleClose = async (event: React.FormEvent) => {
     event.preventDefault();
     await closeAccount();
     await logout();
-  }
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    // Prevent page reload
-    event.preventDefault();
-    const { email, password, firstName, lastName, image } =
-      userInfo;
-    try {
-      const me = await updateUserInfo(user!.id, { email, firstName, lastName, image, password });
+  };
+  const updateUserMutation = useMutation({
+    mutationFn: async () => {
+      const { email, password, firstName, lastName, image } = userInfo;
+      return updateUserInfo(user!.id, {
+        email,
+        firstName,
+        lastName,
+        image,
+        password,
+      });
+    },
+    onSuccess: (me: User) => {
       setSubmitted(true);
       setErrors([]);
       setUser({
         ...user,
-        ...me
-      }); 
-    } catch (error) {
-      if (error instanceof Error) {
-        setErrors(error.message.split(",").map(formatError));
-      }
-    }
+        ...me,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: `Update user failed: ${error.message}. Please try again later.`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      setErrors(error.message.split(",").map(formatError));
+    },
+  });
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    // Prevent page reload
+    event.preventDefault();
+    await updateUserMutation.mutate();
   };
 
-	const handlePasswordSubmit = async (event: React.FormEvent) => {
+  const handlePasswordSubmit = async (event: React.FormEvent) => {
     try {
       //await updatePassword(user.id, password);
       setSubmitted(true);
@@ -131,7 +156,7 @@ export const UpdateUserForm = () => {
         setErrors(error.message.split(",").map(formatError));
       }
     }
-	}
+  };
 
   if (!user) {
     return null;
@@ -141,7 +166,7 @@ export const UpdateUserForm = () => {
     <Flex>
       <Box w="100%">
         {isSubmitted && (
-          <Alert status='success'>
+          <Alert status="success">
             <AlertIcon />
             <AlertTitle>Success!</AlertTitle>
             <AlertDescription>
@@ -179,7 +204,16 @@ export const UpdateUserForm = () => {
           />
           <OutlinedBox>
             <FormLabel>Avatar</FormLabel>
-            <Avatar mb={2} src={userInfo.image ? URL.createObjectURL(userInfo.image) : user.imageUrl} borderRadius="lg" size="xl" />
+            <Avatar
+              mb={2}
+              src={
+                userInfo.image
+                  ? URL.createObjectURL(userInfo.image)
+                  : user.imageUrl
+              }
+              borderRadius="lg"
+              size="xl"
+            />
             <FileInput
               placeholder="Avatar"
               onChange={handleUserAvatarUpdated}
@@ -198,12 +232,14 @@ export const UpdateUserForm = () => {
             isInvalid={errors.length > 0}
           >
             <FormLabel>Password</FormLabel>
-            <FormHelperText>If left empty, password will not be updated</FormHelperText>
+            <FormHelperText>
+              If left empty, password will not be updated
+            </FormHelperText>
             <Input
               id="password"
               type="password"
               placeholder="Password"
-              onChange={handleUserInfoUpdated('password')}
+              onChange={handleUserInfoUpdated("password")}
               minW="100%"
             />
             <FormLabel>Confirm Password</FormLabel>
@@ -212,14 +248,13 @@ export const UpdateUserForm = () => {
               id="confirm_password"
               type="password"
               placeholder="Confirm Password"
-              onChange={handleUserInfoUpdated('confirmPassword')}
+              onChange={handleUserInfoUpdated("confirmPassword")}
               minW="100%"
             />
           </FormControl>
         </OutlinedBox>
         <Button
           type="submit"
-          disabled={!canSubmit}
           onClick={handleSubmit}
           marginTop={4}
         >
@@ -230,7 +265,7 @@ export const UpdateUserForm = () => {
           onClick={handleClose}
           marginTop={4}
           marginLeft={4}
-          variant={'outline'}
+          variant={"outline"}
           colorScheme="red"
         >
           Close Account
