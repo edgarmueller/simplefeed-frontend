@@ -5,8 +5,7 @@ import { API_URL } from '../api/constants';
 
 const REFRESH_URL = `${API_URL}/auth/refresh`;
 
-export const createHeaders = () => {
-  const token = localStorage.getItem("token")
+export const createHeaders = (token = localStorage.getItem('token')) => {
   if (!token) {
     return
   }

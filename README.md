@@ -2,7 +2,7 @@
 
 Frontend for `simplefeed`.
 
-This project was bootstrapped via CRA, but was migrated to vite.
+This project was bootstrapped via CRA, but was migrated to vite later.
 
 ## Getting started
 

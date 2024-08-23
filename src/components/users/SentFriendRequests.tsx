@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, Text, useToast } from "@chakra-ui/react";
+import { Alert, Box, Button, Flex, Heading, Spinner, Text, useToast } from "@chakra-ui/react";
 import { cancelFriendRequest } from "../../api/friends";
 import { useFriends } from "../../hooks/useFriends";
 import { UserDetailSmall } from "./UserDetailSmall";
@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 export const SentFriendRequests = () => {
   const toast = useToast();
-  const { sentFriendRequests, fetchSentFriendRequests } = useFriends();
+  const { sentFriendRequests, fetchSentFriendRequests, isLoadingSentFriendRequests, sentFriendRequestsFetchError } = useFriends();
   const cancelFriendRequestMutation = useMutation({
     mutationFn: (friendRequestId: string) => cancelFriendRequest(friendRequestId),
     onSuccess: async () => {
@@ -33,6 +33,12 @@ export const SentFriendRequests = () => {
     fetchSentFriendRequests();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  if (isLoadingSentFriendRequests) {
+    return <Spinner />
+  }
+  if (sentFriendRequestsFetchError) {
+    return <Alert variant='solid' colorScheme="red">{sentFriendRequestsFetchError.message}</Alert>
+  }
   return (
     <Box>
       <Heading size="xs" mb={2}>Sent</Heading>
