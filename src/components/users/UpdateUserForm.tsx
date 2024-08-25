@@ -68,6 +68,12 @@ export const FileInput = (props: InputProps) => {
 
 export const UpdateUserForm = () => {
   const { user, setUser } = useUserStore();
+  const closeAccountMutation = useMutation({
+    mutationFn: async () => await closeAccount(),
+    onSuccess: () => {
+      logout();
+    }
+  })
   const [userInfo, setUserInfo] = useState({
     email: user?.email || "",
     firstName: user?.firstName || "",
@@ -107,8 +113,7 @@ export const UpdateUserForm = () => {
 
   const handleClose = async (event: React.FormEvent) => {
     event.preventDefault();
-    await closeAccount();
-    await logout();
+    await closeAccountMutation.mutate();
   };
   const updateUserMutation = useMutation({
     mutationFn: async () => {

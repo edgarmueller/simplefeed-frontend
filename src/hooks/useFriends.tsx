@@ -36,6 +36,7 @@ const FriendsContext = createContext<FriendsContextProps>({
 
 function useFriendRequests() {
   return useQuery({
+    enabled: false,
     queryKey: ["friend-requests"],
     queryFn: () => {
       return getFriendRequests();
@@ -45,6 +46,7 @@ function useFriendRequests() {
 
 function useSentFriendRequests() {
   return useQuery({
+    enabled: false,
     queryKey: ["sent-friend-requests"],
     queryFn: () => {
       return getSentFriendRequests();
@@ -53,7 +55,6 @@ function useSentFriendRequests() {
 }
 
 export const FriendsProvider = ({ children }: any) => {
-  const { token } = useAuth();
   const {
     data: receivedFriendRequests,
     refetch: fetchReceivedFriendRequests,
@@ -66,14 +67,6 @@ export const FriendsProvider = ({ children }: any) => {
     isLoading: isLoadingSentFriendRequests,
     error: sentFriendRequestsFetchError
   } = useSentFriendRequests();
-
-  useEffect(() => {
-    if (!token) {
-      return;
-    }
-    fetchReceivedFriendRequests();
-    fetchSentFriendRequests();
-  }, [token]);
 
   const value = {
     receivedFriendRequests: receivedFriendRequests || [],
