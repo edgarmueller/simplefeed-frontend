@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo } from "react";
+import type { ReactNode } from "react";
 import { useNavigate } from "react-router";
 import { jwtDecode } from "jwt-decode";
 import { refreshToken } from "../lib/axios";
@@ -17,7 +18,7 @@ const AuthContext = createContext<AuthContextProps>({
   logout: () => {}
 });
 
-export const AuthProvider = ({ children }: any) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const token = useStoredValue("token");
   const navigate = useNavigate();
   const login = useCallback(() => {

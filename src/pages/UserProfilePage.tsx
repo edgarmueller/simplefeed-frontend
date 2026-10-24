@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
   redirect,
+  type LoaderFunctionArgs,
   useLoaderData,
   useLocation,
   useParams,
@@ -20,10 +21,10 @@ import { UserDetailSmall } from "../components/users/UserDetailSmall";
 import { useChatStore } from "../stores/useChatStore";
 import { useUserStore } from "../stores/useUserStore";
 
-export async function loader({ params }: any): Promise<User | Response> {
+export async function loader({ params }: LoaderFunctionArgs): Promise<User | Response> {
   try {
-    return await fetchUser(params.username);
-  } catch (error) {
+    return await fetchUser(params.username!);
+  } catch {
     return redirect("/sign-in");
   }
 }

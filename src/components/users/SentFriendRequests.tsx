@@ -5,7 +5,6 @@ import { useFriends } from "../../hooks/useFriends";
 import { UserDetailSmall } from "./UserDetailSmall";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { User } from "../../model/domain.interface";
 
 export const SentFriendRequests = () => {
   const { sentFriendRequests, fetchSentFriendRequests, isLoadingSentFriendRequests, sentFriendRequestsFetchError } = useFriends();
@@ -41,7 +40,7 @@ export const SentFriendRequests = () => {
       ) : (
         sentFriendRequests.map((friendRequest) => (
           <Flex key={friendRequest.id} justify="space-between" align="center" mt={2}>
-            <UserDetailSmall user={friendRequest.to as User} />
+            <UserDetailSmall user={friendRequest.to} />
             <Button
               variant="outline"
               colorPalette="red"

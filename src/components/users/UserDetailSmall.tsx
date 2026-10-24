@@ -1,10 +1,10 @@
 import { Link, Stack, Text } from "@chakra-ui/react";
 import { UserAvatar } from "../ui/user-avatar";
 import { Link as RouterLink } from "react-router";
-import { User } from "../../model/domain.interface";
+import { UserSummary } from "../../model/domain.interface";
 
 export interface UserDetailSmallProps {
-  user?: User;
+  user?: UserSummary;
   asLink?: boolean;
   bold?: boolean;
 }

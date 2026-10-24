@@ -1,5 +1,6 @@
 import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 import { createContext, useContext } from "react";
+import type { ReactNode } from "react";
 import { getFriendRequests, getSentFriendRequests } from "../api/friends";
 import { FriendRequest } from "../model/domain.interface";
 
@@ -53,7 +54,7 @@ function useSentFriendRequests() {
   });
 }
 
-export const FriendsProvider = ({ children }: any) => {
+export const FriendsProvider = ({ children }: { children: ReactNode }) => {
   const {
     data: receivedFriendRequests,
     refetch: fetchReceivedFriendRequests,

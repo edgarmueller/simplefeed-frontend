@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@chakra-ui/react";
 import { notifyError } from "../ui/toaster";
 import { BiLike } from "react-icons/bi";
@@ -21,8 +21,9 @@ export interface LikeButtonProps {
 
 export const LikeButton = ({ post, userId }: LikeButtonProps) => {
   const { refresh: refreshUserProfile } = useUser();
-  const [isLiked, setLiked] = useState(isPostLiked(post, userId));
-  useEffect(() => { setLiked(isPostLiked(post, userId)) }, [post, userId]);
+  // what the user toggled since the post was loaded, if anything
+  const [likedOverride, setLiked] = useState<boolean>();
+  const isLiked = likedOverride ?? isPostLiked(post, userId);
   const likePostMutation = useMutation({
     mutationFn: likePost,
     onSuccess: () => {

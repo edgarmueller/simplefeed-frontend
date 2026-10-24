@@ -3,13 +3,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChangeEvent, FormEvent, useState } from "react";
 // @ts-expect-error extract-urls ships without types
 import extractUrls from "extract-urls";
-import { submitPost } from "../../api/posts";
+import { PostAttachment, submitPost } from "../../api/posts";
 import { Post } from "../../model/domain.interface";
 import { useUserStore } from "../../stores/useUserStore";
 import { FileInput } from "../ui/file-input";
 import { notifyError } from "../ui/toaster";
-
-type ImageAttachment = { type: "image"; image: File; filename: string };
 
 export interface SubmitFormProps {
   onSubmit?: (post: Post) => void;
@@ -18,7 +16,7 @@ export interface SubmitFormProps {
 
 export const SubmitForm = ({ onSubmit, postTo }: SubmitFormProps) => {
   const [text, setText] = useState("");
-  const [attachments, setAttachments] = useState<ImageAttachment[]>([]);
+  const [attachments, setAttachments] = useState<PostAttachment[]>([]);
   const { user } = useUserStore();
   const queryClient = useQueryClient();
   const mutation = useMutation({
@@ -39,7 +37,7 @@ export const SubmitForm = ({ onSubmit, postTo }: SubmitFormProps) => {
     event.preventDefault();
     const videos = ((extractUrls(text) as string[] | undefined) || [])
       .filter((url) => url.includes("youtube.com"))
-      .map((url) => ({ type: "video", url }));
+      .map((url): PostAttachment => ({ type: "video", url }));
     mutation.mutate({
       body: text,
       toUserId: postTo || user?.id,

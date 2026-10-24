@@ -49,7 +49,10 @@ export async function register(
   return response.data;
 }
 
-export async function login(email: string, password: string): Promise<any> {
+export async function login(
+  email: string,
+  password: string
+): Promise<{ accessToken: string; refreshToken: string }> {
   const headers = { "Content-Type": "application/json" }
 
   const raw = {

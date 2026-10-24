@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { Socket, io } from "socket.io-client";
 import { useAuth } from "./useAuth";
 import { Notification } from "../model/domain.interface";
@@ -17,7 +18,7 @@ const NotificationContext = createContext<NotificationContextProps>({
   markAsRead: () => { },
 });
 
-export const NotificationProvider = ({ children }: any) => {
+export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const { token } = useAuth();
   const { refresh } = useUser();
   const { fetchReceivedFriendRequests, fetchSentFriendRequests } = useFriends();

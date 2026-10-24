@@ -58,7 +58,7 @@ export const UserDetail = ({
               ) : (
                 <BefriendButton
                   hasFriendRequest={hasFriendRequest}
-                  username={userProfile?.username!}
+                  username={userProfile?.username ?? ""}
                 />
               )}
             </Box>

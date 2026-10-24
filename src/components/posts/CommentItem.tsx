@@ -65,14 +65,13 @@ const CommentItem = memo(
         return;
       }
       if (page > 0) {
-        fetchReplies &&
-          fetchReplies(page, commentNode.comment.id).then(
-            (resp: Pagination<Comment>) => {
-              setTotalPages(resp.meta.totalPages)
-              setTotalItems(resp.meta.totalItems)
-              onRepliesFetched && onRepliesFetched(resp)
-            }
-          );
+        fetchReplies?.(page, commentNode.comment.id).then(
+          (resp: Pagination<Comment>) => {
+            setTotalPages(resp.meta.totalPages)
+            setTotalItems(resp.meta.totalItems)
+            onRepliesFetched?.(resp)
+          }
+        );
       }
     }, [page, fetchReplies, commentNode.comment.id, totalPages]);
 
@@ -132,13 +131,8 @@ const CommentItem = memo(
               <CommentForm
                 postId={postId}
                 path={commentPath}
-                onSubmit={(postedComment: any) => {
-                  onReply &&
-                    onReply({
-                      ...postedComment,
-                      author: postedComment.author,
-                      postId,
-                    });
+                onSubmit={(postedComment: Comment) => {
+                  onReply?.(postedComment);
                   setShowReplyForm(false);
                 }}
               />

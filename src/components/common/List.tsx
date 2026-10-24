@@ -8,7 +8,7 @@ export interface ListProps<T> {
   ifEmpty: React.ReactElement;
 }
 
-export const List = <T extends unknown>({ elements, getKey, renderElement, ifEmpty }: ListProps<T>) => {
+export const List = <T,>({ elements, getKey, renderElement, ifEmpty }: ListProps<T>) => {
   if (elements.length === 0) {
   	return ifEmpty;
   }

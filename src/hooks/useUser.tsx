@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { QueryObserverResult, useQuery } from "@tanstack/react-query";
 import {
   createContext,
@@ -27,7 +28,7 @@ export const UserContext = createContext<UserContextProps>({
   },
 });
 
-export const UserProvider = ({ children }: any) => {
+export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { token } = useAuth();
   const { user, setUser, setFriends } = useUserStore();
   const [error, setError] = useState<string>();

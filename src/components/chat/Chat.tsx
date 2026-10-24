@@ -1,6 +1,6 @@
 import { Box, Button, Input, Text, VStack } from "@chakra-ui/react";
 import { head } from "lodash";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ScrollableBox } from "./ScrollableBox";
 import { useChat } from "../../hooks/useChat";
 import { useChatStore } from "../../stores/useChatStore";
@@ -37,17 +37,14 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
     requestMessages(conversationId, page);
   }, [page, requestMessages, conversationId])
 
-  // TODO: sorted in reverse order, provide convenience?
-  const lastMessage = head(messagesByConversation[conversationId]) 
+  // messages are sorted newest first
+  const lastMessage = head(messagesByConversation[conversationId])
   const lastMessageFromOtherUser = lastMessage?.authorId !== user?.id;
   const nbOfMessages = messagesByConversation[conversationId]?.length
-  // TODO: fix this
-  let ref: any = undefined;
+  const lastMessageRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (lastMessage?.isRead) return;
-    // the list may still be empty while messages load
-    const lastElement = ref?.current?.lastElementChild?.lastElementChild?.firstElementChild
-    lastElement?.scrollIntoView({ behavior: "smooth", block: "end" })
+    lastMessageRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
     if (lastMessageFromOtherUser) {
       markAsRead(conversationId)
     }
@@ -63,11 +60,6 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
       <VStack gap={4} align="stretch">
         <ScrollableBox
           loading={loading}
-          bg="gray.200"
-          borderRadius="md"
-          p={4}
-          height="20em"
-          overflowY="auto"
           data={messagesByConversation[conversationId]}
           onScrollToTop={() => {
             setPage(page + 1);
@@ -76,12 +68,11 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
             markAsRead(conversationId);
           }}
         >
-          {(scrollRef: any) => {
-            ref = scrollRef;
-            return messagesByConversation[conversationId]?.map(
+          {messagesByConversation[conversationId]?.map(
               (message, index) => (
                 <Box
-                  key={index}
+                  key={message.id ?? index}
+                  ref={index === 0 ? lastMessageRef : undefined}
                   p={2}
                   textAlign={message.authorId === friend.id ? "left" : "right"}
                 >
@@ -99,8 +90,7 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
                   </Text>
                 </Box>
               )
-            );
-          }}
+          )}
         </ScrollableBox>
         <form
           onSubmit={(event) => {
