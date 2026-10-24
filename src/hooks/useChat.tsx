@@ -1,4 +1,4 @@
-import { sortBy, uniqBy } from "lodash";
+import type { ReactNode } from "react";
 import {
   createContext,
   useCallback,
@@ -37,14 +37,14 @@ const ChatContext = createContext<ChatContextProps>({
   hasError: false,
   error: undefined,
   fetchConversations: async () => [],
-  joinConversation: (id) => { },
+  joinConversation: () => { },
   sendMessage: () => { },
   requestMessages: () => { },
   markAsRead: () => { },
   loading: false,
 });
 
-export const ChatProvider = ({ children }: any) => {
+export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useUser();
   const { token } = useAuth();
   const [socket, setSocket] = useState<Socket>();
@@ -120,7 +120,7 @@ export const ChatProvider = ({ children }: any) => {
     [socket]
   );
 
-  const clearConversations = useChatStore((state: any) => state.clearConversations)
+  const clearConversations = useChatStore((state) => state.clearConversations)
   useEffect(() => {
     clearConversations();
     setError(undefined);
@@ -145,10 +145,7 @@ export const ChatProvider = ({ children }: any) => {
       transports: ["websocket"],
     });
 
-    function onMessageRead(message: any) {
-      // TODO: we can use message
-      const conversationId = message.conversationId;
-      const userId = message.userId;
+    function onMessageRead({ conversationId, userId }: { conversationId: string; userId: string }) {
       markAsReadInStore(conversationId, userId)
     }
 

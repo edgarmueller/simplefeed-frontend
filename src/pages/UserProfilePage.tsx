@@ -1,12 +1,13 @@
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { Tabs } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
   redirect,
+  type LoaderFunctionArgs,
   useLoaderData,
   useLocation,
   useParams,
-} from "react-router-dom";
+} from "react-router";
 import { getSentFriendRequests } from "../api/friends";
 import { fetchUser } from "../api/user";
 import { Layout } from "../components/common/Layout";
@@ -20,10 +21,10 @@ import { UserDetailSmall } from "../components/users/UserDetailSmall";
 import { useChatStore } from "../stores/useChatStore";
 import { useUserStore } from "../stores/useUserStore";
 
-export async function loader({ params }: any): Promise<User | Response> {
+export async function loader({ params }: LoaderFunctionArgs): Promise<User | Response> {
   try {
-    return await fetchUser(params.username);
-  } catch (error) {
+    return await fetchUser(params.username!);
+  } catch {
     return redirect("/sign-in");
   }
 }
@@ -67,32 +68,29 @@ const UserProfile = () => {
         isFriend={isFriend}
         hasFriendRequest={friendRequestSent}
       />
-      <Tabs
-        variant="soft-rounded"
+      <Tabs.Root
+        variant="enclosed"
         marginTop={4}
-        colorScheme="blackAlpha"
-        defaultIndex={showChat ? 2 : 0}
-        onChange={(index) => { /* setTabIndex(index) */ }}
+        defaultValue={showChat ? "chat" : "posts"}
       >
-        <TabList>
-          <Tab>Posts</Tab>
-          <Tab>Friends</Tab>
-          {isMyProfile ? null : <Tab>Chat</Tab>}
-        </TabList>
-        <TabPanels>
-          <TabPanel>
+        <Tabs.List>
+          <Tabs.Trigger value="posts">Posts</Tabs.Trigger>
+          <Tabs.Trigger value="friends">Friends</Tabs.Trigger>
+          {isMyProfile ? null : <Tabs.Trigger value="chat">Chat</Tabs.Trigger>}
+        </Tabs.List>
+        <Tabs.Content value="posts">
             <SubmitForm
               onSubmit={async () => {
-                setUser({ ...user, nrOfPosts: user.nrOfPosts + 1 });
-                await queryClient.refetchQueries({
-                  queryKey: ["posts", "infinite", userId ]
-                });
+                if (myself && isMyProfile) {
+                  setUser({ ...myself, nrOfPosts: myself.nrOfPosts + 1 });
+                }
+                await queryClient.invalidateQueries({ queryKey: ["posts", userId] });
               }}
               postTo={userId}
             />
             <PostList userId={userId} />
-          </TabPanel>
-          <TabPanel>
+        </Tabs.Content>
+        <Tabs.Content value="friends">
             <FriendList
               friends={user.friends}
               ifEmpty={<>"No friends yet!"</>}
@@ -100,18 +98,17 @@ const UserProfile = () => {
                 return <UserDetailSmall user={friend} />
               }}
             />
-          </TabPanel>
+        </Tabs.Content>
           {
             !isMyProfile && conversationId ? (
-              <TabPanel>
+              <Tabs.Content value="chat">
                 <Chat
                   friend={{ id: user.id, username: user.username }}
                   conversationId={conversationId}
                 />
-              </TabPanel>) : null
+              </Tabs.Content>) : null
           }
-        </TabPanels>
-      </Tabs>
+      </Tabs.Root>
     </Layout>
   );
 };

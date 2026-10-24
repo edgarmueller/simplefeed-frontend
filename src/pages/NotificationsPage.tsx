@@ -1,5 +1,5 @@
 import { Box, Button, Grid, GridItem, Heading, Link } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { Layout } from "../components/common/Layout";
 import { useNotifications } from "../hooks/useNotifications";
 import { NotificationState, useNotificationsStore } from "../stores/useNotificationsStore";
@@ -10,20 +10,18 @@ const NotificationsPage = () => {
   const unreadNotificatons = notifications?.filter((n) => !n.viewed);
   return (
     <Layout>
-      <Heading>Notifications</Heading>
+      <Heading size="3xl" mb={4}>Notifications</Heading>
       <Grid templateColumns="4fr 1fr" gap={4}>
         <Box p={4}></Box>
         <Box>
           {
             unreadNotificatons.length > 0 ?
               <Button
-                colorScheme="green"
+                colorPalette="green"
                 variant="outline"
                 size="xs"
                 onClick={() => {
-                  unreadNotificatons.map((notification) => {
-                    markAsRead(notification.id);
-                  });
+                  unreadNotificatons.forEach((notification) => markAsRead(notification.id));
                 }}
               >
                 Mark all as read
@@ -38,12 +36,14 @@ const NotificationsPage = () => {
           {unreadNotificatons.map((notification) => {
             return (
               <GridItem colSpan={2} key={notification.id} >
-                <Link as={RouterLink} to={notification.link} onClick={() => markAsRead(notification.id)}>
-								  {notification.message}
+                <Link asChild>
+                  <RouterLink to={notification.link} onClick={() => markAsRead(notification.id)}>
+                    {notification.message}
+                  </RouterLink>
                 </Link>
                 <Button
-									m={2}
-                  colorScheme="green"
+                  m={2}
+                  colorPalette="green"
                   variant="outline"
                   size="xs"
                   onClick={() => {

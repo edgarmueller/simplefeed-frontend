@@ -1,5 +1,5 @@
-import axios from 'axios';
-import createAuthRefreshInterceptor from 'axios-auth-refresh';
+import axios, { AxiosError } from 'axios';
+import { AxiosAuthRefreshRequestConfig, createAuthRefresh } from 'axios-auth-refresh';
 import { logout, saveAccessToken } from '../api/auth';
 import { API_URL } from '../api/constants';
 
@@ -21,7 +21,8 @@ export async function refreshToken() {
 	}
 	try {
 		console.log("refreshing token")
-		const resp = await axios.post(REFRESH_URL, { refreshToken }, { skipAuthRefresh: true } as any)
+		const config: AxiosAuthRefreshRequestConfig = { skipAuthRefresh: true }
+		const resp = await axios.post(REFRESH_URL, { refreshToken }, config)
 		const accessToken = resp.data.accessToken
 		saveAccessToken(accessToken)
 		return accessToken
@@ -32,16 +33,16 @@ export async function refreshToken() {
 }
 
 // Function that will be called to refresh authorization
-const refreshAuthLogic = async (failedRequest: any) => {
+const refreshAuthLogic = async (failedRequest: AxiosError) => {
 	try {
 		const accessToken = await refreshToken()
-		failedRequest.response.config.headers['Authorization'] = `Bearer ${accessToken}`
+		failedRequest.response!.config.headers['Authorization'] = `Bearer ${accessToken}`
 	} catch (error) {
 		console.log('refreshAuthLogic error', error)
 	}
 }
 
 // Instantiate the interceptor
-createAuthRefreshInterceptor(axios, refreshAuthLogic);
+createAuthRefresh(axios, refreshAuthLogic);
 
 export default axios;

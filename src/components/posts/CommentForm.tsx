@@ -1,13 +1,9 @@
-import {
-  Button, Stack,
-  Textarea,
-  useToast
-} from "@chakra-ui/react";
-import { useState } from "react";
+import { Button, Stack, Text, Textarea } from "@chakra-ui/react";
+import { FormEvent, useState } from "react";
 import { submitComment } from "../../api/comments";
 import { Comment } from "../../model/domain.interface";
 import { useMutation } from "@tanstack/react-query";
-import { Text } from "@chakra-ui/react";
+import { notifyError } from "../ui/toaster";
 
 export interface CommentProps {
   postId: string;
@@ -17,7 +13,6 @@ export interface CommentProps {
 
 export const CommentForm = ({ postId, path, onSubmit }: CommentProps) => {
   const [comment, setComment] = useState("");
-  const toast = useToast();
   const mutation = useMutation({
     mutationFn: submitComment,
     onSuccess: (comment: Comment) => {
@@ -26,16 +21,9 @@ export const CommentForm = ({ postId, path, onSubmit }: CommentProps) => {
       }
       setComment("");
     },
-    onError: (error: Error) => {
-      toast({
-        title: `Post comment failed: ${error.message}. Please try again later.`,
-        status: "error",
-        duration: 5000,
-        isClosable: true
-      })
-    }
+    onError: (error: Error) => notifyError("Posting the comment", error),
   });
-  const handleSubmit = (event: any) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     mutation.mutate({
       postId,
@@ -45,7 +33,7 @@ export const CommentForm = ({ postId, path, onSubmit }: CommentProps) => {
   };
 
   return (
-    <Stack direction="row" spacing={4} m={2}>
+    <Stack as="form" direction="row" gap={4} m={2} onSubmit={handleSubmit}>
       <Textarea
         className="comment"
         placeholder={`Write a ${(path?.length || 0) > postId.length ? "reply" : "comment"}...`}
@@ -53,7 +41,7 @@ export const CommentForm = ({ postId, path, onSubmit }: CommentProps) => {
         value={comment}
         rows={1}
       />
-      <Button type="submit" onClick={handleSubmit}>
+      <Button type="submit" variant="subtle">
         Comment
       </Button>
       {mutation.isError && <Text color="red.500">Failed to post comment</Text>}

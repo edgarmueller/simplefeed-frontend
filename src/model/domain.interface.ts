@@ -44,8 +44,26 @@ export interface Post {
 	createdAt: string;
 	postedTo: User
 	author: User
-	likes: any[]
-	attachments?: { type: 'video' | 'image', url: string }[]
+	/** only the current user's like, if any */
+	likes: Like[]
+	attachments?: Attachment[]
+}
+
+export interface Like {
+	id: string
+	userId: string
+	unliked?: boolean
+}
+
+export type Attachment = { type: 'video' | 'image', url: string }
+
+/** A user as embedded in other resources */
+export interface UserSummary {
+	id: string
+	username: string
+	firstName: string
+	lastName: string
+	imageUrl?: string
 }
 
 export interface Pagination<T> {
@@ -68,8 +86,6 @@ export interface Comment {
 
 export interface FriendRequest {
 	id: string;
-	from: any;
-	to: {
-		id: string
-	};
+	from: UserSummary;
+	to: UserSummary;
 }

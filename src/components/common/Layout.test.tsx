@@ -1,29 +1,18 @@
-// components/counter/counter.test.tsx
-import { render, screen } from '@testing-library/react'
-
-import { Layout } from './Layout'
-import { BrowserRouter } from 'react-router-dom'
-import { useChatStore } from '../../stores/useChatStore'
+import { screen } from '@testing-library/react'
 import { Conversation, Message, User } from '../../model/domain.interface'
+import { useChatStore } from '../../stores/useChatStore'
 import { useUserStore } from '../../stores/useUserStore'
+import { renderWithProviders } from '../../test/render'
+import { Layout } from './Layout'
 
 describe('Layout', () => {
-  test('should render with initial state of 1', async () => {
+  it('shows the number of unread chat messages', async () => {
     useUserStore.getState().setUser({ id: 'user_123' } as User)
     useChatStore.getState().setConversations([{ id: 'conv_123', messages: [], userIds: ['user_123', 'user_234'] } as Conversation])
     useChatStore.getState().addNewMessages('conv_123', [{ content: 'hello' } as Message])
-    renderLayout()
 
-    expect(
-      await screen.findByRole('button', { name: /chat 1/i }),
-    ).toBeInTheDocument()
+    renderWithProviders(<Layout />)
+
+    expect(await screen.findByRole('link', { name: /chat 1/i })).toBeInTheDocument()
   })
 })
-
-const renderLayout = () => {
-  return render(
-    <BrowserRouter>
-      <Layout />
-    </BrowserRouter>
-  )
-}

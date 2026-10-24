@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { getErrorMessages } from "../../lib/errors";
 
 export interface SignInProps {
   login: (
@@ -9,7 +10,7 @@ export interface SignInProps {
 }
 
 type Api = {
-	canSubmit: boolean | undefined;
+	canSubmit: boolean;
 	handleSubmit: (event: React.FormEvent) => Promise<void>;
 	errors: string[];
 	isSubmitted: boolean;
@@ -31,14 +32,10 @@ export function SignInLogic({
     password: "",
     confirmPassword: "",
   });
-  const [canSubmit, setCanSubmit] = useState<boolean>();
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitted, setSubmitted] = useState<boolean>(false);
 
-  useEffect(() => {
-    const { email, password } = signInInfo;
-    setCanSubmit(email !== "" && password !== "");
-  }, [signInInfo]);
+  const canSubmit = signInInfo.email !== "" && signInInfo.password !== "";
 
   const handleSubmit = async (event: React.FormEvent) => {
     // Prevent page reload
@@ -49,9 +46,7 @@ export function SignInLogic({
       setSubmitted(true);
       setErrors([]);
     } catch (error) {
-      if (error instanceof Error) {
-        setErrors(error.message.split(",").map(formatError));
-      }
+      setErrors(getErrorMessages(error).map(formatError));
     }
   };
 

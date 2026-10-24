@@ -1,18 +1,24 @@
-import { Link, Navigate } from "react-router-dom";
-import { Link as RouterLink } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  Input,
-  Text
-} from "@chakra-ui/react";
+import { Box, Button, Field, Flex, Input, Link, Stack, Text } from "@chakra-ui/react";
+import { ChangeEvent } from "react";
+import { Link as RouterLink, Navigate } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
 import { SignUpLogic } from "./SignUpLogic";
 import { register } from "../../api/auth";
 import { Logo } from "../common/Logo";
+
+type TextFieldProps = {
+  id: string;
+  label: string;
+  type?: string;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+};
+
+const TextField = ({ id, label, type = "text", onChange }: TextFieldProps) => (
+  <Field.Root>
+    <Field.Label htmlFor={id}>{label}</Field.Label>
+    <Input id={id} type={type} placeholder={label} onChange={onChange} />
+  </Field.Root>
+);
 
 export const SignUp = () => {
   const { token } = useAuth();
@@ -32,92 +38,47 @@ export const SignUp = () => {
         <Flex alignItems="center" justifyContent="center" minHeight="100vh">
           <Box maxW="md" w="100%">
             <Logo />
-            <FormControl onSubmit={handleSubmit} isInvalid={errors.length > 0}>
-              <FormLabel>Email address</FormLabel>
-              <Input
-                id="input-email"
-                type="email"
-                placeholder="Email address"
-                onChange={handleEmailUpdated}
-                minW="100%"
-              />
-              <FormLabel>Username</FormLabel>
-              <Input
-                id="input-username"
-                type="text"
-                placeholder="Username"
-                onChange={handleSignUpInfoUpdated("username")}
-                minW="100%"
-              />
-              <FormLabel>First Name</FormLabel>
-              <Input
-                id="input-first-name"
-                type="text"
-                placeholder="First name"
-                onChange={handleSignUpInfoUpdated("firstName")}
-                minW="100%"
-              />
-              <FormLabel>Last Name</FormLabel>
-              <Input
-                id="input-last-name"
-                type="text"
-                placeholder="Last name"
-                onChange={handleSignUpInfoUpdated("lastName")}
-                minW="100%"
-              />
-              <FormLabel>Avatar</FormLabel>
-              <Input
-                id='input-avatar-url'
-                type="text"
-                placeholder="Avatar URL"
-                onChange={handleSignUpInfoUpdated("imageUrl")}
-                minW="100%"
-              />
-              <FormLabel>Password</FormLabel>
-              <Input
-                id="input-password"
-                type="password"
-                placeholder="Password"
-                onChange={handlePasswordUpdated}
-                minW="100%"
-              />
-              <FormLabel>Confirm Password</FormLabel>
-              <Input
-                id="input-confirm-password"
-                type="password"
-                placeholder="Confirm Password"
-                onChange={handlePasswordConfirmUpdated}
-                minW="100%"
-              />
-            </FormControl>
-            {errors.map((error) => (
-              <p key={error}>{error}</p>
-            ))}
-            <Flex justifyContent="flex-end" marginTop={4}>
-              <Button
-                id="btn-sign-up"
-                type="submit"
-                disabled={!canSubmit}
-                onClick={handleSubmit}
-              >
-                Sign up
-              </Button>
-            </Flex>
-            {isSubmitted && (
-              <Text>
-                Sign up successful!&nbsp;
-                <RouterLink to="/sign-in">
-                  <Button variant="link">
-                    Login here
+            <form onSubmit={handleSubmit}>
+              <Stack gap={3} mt={4}>
+                <TextField id="input-email" label="Email address" type="email" onChange={handleEmailUpdated} />
+                <TextField id="input-username" label="Username" onChange={handleSignUpInfoUpdated("username")} />
+                <TextField id="input-first-name" label="First name" onChange={handleSignUpInfoUpdated("firstName")} />
+                <TextField id="input-last-name" label="Last name" onChange={handleSignUpInfoUpdated("lastName")} />
+                <TextField id="input-avatar-url" label="Avatar URL" onChange={handleSignUpInfoUpdated("imageUrl")} />
+                <TextField id="input-password" label="Password" type="password" onChange={handlePasswordUpdated} />
+                <TextField
+                  id="input-confirm-password"
+                  label="Confirm password"
+                  type="password"
+                  onChange={handlePasswordConfirmUpdated}
+                />
+                {errors.map((error) => (
+                  <Text key={error} color="fg.error" fontSize="sm">
+                    {error}
+                  </Text>
+                ))}
+                <Flex justifyContent="flex-end">
+                  <Button id="btn-sign-up" type="submit" disabled={!canSubmit}>
+                    Sign up
                   </Button>
-                </RouterLink>
+                </Flex>
+              </Stack>
+            </form>
+            {isSubmitted ? (
+              <Text py={4}>
+                Sign up successful!{" "}
+                <Link asChild colorPalette="blue" fontWeight="semibold">
+                  <RouterLink to="/sign-in">Sign in here</RouterLink>
+                </Link>
+              </Text>
+            ) : (
+              <Text py={4}>
+                Already have an account?{" "}
+                <Link asChild colorPalette="blue" fontWeight="semibold">
+                  <RouterLink to="/sign-in">Sign in here!</RouterLink>
+                </Link>
               </Text>
             )}
-            <Box>
-              <Link to="/sign-in">
-                Already have an account? Sign in here!
-              </Link>
-            </Box>
           </Box>
         </Flex>
       )}

@@ -2,10 +2,14 @@ import { Pagination, Post } from "../model/domain.interface";
 import axios, { createHeaders } from "../lib/axios";
 import { API_URL } from "./constants";
 
+export type PostAttachment =
+  | { type: "image"; image: File; filename: string }
+  | { type: "video"; url: string };
+
 export type SubmitPostDto = {
   body: string;
   toUserId: string | undefined;
-  attachments: any[];
+  attachments: PostAttachment[];
 };
 
 export async function fetchFeed(
@@ -40,9 +44,9 @@ export async function fetchPost(postId: string): Promise<Post> {
 export async function submitPost(post: SubmitPostDto): Promise<Post> {
   const formData = new FormData();
   post.attachments
-    .filter(({ type }: any) => type === "image")
-    .forEach(({ image }: any, index: number) => {
-      formData.append(`image_${index}`, image);
+    .filter((attachment) => attachment.type === "image")
+    .forEach((attachment, index) => {
+      formData.append(`image_${index}`, attachment.image);
     });
   formData.append("body", post.body);
   formData.append("attachments", JSON.stringify(post.attachments));

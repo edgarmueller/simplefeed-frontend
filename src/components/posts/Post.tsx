@@ -1,15 +1,9 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Link,
-  Stack
-} from "@chakra-ui/react";
+import { Box, Button, Link, Stack, Text } from "@chakra-ui/react";
 import { uniqBy } from "lodash";
 import { memo, useCallback, useEffect, useState } from "react";
 import { BiTrash } from "react-icons/bi";
 import Markdown from 'react-markdown';
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import YouTube from "react-youtube";
 import { isEqual } from "lodash";
 import {
@@ -23,6 +17,7 @@ import { LikeButton } from "./LikeButton";
 import { useUserStore } from "../../stores/useUserStore";
 import { CommentNode, buildCommentTree } from "../../model/comments";
 import { useMutation } from "@tanstack/react-query";
+import { UserAvatar } from "../ui/user-avatar";
 
 type PostHeaderProps = {
   author: {
@@ -39,26 +34,30 @@ type PostHeaderProps = {
   createdAt: string;
 }
 
-function PostHeader({ createdAt, author, postedTo }: PostHeaderProps) {
+function PostHeader({ createdAt, author, postedTo: target }: PostHeaderProps) {
+  // posts on one's own feed are "posted to" the author as well
+  const postedTo = target && target.username !== author.username ? target : undefined
   return (
-    <Stack direction="row" spacing={4} alignItems="center" marginBottom={2}>
-      <Avatar
-        size="sm"
-        name={author.username}
-        src={author.imageUrl}
-      />
-      <div className="posted_by" style={{ color: "#ACACAC" }}>
-        <Link as={RouterLink} to={`/users/${author.username}`}>
-          {author.firstName} {author.lastName}
-        </Link>{" "}
-        {postedTo && "to "}
+    <Stack direction="row" gap={3} alignItems="center" marginBottom={2}>
+      <UserAvatar size="sm" name={`${author.firstName} ${author.lastName}`} src={author.imageUrl} />
+      <Text color="fg.muted">
+        <Link asChild fontWeight="semibold" color="fg">
+          <RouterLink to={`/users/${author.username}`}>
+            {author.firstName} {author.lastName}
+          </RouterLink>
+        </Link>
         {postedTo && (
-          <Link as={RouterLink} to={`/users/${postedTo.username}`}>
-            {postedTo.firstName} {postedTo.lastName}
-          </Link>
+          <>
+            {" to "}
+            <Link asChild fontWeight="semibold" color="fg">
+              <RouterLink to={`/users/${postedTo.username}`}>
+                {postedTo.firstName} {postedTo.lastName}
+              </RouterLink>
+            </Link>
+          </>
         )}
-      </div>
-      <Box marginBottom={4}>{formatTimeAgo(createdAt)}</Box>
+      </Text>
+      <Text fontSize="sm" color="fg.muted">{formatTimeAgo(createdAt)}</Text>
     </Stack>
   )
 }
@@ -112,14 +111,15 @@ const Post = memo(({ post, showComments = false }: { post: PostEntity, showComme
   }, []);
 
   return isVisible ? (
-    <Box key={post.id} bg="gray.100" p={3} borderRadius="md" marginBottom={3}>
+    <Box bg="bg.muted" p={3} borderRadius="md" marginBottom={3}>
       <PostHeader author={post.author} postedTo={post.postedTo} createdAt={post.createdAt} />
-      <Box bg="white" padding={2} borderRadius="md" marginBottom={4}>
+      <Box bg="bg" padding={3} borderRadius="md" marginBottom={2}>
         <Markdown>{post.body}</Markdown>
         {(post.attachments || [])
           .filter((attachment) => attachment.type === "video")
           .map((attachment) => (
             <YouTube
+              key={attachment.url}
               className="youtubeContainer"
               videoId={attachment.url
                 ?.split("&")[0]
@@ -129,7 +129,7 @@ const Post = memo(({ post, showComments = false }: { post: PostEntity, showComme
         {(post.attachments || [])
           .filter((attachment) => attachment.type === "image")
           .map((attachment) => (
-            <img key={attachment.url} src={attachment.url} />
+            <img key={attachment.url} src={attachment.url} alt="" />
           ))}
       </Box>
       <Comments
@@ -139,18 +139,19 @@ const Post = memo(({ post, showComments = false }: { post: PostEntity, showComme
         fetchComments={fetchComments}
         isExpanded={showComments}
       />
-      <LikeButton post={post} userId={user?.id} />
-      {post.author.id === user?.id && (
-        <Button
-          size="sm"
-          leftIcon={<BiTrash />}
-          onClick={async () => {
-            await deletePostMutation.mutate(post.id);
-          }}
-        >
-          Delete
-        </Button>
-      )}
+      <Stack direction="row" gap={1}>
+        <LikeButton post={post} userId={user?.id} />
+        {post.author.id === user?.id && (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => deletePostMutation.mutate(post.id)}
+          >
+            <BiTrash />
+            Delete
+          </Button>
+        )}
+      </Stack>
     </Box>
   ) : null;
 }, isEqual);

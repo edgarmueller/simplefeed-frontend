@@ -10,7 +10,7 @@ export const Feed = () => {
       <InfiniteScroll queryKey={["feed"]} fetchPage={fetchFeed}>
         {(posts) => (
           <>
-            {posts.map((post, i) => <Post key={post.id} post={post} showComments={false}/>)}
+            {posts.map((post) => <Post key={post.id} post={post} showComments={false}/>)}
           </>
         )}
       </InfiniteScroll>

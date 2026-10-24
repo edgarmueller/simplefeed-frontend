@@ -6,7 +6,7 @@ export const updateUserInfo = async (
   id: string,
   userInfo: Pick<User, "email" | "firstName" | "lastName"> & {
     password?: string;
-    image?: any;
+    image?: File;
   }
 ): Promise<User> => {
   const data = new FormData();
@@ -48,7 +48,7 @@ export async function closeAccount(): Promise<void> {
   });
 }
 
-export async function fetchUser(username: string): Promise<any> {
+export async function fetchUser(username: string): Promise<User> {
   const res = await axios.get(`${API_URL}/users/${username}`, {
     headers: {
       "Content-Type": "application/json",

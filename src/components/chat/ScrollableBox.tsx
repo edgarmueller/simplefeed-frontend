@@ -1,54 +1,64 @@
 import { Box } from "@chakra-ui/react";
-import { useEffect } from "react";
-import { useBottomScrollListener } from "react-bottom-scroll-listener";
 import { useIntersectionObserver } from "@uidotdev/usehooks";
-
+import { ReactNode, useEffect, useRef } from "react";
+import { useBottomScrollListener } from "react-bottom-scroll-listener";
 import InfiniteScroll from "react-infinite-scroll-component";
 
+export interface ScrollableBoxProps {
+  children: ReactNode;
+  data: unknown[] | undefined;
+  loading: boolean;
+  /** called when the user scrolls up to older messages */
+  onScrollToTop: () => void;
+  /** called when the newest message is visible */
+  onScrollToBottom: () => void;
+}
+
+/** A scroll container that starts at the bottom, as chats do. */
 export function ScrollableBox({
   children,
   onScrollToBottom,
   onScrollToTop,
   loading,
   data,
-}: any) {
-  const scrollRef = useBottomScrollListener(() => {
-    onScrollToBottom();
+}: ScrollableBoxProps) {
+  const scrollRef = useBottomScrollListener<HTMLDivElement>(onScrollToBottom);
+  const [bottomMarkerRef, entry] = useIntersectionObserver();
+  // only react to the marker becoming visible, not to a new callback
+  const onScrollToBottomRef = useRef(onScrollToBottom);
+  useEffect(() => {
+    onScrollToBottomRef.current = onScrollToBottom;
   });
-
-  const [ref, entry] = useIntersectionObserver();
-
   useEffect(() => {
     if (entry?.isIntersecting) {
-      onScrollToBottom();
+      onScrollToBottomRef.current();
     }
   }, [entry?.isIntersecting]);
 
   return (
     <Box
       id="scrollableDiv"
-      style={{
-        height: 300,
-        overflow: "auto",
-        display: "flex",
-        flexDirection: "column-reverse",
-      }}
-      ref={scrollRef as any}
+      ref={scrollRef}
+      bg="bg.muted"
+      borderRadius="md"
+      p={2}
+      height="300px"
+      overflow="auto"
+      display="flex"
+      flexDirection="column-reverse"
     >
       <InfiniteScroll
         dataLength={data?.length || 0}
-        hasMore={true && !loading}
+        hasMore={!loading}
         inverse={true}
         next={onScrollToTop}
-        style={{ display: "flex", flexDirection: "column-reverse" }} //To put endMessage and loader to the top.
+        // puts the loader at the top
+        style={{ display: "flex", flexDirection: "column-reverse" }}
         scrollableTarget="scrollableDiv"
-        loader={<>loading..</>}
+        loader={null}
       >
-        <div id="bottom-marker" ref={ref as any}>
-          &nbsp;
-        </div>
-        {loading ? <>loading</> : null}
-        {children(scrollRef)}
+        <div ref={bottomMarkerRef}>&nbsp;</div>
+        {children}
       </InfiniteScroll>
     </Box>
   );

@@ -1,4 +1,4 @@
-import { useOutlet } from "react-router-dom";
+import { useOutlet } from "react-router";
 import { AuthProvider } from "../../hooks/useAuth";
 import { UserProvider } from "../../hooks/useUser";
 import { FriendsProvider } from "../../hooks/useFriends";

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { API_URL } from "./constants";
-import { writeStorage, deleteFromStorage } from "@rehooks/local-storage";
+import { deleteFromStorage, writeStorage } from "../lib/storage";
 
 export function getAccessToken() {
   return localStorage.getItem("token");
@@ -45,15 +45,14 @@ export async function register(
     },
   };
 
-  try {
-    const response = await axios.post(`${API_URL}/auth/register`, raw, { headers });
-    return response.data;
-  } catch (error) {
-    console.log(error);
-  }
+  const response = await axios.post(`${API_URL}/auth/register`, raw, { headers });
+  return response.data;
 }
 
-export async function login(email: string, password: string): Promise<any> {
+export async function login(
+  email: string,
+  password: string
+): Promise<{ accessToken: string; refreshToken: string }> {
   const headers = { "Content-Type": "application/json" }
 
   const raw = {

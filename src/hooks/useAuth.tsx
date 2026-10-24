@@ -1,14 +1,14 @@
-import useLocalStorage from "@rehooks/local-storage";
 import { createContext, useCallback, useContext, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { User } from "../model/domain.interface";
-import jwtDecode from "jwt-decode";
+import type { ReactNode } from "react";
+import { useNavigate } from "react-router";
+import { jwtDecode } from "jwt-decode";
 import { refreshToken } from "../lib/axios";
 import { getAccessToken, logout as logoutApi } from "../api/auth"
+import { useStoredValue } from "../lib/storage";
 
 type AuthContextProps = {
 	token: string | null,
-	login: (user: User) => void,
+	login: () => void,
 	logout: () => void
 }
 
@@ -18,11 +18,10 @@ const AuthContext = createContext<AuthContextProps>({
   logout: () => {}
 });
 
-export const AuthProvider = ({ children }: any) => {
-  const [token] = useLocalStorage("token", null);
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const token = useStoredValue("token");
   const navigate = useNavigate();
-  // TODO types
-  const login = useCallback(async (token: any) => {
+  const login = useCallback(() => {
     navigate("/feed");
   }, [navigate])
 
@@ -32,17 +31,17 @@ export const AuthProvider = ({ children }: any) => {
     navigate("/sign-in", { replace: true });
   }, [navigate])
 
-  useEffect(() => { 
-    // run every minute
-    // implement timer
-    setInterval(() => {
+  // refresh the access token shortly before it expires
+  useEffect(() => {
+    const interval = setInterval(() => {
       const accessToken = getAccessToken();
       if (!accessToken) return;
-      const decoded = jwtDecode(accessToken) as any;
-      if (decoded.exp * 1000 - 60 * 1000 < Date.now()) {
+      const { exp } = jwtDecode<{ exp: number }>(accessToken);
+      if (exp * 1000 - 60 * 1000 < Date.now()) {
         refreshToken();
       }
     }, 1000 * 60);
+    return () => clearInterval(interval);
   }, []);
   const value = useMemo(
     () => ({

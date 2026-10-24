@@ -1,40 +1,32 @@
-import { Box, Input, IconButton } from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
-import { useState } from 'react';
+import { IconButton, Input, Stack } from '@chakra-ui/react';
+import { FormEvent, useState } from 'react';
+import { FiSearch } from 'react-icons/fi';
 
 interface SearchBarProps {
   onSearch: (searchTerm: string) => void;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
+export const SearchBar = ({ onSearch }: SearchBarProps) => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleSearch = () => {
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
     onSearch(searchTerm);
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
   return (
-    <Box display="flex" alignItems="center">
+    <Stack as="form" direction="row" align="center" onSubmit={handleSubmit}>
       <Input
         placeholder="Search..."
         value={searchTerm}
-        onChange={handleChange}
+        onChange={(event) => setSearchTerm(event.target.value)}
         size="sm"
-        variant="filled"
-        mr={2}
-				maxWidth={300}
+        variant="subtle"
+        maxWidth={300}
       />
-      <IconButton
-				size="sm"
-        icon={<SearchIcon />}
-        aria-label="Search"
-        onClick={handleSearch}
-      />
-    </Box>
+      <IconButton type="submit" size="sm" variant="subtle" aria-label="Search">
+        <FiSearch />
+      </IconButton>
+    </Stack>
   );
 };
-

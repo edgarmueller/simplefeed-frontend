@@ -6,7 +6,7 @@ import { Pagination } from "../../model/domain.interface";
 import { Alert, Center, Spinner } from "@chakra-ui/react";
 
 export type InfiniteScrollProps<T> = {
-	children: (data: T[]) => JSX.Element;
+	children: (data: T[]) => React.ReactNode;
 	queryKey: string[];
 	fetchPage: (page?: number, limit?: number) => Promise<Pagination<T>>;
 };
@@ -48,7 +48,12 @@ export function InfiniteScroll<T>({ children, queryKey, fetchPage }: InfiniteScr
   }
 
   if (isError) {
-    return <Alert>An error occurred while fetching</Alert>
+    return (
+      <Alert.Root status="error">
+        <Alert.Indicator />
+        <Alert.Title>An error occurred while fetching</Alert.Title>
+      </Alert.Root>
+    )
   }
 
   return (

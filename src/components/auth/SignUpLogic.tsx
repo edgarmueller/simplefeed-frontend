@@ -1,5 +1,6 @@
 import { uniq } from "lodash";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { getErrorMessages } from "../../lib/errors";
 
 export interface SignUpProps {
   isPasswordConfirmEnabled?: boolean;
@@ -17,7 +18,7 @@ export interface SignUpProps {
 }
 
 type Api = {
-	canSubmit: boolean | undefined;
+	canSubmit: boolean;
 	handleSubmit: (event: React.FormEvent) => Promise<void>;
 	errors: string[];
 	isSubmitted: boolean;
@@ -45,18 +46,13 @@ export function SignUpLogic({
     password: "",
     confirmPassword: "",
   });
-  const [canSubmit, setCanSubmit] = useState<boolean>();
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitted, setSubmitted] = useState<boolean>(false);
 
-  useEffect(() => {
-    const { email, password, confirmPassword } = signUpInfo;
-    setCanSubmit(
-      email !== "" &&
-        password !== "" &&
-        (isPasswordConfirmEnabled ? password === confirmPassword : true)
-    );
-  }, [signUpInfo, isPasswordConfirmEnabled]);
+  const canSubmit =
+    signUpInfo.email !== "" &&
+    signUpInfo.password !== "" &&
+    (isPasswordConfirmEnabled ? signUpInfo.password === signUpInfo.confirmPassword : true);
 
   const handleSubmit = async (event: React.FormEvent) => {
     // Prevent page reload
@@ -67,9 +63,7 @@ export function SignUpLogic({
       setSubmitted(true);
       setErrors([]);
     } catch (error) {
-      if (error instanceof Error) {
-        setErrors(error.message.split(",").map(formatError));
-      }
+      setErrors(getErrorMessages(error).map(formatError));
     }
   };
 

@@ -10,7 +10,7 @@ export interface UserSearchResult {
 }
 
 export const searchUsers = async (term: string): Promise<UserSearchResult[]> => {
-		const response = await axios.get(`${API_URL}/search?users=${term}`, {
+		const response = await axios.get(`${API_URL}/search?users=${encodeURIComponent(term)}`, {
 				headers: {
 						...createHeaders(),
 						'Content-Type': 'application/json'
