@@ -1,5 +1,5 @@
 import { Box, Input, IconButton } from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
+import { FiSearch } from 'react-icons/fi';
 import { useState } from 'react';
 
 interface SearchBarProps {
@@ -30,7 +30,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       />
       <IconButton
 				size="sm"
-        icon={<SearchIcon />}
+        icon={<FiSearch />}
         aria-label="Search"
         onClick={handleSearch}
       />

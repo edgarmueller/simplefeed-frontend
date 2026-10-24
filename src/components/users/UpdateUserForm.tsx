@@ -151,18 +151,6 @@ export const UpdateUserForm = () => {
     await updateUserMutation.mutate();
   };
 
-  const handlePasswordSubmit = async (event: React.FormEvent) => {
-    try {
-      //await updatePassword(user.id, password);
-      setSubmitted(true);
-      setErrors([]);
-    } catch (error) {
-      if (error instanceof Error) {
-        setErrors(error.message.split(",").map(formatError));
-      }
-    }
-  };
-
   if (!user) {
     return null;
   }
@@ -232,10 +220,7 @@ export const UpdateUserForm = () => {
           </FormErrorMessage>
         </FormControl>
         <OutlinedBox>
-          <FormControl
-            onSubmit={handlePasswordSubmit}
-            isInvalid={errors.length > 0}
-          >
+          <FormControl isInvalid={errors.length > 0}>
             <FormLabel>Password</FormLabel>
             <FormHelperText>
               If left empty, password will not be updated

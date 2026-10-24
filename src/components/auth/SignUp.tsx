@@ -1,5 +1,5 @@
-import { Link, Navigate } from "react-router-dom";
-import { Link as RouterLink } from "react-router-dom";
+import { Link, Navigate } from "react-router";
+import { Link as RouterLink } from "react-router";
 import {
   Box,
   Button,

@@ -6,7 +6,7 @@ import {
   useLoaderData,
   useLocation,
   useParams,
-} from "react-router-dom";
+} from "react-router";
 import { getSentFriendRequests } from "../api/friends";
 import { fetchUser } from "../api/user";
 import { Layout } from "../components/common/Layout";
@@ -72,7 +72,6 @@ const UserProfile = () => {
         marginTop={4}
         colorScheme="blackAlpha"
         defaultIndex={showChat ? 2 : 0}
-        onChange={(index) => { /* setTabIndex(index) */ }}
       >
         <TabList>
           <Tab>Posts</Tab>

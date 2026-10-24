@@ -6,7 +6,7 @@ import { Pagination } from "../../model/domain.interface";
 import { Alert, Center, Spinner } from "@chakra-ui/react";
 
 export type InfiniteScrollProps<T> = {
-	children: (data: T[]) => JSX.Element;
+	children: (data: T[]) => React.ReactNode;
 	queryKey: string[];
 	fetchPage: (page?: number, limit?: number) => Promise<Pagination<T>>;
 };

@@ -1,12 +1,11 @@
-// import './wdyr';
 import { ChakraProvider } from '@chakra-ui/react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router';
+import { RouterProvider } from 'react-router/dom';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { AuthOutlet } from './components/auth/AuthOutlet';
 import Feed from './pages/FeedPage';
 import UserProfile, { loader as userLoader } from './pages/UserProfilePage';
-import reportWebVitals from './reportWebVitals';
 import Settings from './pages/SettingsPage';
 import Chat from './pages/ChatPage';
 import Search from './pages/SearchPage';
@@ -51,8 +50,3 @@ root.render(
     <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { API_URL } from "./constants";
-import { writeStorage, deleteFromStorage } from "@rehooks/local-storage";
+import { deleteFromStorage, writeStorage } from "../lib/storage";
 
 export function getAccessToken() {
   return localStorage.getItem("token");

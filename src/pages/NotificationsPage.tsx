@@ -1,5 +1,5 @@
 import { Box, Button, Grid, GridItem, Heading, Link } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { Layout } from "../components/common/Layout";
 import { useNotifications } from "../hooks/useNotifications";
 import { NotificationState, useNotificationsStore } from "../stores/useNotificationsStore";

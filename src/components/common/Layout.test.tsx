@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/react'
 
 import { Layout } from './Layout'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router'
 import { useChatStore } from '../../stores/useChatStore'
 import { Conversation, Message, User } from '../../model/domain.interface'
 import { useUserStore } from '../../stores/useUserStore'

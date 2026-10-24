@@ -1,4 +1,4 @@
-import decodeToken from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { getAccessToken } from "./auth";
 import { refreshToken } from "../lib/axios";
 
@@ -7,7 +7,7 @@ export const validateToken = async () => {
 	if (!existingToken) {
 		return;
 	}
-	const decodedToken = decodeToken<{ exp: number }>(existingToken);
+	const decodedToken = jwtDecode<{ exp: number }>(existingToken);
 
 	if (decodedToken && decodedToken.exp * 1000 < Date.now()) {
 		// Token has expired

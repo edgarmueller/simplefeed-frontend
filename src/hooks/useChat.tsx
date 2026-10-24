@@ -1,4 +1,3 @@
-import { sortBy, uniqBy } from "lodash";
 import {
   createContext,
   useCallback,
@@ -37,7 +36,7 @@ const ChatContext = createContext<ChatContextProps>({
   hasError: false,
   error: undefined,
   fetchConversations: async () => [],
-  joinConversation: (id) => { },
+  joinConversation: () => { },
   sendMessage: () => { },
   requestMessages: () => { },
   markAsRead: () => { },

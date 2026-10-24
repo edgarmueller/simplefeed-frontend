@@ -9,7 +9,7 @@ import { uniqBy } from "lodash";
 import { memo, useCallback, useEffect, useState } from "react";
 import { BiTrash } from "react-icons/bi";
 import Markdown from 'react-markdown';
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import YouTube from "react-youtube";
 import { isEqual } from "lodash";
 import {

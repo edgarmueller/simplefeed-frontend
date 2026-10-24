@@ -2,7 +2,7 @@ import { Alert, AlertDescription, AlertIcon, AlertTitle, Badge, Box, Button, Gri
 import { BiBell, BiChat, BiCog } from "react-icons/bi";
 import { FiLogOut, FiSearch, FiUsers } from "react-icons/fi";
 import { MdOutlineFeed } from "react-icons/md";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
 import { useUser } from "../../hooks/useUser";
 import { Logo } from "./Logo";
@@ -15,9 +15,8 @@ export const Layout = ({ children }: any) => {
   // 4 expected render initially
   const { hasError, error } = useUser();
   const { user } = useUserStore();
-  const getUnreadMessages  = useChatStore(getUnreadCount)
-  const unreadChatMessages = getUnreadMessages(user?.id)
-  const unreadNotifications = useNotificationsStore(getUnreadNotifications)
+  const unreadChatMessages = useChatStore((s) => getUnreadCount(s)(user?.id))
+  const unreadNotifications = useNotificationsStore((s) => getUnreadNotifications(s).length)
   const { logout } = useAuth();
   return (
     <Grid
@@ -64,9 +63,9 @@ export const Layout = ({ children }: any) => {
             <Button variant="link" leftIcon={<BiBell />}>
               Notifications
               {
-                unreadNotifications.length === 0 ? null :
+                unreadNotifications === 0 ? null :
                   <Badge colorScheme="red" variant="solid" ml={2}>
-                    {unreadNotifications.length}
+                    {unreadNotifications}
                   </Badge>
               }
             </Button>

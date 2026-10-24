@@ -1,16 +1,17 @@
-import { useLoaderData, defer, Await } from "react-router-dom";
+import { Await, useLoaderData, type LoaderFunctionArgs } from "react-router";
 import { fetchPost } from "../api/posts";
 import { Layout } from "../components/common/Layout";
 import { Post as PostEntity } from "../model/domain.interface";
 import { Post } from "../components/posts/Post";
 import React from "react";
 
-export async function loader({ params }: any) {
-	return defer({ post: fetchPost(params.postId) })
+export function loader({ params }: LoaderFunctionArgs) {
+	// returning the promise unawaited lets the page render while the post loads
+	return { post: fetchPost(params.postId!) }
 }
 
 const PostPage = () => {
-	const data = useLoaderData() as { post: PostEntity };
+	const data = useLoaderData<typeof loader>();
 	return (
 		<Layout>
 			<React.Suspense
@@ -22,7 +23,7 @@ const PostPage = () => {
 						<p>Error loading post!</p>
 					}
 				>
-					{(post) => <Post post={post} showComments />}
+					{(post: PostEntity) => <Post post={post} showComments />}
 				</Await>
 			</React.Suspense>
 		</Layout>

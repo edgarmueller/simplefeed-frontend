@@ -1,14 +1,13 @@
-import useLocalStorage from "@rehooks/local-storage";
 import { createContext, useCallback, useContext, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { User } from "../model/domain.interface";
-import jwtDecode from "jwt-decode";
+import { useNavigate } from "react-router";
+import { jwtDecode } from "jwt-decode";
 import { refreshToken } from "../lib/axios";
 import { getAccessToken, logout as logoutApi } from "../api/auth"
+import { useStoredValue } from "../lib/storage";
 
 type AuthContextProps = {
 	token: string | null,
-	login: (user: User) => void,
+	login: () => void,
 	logout: () => void
 }
 
@@ -19,10 +18,9 @@ const AuthContext = createContext<AuthContextProps>({
 });
 
 export const AuthProvider = ({ children }: any) => {
-  const [token] = useLocalStorage("token", null);
+  const token = useStoredValue("token");
   const navigate = useNavigate();
-  // TODO types
-  const login = useCallback(async (token: any) => {
+  const login = useCallback(() => {
     navigate("/feed");
   }, [navigate])
 

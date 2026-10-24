@@ -1,5 +1,5 @@
 import axios from 'axios';
-import createAuthRefreshInterceptor from 'axios-auth-refresh';
+import { createAuthRefresh } from 'axios-auth-refresh';
 import { logout, saveAccessToken } from '../api/auth';
 import { API_URL } from '../api/constants';
 
@@ -42,6 +42,6 @@ const refreshAuthLogic = async (failedRequest: any) => {
 }
 
 // Instantiate the interceptor
-createAuthRefreshInterceptor(axios, refreshAuthLogic);
+createAuthRefresh(axios, refreshAuthLogic);
 
 export default axios;

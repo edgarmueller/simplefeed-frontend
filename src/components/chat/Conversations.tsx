@@ -1,6 +1,7 @@
 import { Alert, AlertDescription, AlertIcon, Badge, Box, Card, CardBody, Text } from "@chakra-ui/react";
 import { head } from "lodash";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
+import { useShallow } from "zustand/react/shallow";
 import { Conversation, Message, User } from "../../model/domain.interface";
 import { useChat } from "../../hooks/useChat";
 import { getUnreadMessagesByConversation, useChatStore } from "../../stores/useChatStore";
@@ -69,8 +70,9 @@ export const Conversations = () => {
   const { error } = useChat();
   const conversations = useChatStore((state) => state.conversations);
   const messagesByConversation = useChatStore((state) => state.messagesByConversation);
-  const getUnreadByConversation = useChatStore(getUnreadMessagesByConversation)
-  const unreadByConversation = getUnreadByConversation(user?.id)
+  const unreadByConversation = useChatStore(
+    useShallow((s) => getUnreadMessagesByConversation(s)(user?.id))
+  )
   const getMostRecentMessage = (conversation: Conversation) => head(messagesByConversation[conversation.id])
 
   return (

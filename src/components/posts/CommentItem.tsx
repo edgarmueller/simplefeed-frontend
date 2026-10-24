@@ -150,6 +150,5 @@ const CommentItem = memo(
     );
   }
 );
-CommentItem.whyDidYouRender = true;
 CommentItem.displayName = "CommentItem";
 export { CommentItem };

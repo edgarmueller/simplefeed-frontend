@@ -8,7 +8,7 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink, Navigate } from "react-router-dom";
+import { Link as RouterLink, Navigate } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
 import { SignInLogic } from "./SignInLogic";
 import { login as loginApi } from "../../api/auth";
@@ -17,8 +17,8 @@ import { Logo } from "../common/Logo";
 export const SignIn = () => {
   const { token, login: loginApp } = useAuth();
   const login = async (email: string, password: string) => {
-    const { accessToken } = await loginApi(email, password);
-    loginApp(accessToken);
+    await loginApi(email, password);
+    loginApp();
   };
   if (token) {
     return <Navigate replace to="/feed" />;

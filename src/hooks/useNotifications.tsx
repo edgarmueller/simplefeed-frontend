@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import { useAuth } from "./useAuth";
 import { Notification } from "../model/domain.interface";
@@ -14,7 +14,7 @@ type NotificationContextProps = {
 };
 
 const NotificationContext = createContext<NotificationContextProps>({
-  markAsRead: (id: string) => { },
+  markAsRead: () => { },
 });
 
 export const NotificationProvider = ({ children }: any) => {
