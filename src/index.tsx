@@ -18,6 +18,7 @@ import { SignUp } from './components/auth/SignUp';
 import { SignIn } from './components/auth/SignIn';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { FriendsPage } from './pages/FriendsPage';
+import ChannelsPage from './pages/ChannelsPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -31,6 +32,7 @@ const router = createBrowserRouter(
       <Route path="/sign-up" element={<SignUp />} />
       <Route path='/sign-in' element={<SignIn />} />
       <Route path='/friends' element={<ProtectedRoute><FriendsPage /></ProtectedRoute>} />
+      <Route path='/channels' element={<ProtectedRoute><ChannelsPage /></ProtectedRoute>} />
       <Route path='/chat' element={<ProtectedRoute><Chat /></ProtectedRoute>} />
       <Route path='/notifications' element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
       <Route path='/posts/:postId' element={<ProtectedRoute><Post /></ProtectedRoute>} loader={postLoader} errorElement={<>An error occurred while loading the post</>} />

@@ -80,7 +80,9 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
                     display="inline-block"
                     px={3}
                     py={1}
-                    rounded="full"
+                    rounded="xl"
+                    whiteSpace="pre-line"
+                    textAlign="left"
                     bg={message.authorId === friend.id ? "teal.100" : "blue.300"}
                   >
                     {message.content}

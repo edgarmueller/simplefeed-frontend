@@ -2,7 +2,7 @@ import { Alert, Badge, Box, Grid, Link, Stack } from "@chakra-ui/react";
 import { ReactNode } from "react";
 import { BiBell, BiChat, BiCog } from "react-icons/bi";
 import { FiLogOut, FiSearch, FiUsers } from "react-icons/fi";
-import { MdOutlineFeed } from "react-icons/md";
+import { MdOutlineFeed, MdRssFeed } from "react-icons/md";
 import { Link as RouterLink } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
 import { useUser } from "../../hooks/useUser";
@@ -59,6 +59,7 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
             <UserDetail small user={user} />
           </RouterLink>
           <NavLink to="/feed" icon={<MdOutlineFeed />}>Feed</NavLink>
+          <NavLink to="/channels" icon={<MdRssFeed />}>Channels</NavLink>
           <NavLink to="/search" icon={<FiSearch />}>Search</NavLink>
           <NavLink to="/chat" icon={<BiChat />}>
             Chat <CountBadge count={unreadChatMessages} />

@@ -1,6 +1,7 @@
 import { Badge, Box, Card, Heading, Stack, Text } from "@chakra-ui/react";
 import { UserAvatar } from "../ui/user-avatar";
 import { User } from "../../model/domain.interface";
+import { BotBadge } from "../ui/bot-badge";
 import { BefriendButton } from "./BefriendButton";
 import { UserDetailSmall } from "./UserDetailSmall";
 
@@ -27,10 +28,17 @@ export const UserDetail = ({
   return (
     <Card.Root variant="outline">
       <Card.Body>
-        <Heading size="3xl" mb={2}>
-          {userProfile?.firstName} {userProfile?.lastName} (
-          {userProfile?.username})
-        </Heading>
+        <Stack direction="row" align="center" mb={2} gap={3}>
+          <Heading size="3xl">
+            {userProfile?.firstName} {userProfile?.lastName} ({userProfile?.username})
+          </Heading>
+          {userProfile?.isBot ? <BotBadge /> : null}
+        </Stack>
+        {userProfile?.bio ? (
+          <Text color="fg.muted" mb={2}>
+            {userProfile.bio}
+          </Text>
+        ) : null}
         <Stack direction="row" align="center">
           <UserAvatar name={`${userProfile?.firstName} ${userProfile?.lastName}`} src={userProfile?.imageUrl} size="2xl" />
           <Stack direction="row" justify="space-between" w="100%">
@@ -38,11 +46,13 @@ export const UserDetail = ({
               <Text pt="2" fontSize="sm">
                 Posts: {userProfile?.nrOfPosts} <br />
               </Text>
+              {userProfile?.isBot ? null : (
+                <Text pt="2" fontSize="sm">
+                  Likes: {userProfile?.nrOfLikes}
+                </Text>
+              )}
               <Text pt="2" fontSize="sm">
-                Likes: {userProfile?.nrOfLikes}
-              </Text>
-              <Text pt="2" fontSize="sm">
-                Friends: {userProfile?.friends.length}
+                {userProfile?.isBot ? "Subscribers" : "Friends"}: {userProfile?.friends.length}
               </Text>
               {isMyself ? null : userProfile?.mutualFriendsCount ? (
                 <Text pt="2" fontSize="sm">
@@ -53,12 +63,13 @@ export const UserDetail = ({
             <Box>
               {isMyself ? null : isFriend ? (
                 <Badge colorPalette="green" variant="outline">
-                  Friend
+                  {userProfile?.isBot ? "Subscribed" : "Friend"}
                 </Badge>
               ) : (
                 <BefriendButton
                   hasFriendRequest={hasFriendRequest}
                   username={userProfile?.username ?? ""}
+                  isChannel={userProfile?.isBot}
                 />
               )}
             </Box>

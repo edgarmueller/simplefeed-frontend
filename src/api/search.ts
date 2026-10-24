@@ -7,6 +7,7 @@ export interface UserSearchResult {
 	firstName: string;
 	lastName: string;
 	imageUrl: string;
+	isBot?: boolean;
 }
 
 export const searchUsers = async (term: string): Promise<UserSearchResult[]> => {

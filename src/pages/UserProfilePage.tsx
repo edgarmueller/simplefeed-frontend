@@ -1,4 +1,4 @@
-import { Tabs } from "@chakra-ui/react";
+import { Tabs, Text } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
@@ -18,6 +18,7 @@ import { PostList } from "../components/posts/PostList";
 import { Conversation, User } from "../model/domain.interface";
 import { FriendList } from "../components/users/FriendList";
 import { UserDetailSmall } from "../components/users/UserDetailSmall";
+import { useChat } from "../hooks/useChat";
 import { useChatStore } from "../stores/useChatStore";
 import { useUserStore } from "../stores/useUserStore";
 
@@ -51,6 +52,15 @@ const UserProfile = () => {
   const userId = user?.id;
   const isFriend =
     isMyProfile || !!myself?.friends?.find(({ id }) => id === user?.id)
+  const { fetchConversations, joinConversation } = useChat();
+
+  // accepting a friend request creates the conversation in the background, so
+  // it can be missing when the acceptance arrives; look again when it's needed
+  useEffect(() => {
+    if (isFriend && !isMyProfile && !conversationId) {
+      fetchConversations().then((fetched) => fetched.forEach((conversation) => joinConversation(conversation.id)));
+    }
+  }, [isFriend, isMyProfile, conversationId, fetchConversations, joinConversation]);
 
   useEffect(() => {
     if (!isMyProfile) {
@@ -75,7 +85,7 @@ const UserProfile = () => {
       >
         <Tabs.List>
           <Tabs.Trigger value="posts">Posts</Tabs.Trigger>
-          <Tabs.Trigger value="friends">Friends</Tabs.Trigger>
+          <Tabs.Trigger value="friends">{user.isBot ? "Subscribers" : "Friends"}</Tabs.Trigger>
           {isMyProfile ? null : <Tabs.Trigger value="chat">Chat</Tabs.Trigger>}
         </Tabs.List>
         <Tabs.Content value="posts">
@@ -99,15 +109,17 @@ const UserProfile = () => {
               }}
             />
         </Tabs.Content>
-          {
-            !isMyProfile && conversationId ? (
-              <Tabs.Content value="chat">
-                <Chat
-                  friend={{ id: user.id, username: user.username }}
-                  conversationId={conversationId}
-                />
-              </Tabs.Content>) : null
-          }
+          {isMyProfile ? null : (
+            <Tabs.Content value="chat">
+              {conversationId ? (
+                <Chat friend={{ id: user.id, username: user.username }} conversationId={conversationId} />
+              ) : (
+                <Text color="fg.muted">
+                  {isFriend ? "Starting the conversation…" : `Become friends with ${user.firstName} to chat.`}
+                </Text>
+              )}
+            </Tabs.Content>
+          )}
       </Tabs.Root>
     </Layout>
   );
