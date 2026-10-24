@@ -26,13 +26,10 @@ export const NotificationProvider = ({ children }: any) => {
   const setNotifications = useNotificationsStore((state: NotificationState) => state.setNotifications)
   const markNotificationAsRead = useNotificationsStore((state: NotificationState) => state.markNotificationAsRead)
   const addNotification = useNotificationsStore((state: NotificationState) => state.addNewNotification)
-  const [isConnecting, setIsConnecting] = useState(false)
-
   useEffect(() => {
-    if (!token || isConnecting) {
+    if (!token) {
       return;
     }
-    setIsConnecting(true)
     const socket = io(`${SOCKET_URL}/notifications`, {
       autoConnect: false,
       query: {
@@ -65,22 +62,15 @@ export const NotificationProvider = ({ children }: any) => {
       markNotificationAsRead(n)
     }
 
-    if (isConnecting || socket?.connected) {
-      return;
-    }
-
-    socket?.on("send_all_notifications", onAllNotifications);
-    // TODO: in use?
-    socket?.on("receive_notification", onNotification);
-    socket?.on("notification_read", onNotificationRead);
-
-    socket?.connect();
-    setIsConnecting(false)
+    socket.on("send_all_notifications", onAllNotifications);
+    socket.on("receive_notification", onNotification);
+    socket.on("notification_read", onNotificationRead);
+    socket.connect();
 
     return () => {
-      socket?.off("send_all_notifications", onAllNotifications);
-      socket?.off("receive_notification", onNotification);
-      socket?.off("notification_read", onNotificationRead);
+      socket.off("send_all_notifications", onAllNotifications);
+      socket.off("receive_notification", onNotification);
+      socket.off("notification_read", onNotificationRead);
       socket.close()
     };
   }, [token]);

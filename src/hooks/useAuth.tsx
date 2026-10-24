@@ -30,17 +30,17 @@ export const AuthProvider = ({ children }: any) => {
     navigate("/sign-in", { replace: true });
   }, [navigate])
 
-  useEffect(() => { 
-    // run every minute
-    // implement timer
-    setInterval(() => {
+  // refresh the access token shortly before it expires
+  useEffect(() => {
+    const interval = setInterval(() => {
       const accessToken = getAccessToken();
       if (!accessToken) return;
-      const decoded = jwtDecode(accessToken) as any;
-      if (decoded.exp * 1000 - 60 * 1000 < Date.now()) {
+      const { exp } = jwtDecode<{ exp: number }>(accessToken);
+      if (exp * 1000 - 60 * 1000 < Date.now()) {
         refreshToken();
       }
     }, 1000 * 60);
+    return () => clearInterval(interval);
   }, []);
   const value = useMemo(
     () => ({

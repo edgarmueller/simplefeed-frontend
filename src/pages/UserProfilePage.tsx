@@ -82,10 +82,10 @@ const UserProfile = () => {
           <TabPanel>
             <SubmitForm
               onSubmit={async () => {
-                setUser({ ...user, nrOfPosts: user.nrOfPosts + 1 });
-                await queryClient.refetchQueries({
-                  queryKey: ["posts", "infinite", userId ]
-                });
+                if (myself && isMyProfile) {
+                  setUser({ ...myself, nrOfPosts: myself.nrOfPosts + 1 });
+                }
+                await queryClient.invalidateQueries({ queryKey: ["posts", userId] });
               }}
               postTo={userId}
             />

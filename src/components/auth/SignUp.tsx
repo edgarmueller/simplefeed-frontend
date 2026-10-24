@@ -32,7 +32,8 @@ export const SignUp = () => {
         <Flex alignItems="center" justifyContent="center" minHeight="100vh">
           <Box maxW="md" w="100%">
             <Logo />
-            <FormControl onSubmit={handleSubmit} isInvalid={errors.length > 0}>
+            <form onSubmit={handleSubmit}>
+            <FormControl isInvalid={errors.length > 0}>
               <FormLabel>Email address</FormLabel>
               <Input
                 id="input-email"
@@ -98,11 +99,11 @@ export const SignUp = () => {
                 id="btn-sign-up"
                 type="submit"
                 disabled={!canSubmit}
-                onClick={handleSubmit}
               >
                 Sign up
               </Button>
             </Flex>
+            </form>
             {isSubmitted && (
               <Text>
                 Sign up successful!&nbsp;

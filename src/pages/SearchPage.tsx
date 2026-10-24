@@ -30,6 +30,7 @@ const SearchPage: React.FC<SearchPageProps> = () => {
       <Box mt={4}>
         <List 
           elements={searchResults}
+          getKey={(user) => user.id}
           renderElement={(user) => (
             <UserDetailSmall key={user.id} user={user as any} asLink />
           )}

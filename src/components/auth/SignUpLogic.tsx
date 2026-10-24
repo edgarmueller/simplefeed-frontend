@@ -1,5 +1,6 @@
 import { uniq } from "lodash";
 import React, { useEffect, useState } from "react";
+import { getErrorMessages } from "../../lib/errors";
 
 export interface SignUpProps {
   isPasswordConfirmEnabled?: boolean;
@@ -67,9 +68,7 @@ export function SignUpLogic({
       setSubmitted(true);
       setErrors([]);
     } catch (error) {
-      if (error instanceof Error) {
-        setErrors(error.message.split(",").map(formatError));
-      }
+      setErrors(getErrorMessages(error).map(formatError));
     }
   };
 

@@ -45,8 +45,9 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
   let ref: any = undefined;
   useEffect(() => {
     if (lastMessage?.isRead) return;
-    const lastElement = ref?.current?.lastElementChild.lastElementChild.firstElementChild
-    lastElement.scrollIntoView({ behavior: "smooth", block: "end" })
+    // the list may still be empty while messages load
+    const lastElement = ref?.current?.lastElementChild?.lastElementChild?.firstElementChild
+    lastElement?.scrollIntoView({ behavior: "smooth", block: "end" })
     if (lastMessageFromOtherUser) {
       markAsRead(conversationId)
     }

@@ -39,7 +39,9 @@ type PostHeaderProps = {
   createdAt: string;
 }
 
-function PostHeader({ createdAt, author, postedTo }: PostHeaderProps) {
+function PostHeader({ createdAt, author, postedTo: target }: PostHeaderProps) {
+  // posts on one's own feed are "posted to" the author as well
+  const postedTo = target && target.username !== author.username ? target : undefined
   return (
     <Stack direction="row" spacing={4} alignItems="center" marginBottom={2}>
       <Avatar

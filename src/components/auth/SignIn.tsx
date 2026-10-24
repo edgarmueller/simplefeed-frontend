@@ -37,10 +37,8 @@ export const SignIn = () => {
           <Flex alignItems="center" justifyContent="center" minHeight="100vh">
             <Box maxW="md" w="100%">
               <Logo />
-              <FormControl
-                onSubmit={handleSubmit}
-                isInvalid={errors.length > 0}
-              >
+              <form onSubmit={handleSubmit}>
+              <FormControl isInvalid={errors.length > 0}>
                 <FormLabel>Email address</FormLabel>
                 <Input
                   type="email"
@@ -59,16 +57,13 @@ export const SignIn = () => {
                   <FormErrorMessage key={error}>{error}</FormErrorMessage>
                 ))}
                 <Flex justifyContent="flex-end" marginTop={4}>
-                  <Button
-                    type="submit"
-                    disabled={!canSubmit}
-                    onClick={handleSubmit}
-                  >
+                  <Button type="submit" disabled={!canSubmit}>
                     Sign in
                   </Button>
                 </Flex>
                 {isSubmitted && <FormLabel>Login successful!</FormLabel>}
               </FormControl>
+              </form>
               <Box p={4}>
                 <Text>
                   Don't have an account?{" "}

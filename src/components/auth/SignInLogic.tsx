@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { getErrorMessages } from "../../lib/errors";
 
 export interface SignInProps {
   login: (
@@ -49,9 +50,7 @@ export function SignInLogic({
       setSubmitted(true);
       setErrors([]);
     } catch (error) {
-      if (error instanceof Error) {
-        setErrors(error.message.split(",").map(formatError));
-      }
+      setErrors(getErrorMessages(error).map(formatError));
     }
   };
 
