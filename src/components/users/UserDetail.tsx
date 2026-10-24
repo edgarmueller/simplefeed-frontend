@@ -1,15 +1,13 @@
-import { Badge, Box, Card, Heading, Stack, Text } from "@chakra-ui/react";
+import { Box, Card, Heading, Stack, Text } from "@chakra-ui/react";
 import { UserAvatar } from "../ui/user-avatar";
 import { User } from "../../model/domain.interface";
 import { BotBadge } from "../ui/bot-badge";
-import { BefriendButton } from "./BefriendButton";
+import { SubscribeButton } from "./SubscribeButton";
 import { UserDetailSmall } from "./UserDetailSmall";
 
 export interface UserDetailProps {
   user: User | null;
   small?: boolean;
-  hasFriendRequest?: boolean;
-  isFriend?: boolean;
   isMyself?: boolean;
 }
 
@@ -17,8 +15,6 @@ export const UserDetail = ({
   isMyself = false,
   user: userProfile,
   small = false,
-  hasFriendRequest = false,
-  isFriend = false,
 }: UserDetailProps) => {
 
   if (small) {
@@ -44,34 +40,21 @@ export const UserDetail = ({
           <Stack direction="row" justify="space-between" w="100%">
             <Stack direction="column">
               <Text pt="2" fontSize="sm">
-                Posts: {userProfile?.nrOfPosts} <br />
+                Posts: {userProfile?.nrOfPosts}
               </Text>
               {userProfile?.isBot ? null : (
                 <Text pt="2" fontSize="sm">
                   Likes: {userProfile?.nrOfLikes}
                 </Text>
               )}
-              <Text pt="2" fontSize="sm">
-                {userProfile?.isBot ? "Subscribers" : "Friends"}: {userProfile?.friends.length}
-              </Text>
-              {isMyself ? null : userProfile?.mutualFriendsCount ? (
+              {isMyself ? (
                 <Text pt="2" fontSize="sm">
-                  Mutual Friends: {userProfile.mutualFriendsCount}
+                  Subscriptions: {userProfile?.subscriptions?.length ?? 0}
                 </Text>
               ) : null}
             </Stack>
             <Box>
-              {isMyself ? null : isFriend ? (
-                <Badge colorPalette="green" variant="outline">
-                  {userProfile?.isBot ? "Subscribed" : "Friend"}
-                </Badge>
-              ) : (
-                <BefriendButton
-                  hasFriendRequest={hasFriendRequest}
-                  username={userProfile?.username ?? ""}
-                  isChannel={userProfile?.isBot}
-                />
-              )}
+              {!isMyself && userProfile?.isBot ? <SubscribeButton channel={userProfile} /> : null}
             </Box>
           </Stack>
         </Stack>

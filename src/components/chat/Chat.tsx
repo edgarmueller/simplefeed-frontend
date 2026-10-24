@@ -8,7 +8,7 @@ import { useUserStore } from "../../stores/useUserStore";
 
 export interface ChatProps {
   conversationId: string;
-  friend: {
+  channel: {
     id: string;
     username: string;
   };
@@ -22,7 +22,7 @@ const formatDate = (dateString: string | undefined) => {
   });
 };
 
-const Chat = ({ friend, conversationId }: ChatProps) => {
+const Chat = ({ channel, conversationId }: ChatProps) => {
   const {
     sendMessage,
     requestMessages,
@@ -74,7 +74,7 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
                   key={message.id ?? index}
                   ref={index === 0 ? lastMessageRef : undefined}
                   p={2}
-                  textAlign={message.authorId === friend.id ? "left" : "right"}
+                  textAlign={message.authorId === channel.id ? "left" : "right"}
                 >
                   <Text
                     display="inline-block"
@@ -83,7 +83,7 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
                     rounded="xl"
                     whiteSpace="pre-line"
                     textAlign="left"
-                    bg={message.authorId === friend.id ? "teal.100" : "blue.300"}
+                    bg={message.authorId === channel.id ? "teal.100" : "blue.300"}
                   >
                     {message.content}
                   </Text>

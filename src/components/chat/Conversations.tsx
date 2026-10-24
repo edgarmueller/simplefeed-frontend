@@ -22,8 +22,9 @@ function UnreadMessageCount({ unreadMessages }: UnreadMessageCountProps) {
     </Badge>
   )
 }
-const findFriend = (user: User | undefined, conversation: Conversation) => {
-  return user?.friends.find((friend) => conversation.userIds.includes(friend.id));
+/** Conversations are between a user and a channel they subscribe to. */
+const findChannel = (subscriptions: User[], conversation: Conversation) => {
+  return subscriptions.find((channel) => conversation.userIds.includes(channel.id));
 }
 
 type ConversationItemProps = {
@@ -35,23 +36,23 @@ type ConversationItemProps = {
 
 const ConversationItem = ({ user, conversation, unreadCount, mostRecentMessage }: ConversationItemProps) => {
   const navigate = useNavigate();
-  const friend = findFriend(user, conversation)
-  const url = `/users/${friend?.username}/chat`
+  const subscriptions = useUserStore((state) => state.subscriptions);
+  const channel = findChannel(subscriptions, conversation)
   return (
     <Box
       mt={2}
       key={conversation.id}
       _hover={{ bg: "blackAlpha.100", cursor: "pointer" }}
       onClick={() => {
-        if (!friend) {
+        if (!channel) {
           return;
         }
-        navigate(url);
+        navigate(`/users/${channel.username}/chat`);
       }}
     >
       <Box>
         <UserDetailSmall
-          user={findFriend(user, conversation)}
+          user={channel}
           bold
           asLink={false}
         />

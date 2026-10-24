@@ -3,9 +3,6 @@ import type { ReactNode } from "react";
 import { Socket, io } from "socket.io-client";
 import { useAuth } from "./useAuth";
 import { Notification } from "../model/domain.interface";
-import { useChat } from "./useChat";
-import { useUser } from "./useUser";
-import { useFriends } from "./useFriends";
 import { SOCKET_URL } from "../api/constants";
 import { validateToken } from "../api/validateToken";
 import { NotificationState, useNotificationsStore } from "../stores/useNotificationsStore";
@@ -20,9 +17,6 @@ const NotificationContext = createContext<NotificationContextProps>({
 
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const { token } = useAuth();
-  const { refresh } = useUser();
-  const { fetchReceivedFriendRequests, fetchSentFriendRequests } = useFriends();
-  const { joinConversation, fetchConversations } = useChat()
   const [socket, setSocket] = useState<Socket>();
   const setNotifications = useNotificationsStore((state: NotificationState) => state.setNotifications)
   const markNotificationAsRead = useNotificationsStore((state: NotificationState) => state.markNotificationAsRead)
@@ -45,17 +39,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
       setNotifications(notifications);
     }
 
-    async function onNotification(msg: Notification) {
-      if (msg.type === "friend-request-accepted") {
-        refresh()
-        await fetchReceivedFriendRequests()
-        await fetchSentFriendRequests()
-        fetchConversations().then(convos => {
-          for (const convo of convos) {
-            joinConversation(convo.id)
-          }
-        });
-      }
+    function onNotification(msg: Notification) {
       addNotification(msg)
     }
 

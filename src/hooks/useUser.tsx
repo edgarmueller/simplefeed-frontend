@@ -30,7 +30,7 @@ export const UserContext = createContext<UserContextProps>({
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { token } = useAuth();
-  const { user, setUser, setFriends } = useUserStore();
+  const { user, setUser, setSubscriptions } = useUserStore();
   const [error, setError] = useState<string>();
   const { refetch, data, error: err } = useQuery({
     enabled: false,
@@ -40,14 +40,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (data) {
       setUser(data)
-      setFriends(data?.friends || []);
+      setSubscriptions(data.subscriptions ?? []);
     }
     if (err) {
       setError(err.message)
     } else {
       setError(undefined)
     }
-  }, [data, error, err, setFriends, setUser])
+  }, [data, error, err, setSubscriptions, setUser])
   useEffect(() => {
     if (token) {
       refetch();

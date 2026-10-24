@@ -1,7 +1,7 @@
 import { Alert, Badge, Box, Grid, Link, Stack } from "@chakra-ui/react";
 import { ReactNode } from "react";
 import { BiBell, BiChat, BiCog } from "react-icons/bi";
-import { FiLogOut, FiSearch, FiUsers } from "react-icons/fi";
+import { FiLogOut, FiSearch } from "react-icons/fi";
 import { MdOutlineFeed, MdRssFeed } from "react-icons/md";
 import { Link as RouterLink } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
@@ -64,7 +64,6 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
           <NavLink to="/chat" icon={<BiChat />}>
             Chat <CountBadge count={unreadChatMessages} />
           </NavLink>
-          <NavLink to="/friends" icon={<FiUsers />}>Friends</NavLink>
           <NavLink to="/notifications" icon={<BiBell />}>
             Notifications <CountBadge count={unreadNotifications} />
           </NavLink>
