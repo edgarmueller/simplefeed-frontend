@@ -23,7 +23,7 @@ const PostPage = () => {
 						<p>Error loading post!</p>
 					}
 				>
-					{(post: PostEntity) => <Post post={post} showComments />}
+					{(post: PostEntity) => <Post post={post} />}
 				</Await>
 			</React.Suspense>
 		</Layout>

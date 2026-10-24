@@ -25,9 +25,6 @@
 - Like a Post
 - Unlike a Post
 - Delete a Post (for owner only)
-- Comment a Post
-- Reply to a comment
-- Fetch comments
 
 ## Channels
 - List channels
