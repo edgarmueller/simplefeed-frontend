@@ -38,6 +38,9 @@ const findConversationId = (conversations: Conversation[], userId: string) => {
   )?.id;
 }
 
+const CONVERSATION_LOOKUP_ATTEMPTS = 5;
+const CONVERSATION_LOOKUP_DELAY_MS = 1000;
+
 const UserProfile = () => {
   const params = useParams();
   const location = useLocation();
@@ -55,12 +58,27 @@ const UserProfile = () => {
   const { fetchConversations, joinConversation } = useChat();
 
   // accepting a friend request creates the conversation in the background, so
-  // it can be missing when the acceptance arrives; look again when it's needed
+  // it can be missing when the acceptance arrives; keep looking for a while
   useEffect(() => {
-    if (isFriend && !isMyProfile && !conversationId) {
-      fetchConversations().then((fetched) => fetched.forEach((conversation) => joinConversation(conversation.id)));
+    if (!isFriend || isMyProfile || conversationId) {
+      return;
     }
-  }, [isFriend, isMyProfile, conversationId, fetchConversations, joinConversation]);
+    let cancelled = false;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const lookup = async (attempt: number) => {
+      const fetched = await fetchConversations().catch(() => [] as Conversation[]);
+      if (cancelled) return;
+      fetched.forEach((conversation) => joinConversation(conversation.id));
+      if (!findConversationId(fetched, userId) && attempt < CONVERSATION_LOOKUP_ATTEMPTS) {
+        timeout = setTimeout(() => lookup(attempt + 1), CONVERSATION_LOOKUP_DELAY_MS);
+      }
+    };
+    lookup(1);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
+  }, [isFriend, isMyProfile, conversationId, userId, fetchConversations, joinConversation]);
 
   useEffect(() => {
     if (!isMyProfile) {
@@ -115,7 +133,11 @@ const UserProfile = () => {
                 <Chat friend={{ id: user.id, username: user.username }} conversationId={conversationId} />
               ) : (
                 <Text color="fg.muted">
-                  {isFriend ? "Starting the conversation…" : `Become friends with ${user.firstName} to chat.`}
+                  {isFriend
+                    ? "Starting the conversation…"
+                    : user.isBot
+                      ? `Subscribe to ${user.firstName} to chat.`
+                      : `Become friends with ${user.firstName} to chat.`}
                 </Text>
               )}
             </Tabs.Content>
