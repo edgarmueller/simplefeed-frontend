@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, AlertIcon, Badge, Box, Card, CardBody, Text } from "@chakra-ui/react";
+import { Alert, Badge, Box, Card, Text } from "@chakra-ui/react";
 import { head } from "lodash";
 import { useNavigate } from "react-router";
 import { useShallow } from "zustand/react/shallow";
@@ -17,7 +17,7 @@ function UnreadMessageCount({ unreadMessages }: UnreadMessageCountProps) {
     return null;
   }
   return (
-    <Badge colorScheme="red" variant="outline" mr={2}>
+    <Badge colorPalette="red" variant="outline" mr={2}>
       {unreadMessages} new message(s)
     </Badge>
   )
@@ -49,7 +49,7 @@ const ConversationItem = ({ user, conversation, unreadCount, mostRecentMessage }
         navigate(url);
       }}
     >
-      <Box dir="row">
+      <Box>
         <UserDetailSmall
           user={findFriend(user, conversation)}
           bold
@@ -76,12 +76,14 @@ export const Conversations = () => {
   const getMostRecentMessage = (conversation: Conversation) => head(messagesByConversation[conversation.id])
 
   return (
-    <Card>
-      <CardBody>
-        {error ? <Alert status="error">
-                <AlertIcon />
-          <AlertDescription>Couldn't fetch conversations: {error}</AlertDescription>
-          </Alert> : null}
+    <Card.Root>
+      <Card.Body>
+        {error ? (
+          <Alert.Root status="error">
+            <Alert.Indicator />
+            <Alert.Description>Couldn't fetch conversations: {error}</Alert.Description>
+          </Alert.Root>
+        ) : null}
         {conversations.length === 0 && <Text>No conversations</Text>}
         {conversations?.map((conversation) => {
           const messageCount = unreadByConversation![conversation.id]
@@ -94,7 +96,7 @@ export const Conversations = () => {
             mostRecentMessage={mostRecentMessage}
           />
         })}
-      </CardBody>
-    </Card>
+      </Card.Body>
+    </Card.Root>
   );
 };

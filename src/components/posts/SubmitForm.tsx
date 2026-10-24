@@ -1,84 +1,75 @@
-import { Box, Button, FormControl, Stack, Text, Textarea } from "@chakra-ui/react";
+import { Box, Button, Stack, Text, Textarea } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-// @ts-ignore
+import { ChangeEvent, FormEvent, useState } from "react";
+// @ts-expect-error extract-urls ships without types
 import extractUrls from "extract-urls";
 import { submitPost } from "../../api/posts";
+import { Post } from "../../model/domain.interface";
 import { useUserStore } from "../../stores/useUserStore";
-import { FileInput } from "../users/UpdateUserForm";
+import { FileInput } from "../ui/file-input";
+import { notifyError } from "../ui/toaster";
+
+type ImageAttachment = { type: "image"; image: File; filename: string };
 
 export interface SubmitFormProps {
-  onSubmit?: (post: any) => void;
+  onSubmit?: (post: Post) => void;
   postTo?: string;
 }
 
 export const SubmitForm = ({ onSubmit, postTo }: SubmitFormProps) => {
   const [text, setText] = useState("");
-  const [attachments, setAttachments] = useState<any[]>([]);
+  const [attachments, setAttachments] = useState<ImageAttachment[]>([]);
   const { user } = useUserStore();
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: submitPost,
     onSuccess: (post) => {
-      if (onSubmit) {
-        onSubmit(post);
-      }
-      queryClient.invalidateQueries({
-        queryKey: ["feed"]
-      });
+      onSubmit?.(post);
+      queryClient.invalidateQueries({ queryKey: ["feed"] });
     },
+    onError: (error: Error) => notifyError("Posting", error),
   });
-  const handleImageAttached = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAttachments([
-      ...attachments,
-      {
-        type: "image",
-        image: event.target.files![0],
-        filename: event.target.files![0].name,
-      },
-    ]);
+  const handleImageAttached = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setAttachments([...attachments, { type: "image", image: file, filename: file.name }]);
   };
 
-  const handleSubmit = async (event: any) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
+    const videos = ((extractUrls(text) as string[] | undefined) || [])
+      .filter((url) => url.includes("youtube.com"))
+      .map((url) => ({ type: "video", url }));
     mutation.mutate({
-      // remove urls from body
-      // text.replace(/(?:https?|ftp):\/\/[\n\S]+/g, ""),
       body: text,
       toUserId: postTo || user?.id,
-      // map to attachments
-      attachments: [
-        ...attachments,
-        ...(extractUrls(text) || [])
-          .filter((url: string) => url.includes("youtube.com"))
-          .map((url: string) => ({ type: "video", url })),
-      ],
+      attachments: [...attachments, ...videos],
     });
     setText("");
+    setAttachments([]);
   };
   return (
-    <Box alignItems="center" justifyItems={"center"} border={"1px"} borderColor={"gray.200"} borderRadius={"lg"} p={2} mb={2}>
-      <FormControl id="post_form" onSubmit={handleSubmit}>
-          <Stack direction="column">
-            <Stack direction="row">
-              <Textarea
-                value={text}
-                name="postContent"
-                id="post_text"
-                placeholder="What's on your mind?"
-                onChange={(e) => setText(e.target.value)}
-              />
-              <Button onClick={handleSubmit} color="black" id="post_button">
-                Post
-              </Button>
-            </Stack>
-            <Text fontSize="xs" as="span"><b>Add attachments</b></Text>
-            <FileInput
-              onChange={handleImageAttached}
-              minW="100%"
+    <Box borderWidth="1px" borderColor="border" borderRadius="lg" p={2} mb={2}>
+      <form id="post_form" onSubmit={handleSubmit}>
+        <Stack direction="column">
+          <Stack direction="row">
+            <Textarea
+              value={text}
+              name="postContent"
+              id="post_text"
+              placeholder="What's on your mind?"
+              onChange={(e) => setText(e.target.value)}
             />
+            <Button type="submit" id="post_button" variant="subtle" disabled={!text.trim()}>
+              Post
+            </Button>
           </Stack>
-      </FormControl>
+          <Text fontSize="xs" fontWeight="bold">
+            Add attachments
+          </Text>
+          <FileInput onChange={handleImageAttached} />
+        </Stack>
+      </form>
     </Box>
   );
 };

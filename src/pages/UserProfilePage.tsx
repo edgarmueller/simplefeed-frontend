@@ -1,4 +1,4 @@
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { Tabs } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
@@ -67,19 +67,17 @@ const UserProfile = () => {
         isFriend={isFriend}
         hasFriendRequest={friendRequestSent}
       />
-      <Tabs
-        variant="soft-rounded"
+      <Tabs.Root
+        variant="enclosed"
         marginTop={4}
-        colorScheme="blackAlpha"
-        defaultIndex={showChat ? 2 : 0}
+        defaultValue={showChat ? "chat" : "posts"}
       >
-        <TabList>
-          <Tab>Posts</Tab>
-          <Tab>Friends</Tab>
-          {isMyProfile ? null : <Tab>Chat</Tab>}
-        </TabList>
-        <TabPanels>
-          <TabPanel>
+        <Tabs.List>
+          <Tabs.Trigger value="posts">Posts</Tabs.Trigger>
+          <Tabs.Trigger value="friends">Friends</Tabs.Trigger>
+          {isMyProfile ? null : <Tabs.Trigger value="chat">Chat</Tabs.Trigger>}
+        </Tabs.List>
+        <Tabs.Content value="posts">
             <SubmitForm
               onSubmit={async () => {
                 if (myself && isMyProfile) {
@@ -90,8 +88,8 @@ const UserProfile = () => {
               postTo={userId}
             />
             <PostList userId={userId} />
-          </TabPanel>
-          <TabPanel>
+        </Tabs.Content>
+        <Tabs.Content value="friends">
             <FriendList
               friends={user.friends}
               ifEmpty={<>"No friends yet!"</>}
@@ -99,18 +97,17 @@ const UserProfile = () => {
                 return <UserDetailSmall user={friend} />
               }}
             />
-          </TabPanel>
+        </Tabs.Content>
           {
             !isMyProfile && conversationId ? (
-              <TabPanel>
+              <Tabs.Content value="chat">
                 <Chat
                   friend={{ id: user.id, username: user.username }}
                   conversationId={conversationId}
                 />
-              </TabPanel>) : null
+              </Tabs.Content>) : null
           }
-        </TabPanels>
-      </Tabs>
+      </Tabs.Root>
     </Layout>
   );
 };

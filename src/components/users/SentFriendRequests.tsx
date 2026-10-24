@@ -1,33 +1,22 @@
-import { Alert, Box, Button, Flex, Heading, Spinner, Text, useToast } from "@chakra-ui/react";
+import { Alert, Box, Button, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
+import { notifyError, notifySuccess } from "../ui/toaster";
 import { cancelFriendRequest } from "../../api/friends";
 import { useFriends } from "../../hooks/useFriends";
 import { UserDetailSmall } from "./UserDetailSmall";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { User } from "../../model/domain.interface";
 
 export const SentFriendRequests = () => {
-  const toast = useToast();
   const { sentFriendRequests, fetchSentFriendRequests, isLoadingSentFriendRequests, sentFriendRequestsFetchError } = useFriends();
   const cancelFriendRequestMutation = useMutation({
     mutationFn: (friendRequestId: string) => cancelFriendRequest(friendRequestId),
     onSuccess: async () => {
       // refetch sent friend requests
       await fetchSentFriendRequests();
-      toast({
-        title: "Friend request cancelled",
-        status: "success",
-        duration: 5000,
-        isClosable: true
-      })
+      notifySuccess("Friend request cancelled");
     },
-    onError: (error: Error) => {
-      toast({
-        title: `Cancel friend request failed: ${error.message}. Please try again later.`,
-        status: "error",
-        duration: 5000,
-        isClosable: true
-      })
-    } 
+    onError: (error: Error) => notifyError("Cancelling the friend request", error),
   });
   useEffect(() => {
     fetchSentFriendRequests();
@@ -37,26 +26,27 @@ export const SentFriendRequests = () => {
     return <Spinner />
   }
   if (sentFriendRequestsFetchError) {
-    return <Alert variant='solid' colorScheme="red">{sentFriendRequestsFetchError.message}</Alert>
+    return (
+      <Alert.Root status="error">
+        <Alert.Indicator />
+        <Alert.Title>{sentFriendRequestsFetchError.message}</Alert.Title>
+      </Alert.Root>
+    )
   }
   return (
     <Box>
       <Heading size="xs" mb={2}>Sent</Heading>
       {sentFriendRequests.length === 0 ? (
-        <Text size="sm">No friend requests</Text>
+        <Text fontSize="sm">No friend requests</Text>
       ) : (
         sentFriendRequests.map((friendRequest) => (
-          <Flex justify="space-between" align="center" mt={2}>
-            <UserDetailSmall
-              key={friendRequest.id}
-              user={friendRequest.to as any}
-            />
+          <Flex key={friendRequest.id} justify="space-between" align="center" mt={2}>
+            <UserDetailSmall user={friendRequest.to as User} />
             <Button
-              colorScheme="red"
+              variant="outline"
+              colorPalette="red"
               size="xs"
-              onClick={async () => {
-								cancelFriendRequestMutation.mutate(friendRequest.id)
-							}}
+              onClick={() => cancelFriendRequestMutation.mutate(friendRequest.id)}
             >
               Cancel
             </Button>

@@ -1,4 +1,5 @@
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
+import { Toaster } from './components/ui/toaster';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, createRoutesFromElements, Route } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
@@ -44,8 +45,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <QueryClientProvider client={queryClient}>
-    <ChakraProvider>
+    <ChakraProvider value={defaultSystem}>
       <RouterProvider router={router} />
+      <Toaster />
     </ChakraProvider>
     <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>

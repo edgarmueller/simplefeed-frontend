@@ -1,4 +1,4 @@
-import { Box, Button, Highlight, Input, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Input, Text, VStack } from "@chakra-ui/react";
 import { head } from "lodash";
 import { useEffect, useState } from "react";
 import { ScrollableBox } from "./ScrollableBox";
@@ -60,7 +60,7 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
 
   return (
     <Box>
-      <VStack spacing={4} align="stretch">
+      <VStack gap={4} align="stretch">
         <ScrollableBox
           loading={loading}
           bg="gray.200"
@@ -85,21 +85,14 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
                   p={2}
                   textAlign={message.authorId === friend.id ? "left" : "right"}
                 >
-                  <Text>
-                    <Highlight
-                      query={message.content}
-                      styles={{
-                        px: "2",
-                        py: "1",
-                        rounded: "full",
-                        bg:
-                          message.authorId === friend?.id
-                            ? "teal.100"
-                            : "blue.300",
-                      }}
-                    >
-                      {message.content}
-                    </Highlight>
+                  <Text
+                    display="inline-block"
+                    px={3}
+                    py={1}
+                    rounded="full"
+                    bg={message.authorId === friend.id ? "teal.100" : "blue.300"}
+                  >
+                    {message.content}
                   </Text>
                   <Text fontSize="xs" color="gray.500">
                     {formatDate(message.createdAt)}
@@ -109,20 +102,24 @@ const Chat = ({ friend, conversationId }: ChatProps) => {
             );
           }}
         </ScrollableBox>
-        <Input
-          placeholder="Type a message"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-        />
-        <Button
-          colorScheme="blackAlpha"
-          onClick={() => {
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
             sendMessage(conversationId, inputValue);
             setInputValue("");
           }}
         >
-          Send
-        </Button>
+          <VStack gap={2} align="stretch">
+            <Input
+              placeholder="Type a message"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+            />
+            <Button type="submit" colorPalette="gray">
+              Send
+            </Button>
+          </VStack>
+        </form>
       </VStack>
     </Box>
   );

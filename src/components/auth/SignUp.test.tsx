@@ -1,7 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import { AxiosError, AxiosHeaders } from 'axios'
-import { MemoryRouter } from 'react-router'
 import { register } from '../../api/auth'
+import { renderWithProviders } from '../../test/render'
 import { SignUp } from './SignUp'
 
 vi.mock('../../api/auth', () => ({ register: vi.fn() }))
@@ -10,11 +10,7 @@ const fill = (id: string, value: string) =>
   fireEvent.change(document.getElementById(id)!, { target: { value } })
 
 function submitForm() {
-  render(
-    <MemoryRouter>
-      <SignUp />
-    </MemoryRouter>
-  )
+  renderWithProviders(<SignUp />)
   fill('input-email', 'bart@example.com')
   fill('input-username', 'bart')
   fill('input-password', 'secret')

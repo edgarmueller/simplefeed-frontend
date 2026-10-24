@@ -1,6 +1,5 @@
-import { Box, Button, Collapse, Stack, Text, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Collapsible, Stack, Text, useDisclosure } from "@chakra-ui/react";
 import { BsArrowDownCircle, BsArrowUpCircle } from "react-icons/bs";
-// TODO
 import { CommentNode } from "../../model/comments";
 import { CommentItem } from "./CommentItem";
 import { CommentForm } from "./CommentForm";
@@ -28,7 +27,7 @@ export const Comments = ({
   const [page, setPage] = useState(0);
   const [loadedItems, setLoadedItems] = useState<number>(0);
   const [totalItems, setTotalItems] = useState(0);
-  const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: isExpanded })
+  const { open: isOpen, onToggle } = useDisclosure({ defaultOpen: isExpanded })
   useEffect(() => {
     if (isOpen) {
       setPage(1)
@@ -46,32 +45,26 @@ export const Comments = ({
   }, [page, postId])
   return (
     <>
-      <Stack direction="row" spacing={0} alignItems="center" marginBottom={2}>
-        {isOpen ? (
-          <Button
-            size="sm"
-            variant="link"
-            rightIcon={<BsArrowUpCircle />}
-            onClick={onToggle}
-          >
-            Comments
-          </Button>
-        ) : (
-          <Button
-            size="sm"
-            variant="link"
-            rightIcon={<BsArrowDownCircle />}
-            onClick={async () => {
-              onToggle();
-              setPage(1 )
-            }}
-          >
-            Comments
-          </Button>
-        )}
+      <Stack direction="row" gap={0} alignItems="center" marginBottom={2}>
+        <Button
+          size="sm"
+          variant="plain"
+          px={0}
+          color="fg.muted"
+          onClick={() => {
+            onToggle();
+            if (!isOpen) {
+              setPage(1);
+            }
+          }}
+        >
+          Comments
+          {isOpen ? <BsArrowUpCircle /> : <BsArrowDownCircle />}
+        </Button>
       </Stack>
-      <Collapse in={isOpen} animateOpacity>
-        <Box bg="white" p={1} borderRadius="md">
+      <Collapsible.Root open={isOpen}>
+        <Collapsible.Content>
+        <Box bg="bg" p={1} borderRadius="md">
           {commentTree.length > 0 ? (
             commentTree?.map((comment) => {
               return (
@@ -94,7 +87,8 @@ export const Comments = ({
                 setPage(page + 1)
               }}
               size="xs"
-              variant="link"
+              variant="plain"
+              px={0}
             >
               {/* TODO: hard coded pag limit */}
               {totalItems > 0 ? `${loadedItems} out of ${totalItems} loaded` : 'Load more replies'}
@@ -108,7 +102,8 @@ export const Comments = ({
             }}
           />
         </Box>
-      </Collapse>
+        </Collapsible.Content>
+      </Collapsible.Root>
     </>
   );
 };

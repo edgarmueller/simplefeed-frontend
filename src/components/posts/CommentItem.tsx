@@ -1,4 +1,5 @@
-import { Avatar, Box, Button, Flex, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Stack, Text } from "@chakra-ui/react";
+import { UserAvatar } from "../ui/user-avatar";
 import { memo, useEffect, useState } from "react";
 import { Comment, Pagination } from "../../model/domain.interface";
 import { formatTimeAgo } from "../../lib/time-ago";
@@ -83,16 +84,12 @@ const CommentItem = memo(
         borderLeftStyle="solid"
         borderLeftColor="gray.300"
       >
-        <Stack direction="row" spacing={2}>
-          <Avatar
-            size="xs"
-            name={commentNode.comment.author}
-            src="https://bit.ly/broken-link"
-          />
-          <Text fontWeight="bold" fontSize="sm" marginBottom={2}>
+        <Stack direction="row" gap={2} align="center">
+          <UserAvatar size="2xs" name={commentNode.comment.author} />
+          <Text fontWeight="bold" fontSize="sm">
             {commentNode.comment.author}
           </Text>
-          <Text fontSize="sm">
+          <Text fontSize="sm" color="fg.muted">
             {formatTimeAgo(commentNode.comment.createdAt)}
           </Text>
         </Stack>
@@ -111,11 +108,12 @@ const CommentItem = memo(
               onRepliesFetched={onRepliesFetched}
             />
           ))}
-          <Stack direction="row" spacing={4} align="center">
+          <Stack direction="row" gap={4} align="center">
             <Button
               onClick={() => setShowReplyForm(!showReplyForm)}
               size="xs"
-              variant="link"
+              variant="plain"
+              px={0}
             >
               {showReplyForm ? "Hide" : "Reply"}
             </Button>
@@ -125,7 +123,8 @@ const CommentItem = memo(
                 setPage(page + 1)
               }}
               size="xs"
-              variant="link"
+              variant="plain"
+              px={0}
             >
               <LoadedItems loaded={loaded} totalItems={totalItems} unloadedItems={unloadedItems} loadedItems={loadedItems} />
             </Button>

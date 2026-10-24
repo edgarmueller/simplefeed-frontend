@@ -1,14 +1,5 @@
-import {
-  Alert,
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Spinner,
-  Stack,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import { Alert, Box, Button, Flex, Heading, Spinner, Stack, Text } from "@chakra-ui/react";
+import { notifyError, notifySuccess } from "../ui/toaster";
 import {
   acceptFriendRequest as acceptFriendRequestApi,
   declineFriendRequest as declineFriendRequestApi,
@@ -23,7 +14,6 @@ import { useUserStore } from "../../stores/useUserStore";
 
 export const ReceivedFriendRequests = () => {
   const { refresh: refreshUserProfile } = useUser();
-  const toast = useToast();
   const { user } = useUserStore();
   const { fetchConversations, joinConversation } = useChat();
   const {
@@ -57,21 +47,9 @@ export const ReceivedFriendRequests = () => {
         return;
       }
       await joinConversation(conversation.id);
-      toast({
-        title: "Friend request accepted",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+      notifySuccess("Friend request accepted");
     },
-    onError: (error: Error) => {
-      toast({
-        title: `Accept friend request failed: ${error.message}. Please try again later.`,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    },
+    onError: (error: Error) => notifyError("Accepting the friend request", error),
   });
   const declineFriendRequest = useMutation({
     mutationFn: (friendRequestId: string) =>
@@ -79,14 +57,7 @@ export const ReceivedFriendRequests = () => {
     onSuccess: async () => {
       await fetchReceivedFriendRequests();
     },
-    onError: (error: Error) => {
-      toast({
-        title: `Decline friend request failed: ${error.message}. Please try again later.`,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    },
+    onError: (error: Error) => notifyError("Declining the friend request", error),
   });
 
   if (isLoadingReceivedFriendRequests) {
@@ -95,9 +66,10 @@ export const ReceivedFriendRequests = () => {
 
   if (receivedFriendRequestsFetchError) {
     return (
-      <Alert variant="solid" colorScheme="red">
-        {receivedFriendRequestsFetchError.message}
-      </Alert>
+      <Alert.Root status="error">
+        <Alert.Indicator />
+        <Alert.Title>{receivedFriendRequestsFetchError.message}</Alert.Title>
+      </Alert.Root>
     );
   }
 
@@ -111,7 +83,7 @@ export const ReceivedFriendRequests = () => {
           Received
         </Heading>
         {receivedFriendRequests.length === 0 ? (
-          <Text size="sm">No friend requests</Text>
+          <Text fontSize="sm">No friend requests</Text>
         ) : (
           receivedFriendRequests.map((friendRequest) => (
             <Flex
@@ -121,24 +93,20 @@ export const ReceivedFriendRequests = () => {
               mt={2}
             >
               <UserDetailSmall user={friendRequest.from} />
-              <Stack direction="row" spacing={2}>
+              <Stack direction="row" gap={2}>
                 <Button
                   variant="outline"
-                  colorScheme="green"
+                  colorPalette="green"
                   size="xs"
-                  onClick={async () => {
-                    await acceptFriendRequestMutation.mutate(friendRequest.id);
-                  }}
+                  onClick={() => acceptFriendRequestMutation.mutate(friendRequest.id)}
                 >
                   Accept
                 </Button>
                 <Button
                   variant="outline"
-                  colorScheme="red"
+                  colorPalette="red"
                   size="xs"
-                  onClick={async () => {
-                    await declineFriendRequest.mutate(friendRequest.id);
-                  }}
+                  onClick={() => declineFriendRequest.mutate(friendRequest.id)}
                 >
                   Decline
                 </Button>

@@ -1,13 +1,5 @@
-import {
-  Avatar,
-  Badge,
-  Box,
-  Card,
-  CardBody,
-  Heading,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Badge, Box, Card, Heading, Stack, Text } from "@chakra-ui/react";
+import { UserAvatar } from "../ui/user-avatar";
 import { User } from "../../model/domain.interface";
 import { BefriendButton } from "./BefriendButton";
 import { UserDetailSmall } from "./UserDetailSmall";
@@ -33,14 +25,14 @@ export const UserDetail = ({
   }
 
   return (
-    <Card variant="outline">
-      <CardBody>
-        <Heading mb={2}>
+    <Card.Root variant="outline">
+      <Card.Body>
+        <Heading size="3xl" mb={2}>
           {userProfile?.firstName} {userProfile?.lastName} (
           {userProfile?.username})
         </Heading>
         <Stack direction="row" align="center">
-          <Avatar name={`${userProfile?.firstName} ${userProfile?.lastName}`} src={userProfile?.imageUrl} size="xl" />
+          <UserAvatar name={`${userProfile?.firstName} ${userProfile?.lastName}`} src={userProfile?.imageUrl} size="2xl" />
           <Stack direction="row" justify="space-between" w="100%">
             <Stack direction="column">
               <Text pt="2" fontSize="sm">
@@ -60,7 +52,7 @@ export const UserDetail = ({
             </Stack>
             <Box>
               {isMyself ? null : isFriend ? (
-                <Badge colorScheme="green" variant="outline">
+                <Badge colorPalette="green" variant="outline">
                   Friend
                 </Badge>
               ) : (
@@ -72,7 +64,7 @@ export const UserDetail = ({
             </Box>
           </Stack>
         </Stack>
-      </CardBody>
-    </Card>
+      </Card.Body>
+    </Card.Root>
   );
 };

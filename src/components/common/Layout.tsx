@@ -1,4 +1,5 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Badge, Box, Button, Grid, Stack } from "@chakra-ui/react";
+import { Alert, Badge, Box, Grid, Link, Stack } from "@chakra-ui/react";
+import { ReactNode } from "react";
 import { BiBell, BiChat, BiCog } from "react-icons/bi";
 import { FiLogOut, FiSearch, FiUsers } from "react-icons/fi";
 import { MdOutlineFeed } from "react-icons/md";
@@ -11,8 +12,32 @@ import { getUnreadCount, useChatStore } from "../../stores/useChatStore";
 import { getUnreadNotifications, useNotificationsStore } from "../../stores/useNotificationsStore";
 import { useUserStore } from "../../stores/useUserStore";
 
-export const Layout = ({ children }: any) => {
-  // 4 expected render initially
+const navLinkStyle = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 2,
+  fontWeight: "semibold",
+  color: "fg.muted",
+  _hover: { color: "fg", textDecoration: "none" },
+} as const;
+
+const NavLink = ({ to, icon, children }: { to: string; icon: ReactNode; children: ReactNode }) => (
+  <Link asChild {...navLinkStyle}>
+    <RouterLink to={to}>
+      {icon}
+      {children}
+    </RouterLink>
+  </Link>
+);
+
+const CountBadge = ({ count }: { count: number }) =>
+  count === 0 ? null : (
+    <Badge colorPalette="red" variant="solid" size="sm">
+      {count}
+    </Badge>
+  );
+
+export const Layout = ({ children }: { children?: ReactNode }) => {
   const { hasError, error } = useUser();
   const { user } = useUserStore();
   const unreadChatMessages = useChatStore((s) => getUnreadCount(s)(user?.id))
@@ -29,76 +54,42 @@ export const Layout = ({ children }: any) => {
         <Logo />
       </Box>
       <Box p={4}>
-        <Stack h="100%" spacing={4} marginLeft={12} align="flex-start">
+        <Stack as="nav" h="100%" gap={4} marginLeft={12} align="flex-start">
           <RouterLink to={`/users/${user?.username}`}>
             <UserDetail small user={user} />
           </RouterLink>
-          <RouterLink to="/feed">
-            <Button variant="link" leftIcon={<MdOutlineFeed />}>
-              Feed
-            </Button>
-          </RouterLink>
-          <RouterLink to="/search">
-            <Button variant="link" leftIcon={<FiSearch/> }>
-              Search
-            </Button>
-          </RouterLink>
-          <RouterLink to="/chat">
-            <Button variant="link" leftIcon={<BiChat />}>
-              Chat
-              {
-                unreadChatMessages === 0 ? null :
-                  <Badge colorScheme="red" variant="solid" ml={2}>
-                    {" " + unreadChatMessages}
-                  </Badge>
-              }
-            </Button>
-          </RouterLink>
-          <RouterLink to="/friends">
-            <Button variant="link" leftIcon={<FiUsers />}>
-              Friends
-            </Button>
-          </RouterLink>
-          <RouterLink to="/notifications">
-            <Button variant="link" leftIcon={<BiBell />}>
-              Notifications
-              {
-                unreadNotifications === 0 ? null :
-                  <Badge colorScheme="red" variant="solid" ml={2}>
-                    {unreadNotifications}
-                  </Badge>
-              }
-            </Button>
-          </RouterLink>
-          <RouterLink to="/settings">
-            <Button variant="link" leftIcon={<BiCog />}>
-              Settings
-            </Button>
-          </RouterLink>
-          <Button variant="link" leftIcon={<FiLogOut />} onClick={logout}>
+          <NavLink to="/feed" icon={<MdOutlineFeed />}>Feed</NavLink>
+          <NavLink to="/search" icon={<FiSearch />}>Search</NavLink>
+          <NavLink to="/chat" icon={<BiChat />}>
+            Chat <CountBadge count={unreadChatMessages} />
+          </NavLink>
+          <NavLink to="/friends" icon={<FiUsers />}>Friends</NavLink>
+          <NavLink to="/notifications" icon={<BiBell />}>
+            Notifications <CountBadge count={unreadNotifications} />
+          </NavLink>
+          <NavLink to="/settings" icon={<BiCog />}>Settings</NavLink>
+          <Link as="button" {...navLinkStyle} onClick={logout}>
+            <FiLogOut />
             Logout
-          </Button>
+          </Link>
         </Stack>
       </Box>
       <Box p={4}>
-        {/* Main Content */}
-        <Box bg="white" maxWidth="65%" h="100%">
-          {
-            hasError ? 
-              <Alert status="error">
-                <AlertIcon />
-                <AlertTitle>An error occurred</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert> : children
-          }
+        <Box bg="bg" maxWidth="65%" h="100%">
+          {hasError ? (
+            <Alert.Root status="error">
+              <Alert.Indicator />
+              <Alert.Content>
+                <Alert.Title>An error occurred</Alert.Title>
+                <Alert.Description>{error}</Alert.Description>
+              </Alert.Content>
+            </Alert.Root>
+          ) : (
+            children
+          )}
         </Box>
       </Box>
-      <Box bg="gray.200" p={4} gridColumn="1 / -1">
-        {/* Footer */}
-        <Box h="100%" bg="gray.400">
-          {/* Replace with your footer content */}
-        </Box>
-      </Box>
+      <Box bg="gray.200" p={4} gridColumn="1 / -1" />
     </Grid>
   );
 };

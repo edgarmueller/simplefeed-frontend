@@ -48,7 +48,12 @@ export function InfiniteScroll<T>({ children, queryKey, fetchPage }: InfiniteScr
   }
 
   if (isError) {
-    return <Alert>An error occurred while fetching</Alert>
+    return (
+      <Alert.Root status="error">
+        <Alert.Indicator />
+        <Alert.Title>An error occurred while fetching</Alert.Title>
+      </Alert.Root>
+    )
   }
 
   return (
