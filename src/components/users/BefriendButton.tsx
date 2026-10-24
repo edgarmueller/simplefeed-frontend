@@ -7,20 +7,24 @@ import { makeFriendRequest } from "../../api/friends";
 export interface BefriendButtonProps {
   username: string;
   hasFriendRequest: boolean;
+  /** channels are subscribed to rather than befriended */
+  isChannel?: boolean;
 }
 
 export const BefriendButton = ({
   username,
   hasFriendRequest,
+  isChannel = false,
 }: BefriendButtonProps) => {
   const [friendRequestSent, setFriendRequestSent] = useState<boolean>(hasFriendRequest);
   const makeFriendRequestMutation = useMutation({
     mutationFn: (username: string) => makeFriendRequest(username),
     onSuccess: () => {
       setFriendRequestSent(true);
-      notifySuccess("Friend request sent");
+      notifySuccess(isChannel ? "Subscribed. The channel will confirm shortly." : "Friend request sent");
     },
-    onError: (error: Error) => notifyError("Sending the friend request", error),
+    onError: (error: Error) =>
+      notifyError(isChannel ? "Subscribing" : "Sending the friend request", error),
   })
   const friendRequestExists = hasFriendRequest || friendRequestSent;
 
@@ -33,9 +37,9 @@ export const BefriendButton = ({
       }}
       disabled={makeFriendRequestMutation.isPending || friendRequestExists}
     >
-      {
-        friendRequestExists ? "Friend request sent" : "Befriend"
-      }
+      {friendRequestExists
+        ? isChannel ? "Subscription requested" : "Friend request sent"
+        : isChannel ? "Subscribe" : "Befriend"}
     </Button>
   );
 };

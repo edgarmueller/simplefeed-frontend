@@ -7,6 +7,9 @@ export interface User {
 	lastName: string
 	friends: User[]
 	imageUrl: string
+	bio?: string
+	/** automated accounts, such as news channels */
+	isBot?: boolean
 	nrOfPosts: number
 	nrOfLikes: number
 	// TODO: split dtos?
@@ -64,6 +67,7 @@ export interface UserSummary {
 	firstName: string
 	lastName: string
 	imageUrl?: string
+	isBot?: boolean
 }
 
 export interface Pagination<T> {

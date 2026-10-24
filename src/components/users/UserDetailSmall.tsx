@@ -1,4 +1,5 @@
 import { Link, Stack, Text } from "@chakra-ui/react";
+import { BotBadge } from "../ui/bot-badge";
 import { UserAvatar } from "../ui/user-avatar";
 import { Link as RouterLink } from "react-router";
 import { UserSummary } from "../../model/domain.interface";
@@ -29,6 +30,7 @@ export const UserDetailSmall = ({ user, asLink, bold }: UserDetailSmallProps) =>
           {user.firstName} {user.lastName}
         </Text>
       )}
+      {user.isBot ? <BotBadge /> : null}
     </Stack>
   );
 };

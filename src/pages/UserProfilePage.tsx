@@ -1,4 +1,4 @@
-import { Tabs } from "@chakra-ui/react";
+import { Tabs, Text } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
@@ -18,6 +18,7 @@ import { PostList } from "../components/posts/PostList";
 import { Conversation, User } from "../model/domain.interface";
 import { FriendList } from "../components/users/FriendList";
 import { UserDetailSmall } from "../components/users/UserDetailSmall";
+import { useChat } from "../hooks/useChat";
 import { useChatStore } from "../stores/useChatStore";
 import { useUserStore } from "../stores/useUserStore";
 
@@ -37,6 +38,9 @@ const findConversationId = (conversations: Conversation[], userId: string) => {
   )?.id;
 }
 
+const CONVERSATION_LOOKUP_ATTEMPTS = 5;
+const CONVERSATION_LOOKUP_DELAY_MS = 1000;
+
 const UserProfile = () => {
   const params = useParams();
   const location = useLocation();
@@ -51,6 +55,30 @@ const UserProfile = () => {
   const userId = user?.id;
   const isFriend =
     isMyProfile || !!myself?.friends?.find(({ id }) => id === user?.id)
+  const { fetchConversations, joinConversation } = useChat();
+
+  // accepting a friend request creates the conversation in the background, so
+  // it can be missing when the acceptance arrives; keep looking for a while
+  useEffect(() => {
+    if (!isFriend || isMyProfile || conversationId) {
+      return;
+    }
+    let cancelled = false;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const lookup = async (attempt: number) => {
+      const fetched = await fetchConversations().catch(() => [] as Conversation[]);
+      if (cancelled) return;
+      fetched.forEach((conversation) => joinConversation(conversation.id));
+      if (!findConversationId(fetched, userId) && attempt < CONVERSATION_LOOKUP_ATTEMPTS) {
+        timeout = setTimeout(() => lookup(attempt + 1), CONVERSATION_LOOKUP_DELAY_MS);
+      }
+    };
+    lookup(1);
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
+  }, [isFriend, isMyProfile, conversationId, userId, fetchConversations, joinConversation]);
 
   useEffect(() => {
     if (!isMyProfile) {
@@ -75,7 +103,7 @@ const UserProfile = () => {
       >
         <Tabs.List>
           <Tabs.Trigger value="posts">Posts</Tabs.Trigger>
-          <Tabs.Trigger value="friends">Friends</Tabs.Trigger>
+          <Tabs.Trigger value="friends">{user.isBot ? "Subscribers" : "Friends"}</Tabs.Trigger>
           {isMyProfile ? null : <Tabs.Trigger value="chat">Chat</Tabs.Trigger>}
         </Tabs.List>
         <Tabs.Content value="posts">
@@ -99,15 +127,21 @@ const UserProfile = () => {
               }}
             />
         </Tabs.Content>
-          {
-            !isMyProfile && conversationId ? (
-              <Tabs.Content value="chat">
-                <Chat
-                  friend={{ id: user.id, username: user.username }}
-                  conversationId={conversationId}
-                />
-              </Tabs.Content>) : null
-          }
+          {isMyProfile ? null : (
+            <Tabs.Content value="chat">
+              {conversationId ? (
+                <Chat friend={{ id: user.id, username: user.username }} conversationId={conversationId} />
+              ) : (
+                <Text color="fg.muted">
+                  {isFriend
+                    ? "Starting the conversation…"
+                    : user.isBot
+                      ? `Subscribe to ${user.firstName} to chat.`
+                      : `Become friends with ${user.firstName} to chat.`}
+                </Text>
+              )}
+            </Tabs.Content>
+          )}
       </Tabs.Root>
     </Layout>
   );

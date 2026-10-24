@@ -2,7 +2,7 @@ import { Box, Button, Link, Stack, Text } from "@chakra-ui/react";
 import { uniqBy } from "lodash";
 import { memo, useCallback, useEffect, useState } from "react";
 import { BiTrash } from "react-icons/bi";
-import Markdown from 'react-markdown';
+import Markdown, { type Components } from 'react-markdown';
 import { Link as RouterLink } from "react-router";
 import YouTube from "react-youtube";
 import { isEqual } from "lodash";
@@ -17,7 +17,15 @@ import { LikeButton } from "./LikeButton";
 import { useUserStore } from "../../stores/useUserStore";
 import { CommentNode, buildCommentTree } from "../../model/comments";
 import { useMutation } from "@tanstack/react-query";
+import { BotBadge } from "../ui/bot-badge";
 import { UserAvatar } from "../ui/user-avatar";
+
+// posts link out a lot, e.g. channels' news stories; keep the feed open
+const markdownComponents: Components = {
+  a: ({ node: _node, ...props }) => (
+    <Link {...props} target="_blank" rel="noopener noreferrer" color="blue.fg" />
+  ),
+}
 
 type PostHeaderProps = {
   author: {
@@ -25,6 +33,7 @@ type PostHeaderProps = {
     imageUrl: string;
     firstName: string;
     lastName: string;
+    isBot?: boolean;
   }
   postedTo?: {
     username: string;
@@ -57,6 +66,7 @@ function PostHeader({ createdAt, author, postedTo: target }: PostHeaderProps) {
           </>
         )}
       </Text>
+      {author.isBot ? <BotBadge /> : null}
       <Text fontSize="sm" color="fg.muted">{formatTimeAgo(createdAt)}</Text>
     </Stack>
   )
@@ -114,7 +124,7 @@ const Post = memo(({ post, showComments = false }: { post: PostEntity, showComme
     <Box bg="bg.muted" p={3} borderRadius="md" marginBottom={3}>
       <PostHeader author={post.author} postedTo={post.postedTo} createdAt={post.createdAt} />
       <Box bg="bg" padding={3} borderRadius="md" marginBottom={2}>
-        <Markdown>{post.body}</Markdown>
+        <Markdown components={markdownComponents}>{post.body}</Markdown>
         {(post.attachments || [])
           .filter((attachment) => attachment.type === "video")
           .map((attachment) => (
