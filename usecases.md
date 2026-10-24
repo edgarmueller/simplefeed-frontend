@@ -7,8 +7,6 @@
 
 ## User
 - Get user by username
-- Get friends of user 
-- Get mututal friends of user
 - Get me
 - Update user info
 - Update Avatar 
@@ -31,13 +29,10 @@
 - Reply to a comment
 - Fetch comments
 
-## Friends
-- Send friend request
-- get sent friend requests
-- receive friend request
-- get received friend requests
-- accept friend request
-- decline friend request
+## Channels
+- List channels
+- Subscribe to a channel (immediately)
+- Unsubscribe from a channel
 
 ## Chat
 
