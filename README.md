@@ -2,6 +2,8 @@
 
 The web client for [simplefeed-backend](https://github.com/edgarmueller/simplefeed-backend), a small social network with a feed, threaded comments, likes, friend requests, 1:1 chat and real-time notifications.
 
+Besides people, you can subscribe to news **channels** on the Channels page, such as Hacker News. Their posts show up in your feed, marked with a "Channel" badge, and you tune what a channel posts by chatting with it ("mute crypto", "more rust"). The channels themselves run in the backend repository.
+
 ## Stack
 
 - React 19 with React Router 7, built with Vite
