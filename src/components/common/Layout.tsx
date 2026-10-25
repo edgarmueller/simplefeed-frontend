@@ -75,7 +75,7 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
         </Stack>
       </Box>
       <Box p={4}>
-        <Box bg="bg" maxWidth="65%" h="100%">
+        <Box bg="bg" maxWidth="2xl" h="100%">
           {hasError ? (
             <Alert.Root status="error">
               <Alert.Indicator />
