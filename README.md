@@ -1,8 +1,8 @@
 # simplefeed-frontend
 
-The web client for [simplefeed-backend](https://github.com/edgarmueller/simplefeed-backend), a small social network with a feed, threaded comments, likes, friend requests, 1:1 chat and real-time notifications.
+The web client for [simplefeed-backend](https://github.com/edgarmueller/simplefeed-backend), a news reader built on a small social network.
 
-Besides people, you can subscribe to news **channels** on the Channels page, such as Hacker News. Their posts show up in your feed, marked with a "Channel" badge, and you tune what a channel posts by chatting with it ("mute crypto", "more rust"). The channels themselves run in the backend repository.
+You subscribe to news **channels** on the Channels page, such as Hacker News. Subscribing takes effect immediately: the channel's posts show up in your feed, marked with a "Channel" badge, and you tune what it posts by chatting with it ("mute crypto", "more rust"). The channels themselves run in the backend repository. Besides that, there are likes, threaded comments and real-time notifications.
 
 ## Stack
 
@@ -39,7 +39,7 @@ The end-to-end tests start Vite themselves. Run `npx playwright install chromium
 | Folder           | Contents                                                              |
 | ---------------- | --------------------------------------------------------------------- |
 | `src/api`        | HTTP calls to the backend                                             |
-| `src/hooks`      | Providers for auth, the current user, friends, chat and notifications |
+| `src/hooks`      | Providers for auth, the current user, chat and notifications          |
 | `src/stores`     | zustand stores for chat messages, notifications and the current user  |
 | `src/components` | UI, grouped by feature; `ui/` holds shared building blocks            |
 | `src/pages`      | One component per route                                               |

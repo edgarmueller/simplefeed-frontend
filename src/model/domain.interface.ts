@@ -5,15 +5,16 @@ export interface User {
 	username: string
 	firstName: string
 	lastName: string
-	friends: User[]
 	imageUrl: string
 	bio?: string
 	/** automated accounts, such as news channels */
 	isBot?: boolean
 	nrOfPosts: number
 	nrOfLikes: number
-	// TODO: split dtos?
-	mutualFriendsCount?: number
+	/** for channels: whether the current user subscribes */
+	subscribed?: boolean
+	/** for the current user: the channels they subscribe to */
+	subscriptions?: User[]
 }
 
 export interface Conversation {
@@ -86,10 +87,4 @@ export interface Comment {
 	createdAt: string;
 	author: string;
 	path: string;
-}
-
-export interface FriendRequest {
-	id: string;
-	from: UserSummary;
-	to: UserSummary;
 }

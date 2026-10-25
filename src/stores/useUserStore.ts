@@ -3,14 +3,15 @@ import { User } from '../model/domain.interface';
 
 export interface UserState {
   user: User | null
-  friends: User[]
+  /** the channels the user subscribes to */
+  subscriptions: User[]
   setUser: (user: User) => void
-  setFriends(friends: User[]): void
+  setSubscriptions(subscriptions: User[]): void
 }
 
 export const useUserStore = create<UserState>((set) => ({
   user: null,
-  friends: [],
+  subscriptions: [],
   setUser: (user: User) => set({ user }),
-  setFriends: (friends: User[]) => set({ friends })
+  setSubscriptions: (subscriptions: User[]) => set({ subscriptions })
 }))

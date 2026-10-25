@@ -2,19 +2,38 @@ import { Alert, Button, Card, Heading, Spinner, Stack, Text } from "@chakra-ui/r
 import { useQuery } from "@tanstack/react-query";
 import { Link as RouterLink } from "react-router";
 import { fetchChannels } from "../api/channels";
-import { getSentFriendRequests } from "../api/friends";
 import { Layout } from "../components/common/Layout";
-import { BefriendButton } from "../components/users/BefriendButton";
+import { SubscribeButton } from "../components/users/SubscribeButton";
+import { useIsSubscribed } from "../hooks/useIsSubscribed";
 import { UserDetailSmall } from "../components/users/UserDetailSmall";
-import { useUserStore } from "../stores/useUserStore";
+import { User } from "../model/domain.interface";
+
+const ChannelCard = ({ channel }: { channel: User }) => {
+  const isSubscribed = useIsSubscribed(channel.id);
+  return (
+    <Card.Root variant="outline">
+      <Card.Body>
+        <Stack direction="row" justify="space-between" align="center" gap={4}>
+          <Stack gap={1}>
+            <UserDetailSmall user={channel} asLink />
+            {channel.bio ? <Text color="fg.muted">{channel.bio}</Text> : null}
+          </Stack>
+          <Stack direction="row" gap={2}>
+            {isSubscribed ? (
+              <Button asChild size="sm" variant="subtle">
+                <RouterLink to={`/users/${channel.username}/chat`}>Tune in chat</RouterLink>
+              </Button>
+            ) : null}
+            <SubscribeButton channel={channel} />
+          </Stack>
+        </Stack>
+      </Card.Body>
+    </Card.Root>
+  );
+};
 
 const ChannelsPage = () => {
-  const { friends } = useUserStore();
   const channels = useQuery({ queryKey: ["channels"], queryFn: fetchChannels });
-  const sentRequests = useQuery({ queryKey: ["sent-friend-requests"], queryFn: getSentFriendRequests });
-  const isSubscribed = (channelId: string) => friends.some((friend) => friend.id === channelId);
-  const isRequested = (channelId: string) =>
-    sentRequests.data?.some((request) => request.to.id === channelId) ?? false;
 
   return (
     <Layout>
@@ -33,31 +52,7 @@ const ChannelsPage = () => {
       ) : null}
       {channels.data?.length === 0 ? <Text>No channels yet.</Text> : null}
       <Stack gap={3}>
-        {channels.data?.map((channel) => (
-          <Card.Root key={channel.id} variant="outline">
-            <Card.Body>
-              <Stack direction="row" justify="space-between" align="center" gap={4}>
-                <Stack gap={1}>
-                  <UserDetailSmall user={channel} asLink />
-                  {channel.bio ? <Text color="fg.muted">{channel.bio}</Text> : null}
-                </Stack>
-                {isSubscribed(channel.id) ? (
-                  <Button asChild size="sm" variant="subtle">
-                    <RouterLink to={`/users/${channel.username}/chat`}>Tune in chat</RouterLink>
-                  </Button>
-                ) : (
-                  <BefriendButton
-                    // remount once sent requests have loaded, since the button keeps its own state
-                    key={String(sentRequests.isSuccess)}
-                    username={channel.username}
-                    hasFriendRequest={isRequested(channel.id)}
-                    isChannel
-                  />
-                )}
-              </Stack>
-            </Card.Body>
-          </Card.Root>
-        ))}
+        {channels.data?.map((channel) => <ChannelCard key={channel.id} channel={channel} />)}
       </Stack>
     </Layout>
   );
