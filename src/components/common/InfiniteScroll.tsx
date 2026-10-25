@@ -19,16 +19,8 @@ export function InfiniteScroll<T>({ children, queryKey, fetchPage }: InfiniteScr
     queryKey,
     queryFn: ({ pageParam }) => fetchPage(pageParam as number),
     initialPageParam: 1,
-    getNextPageParam: ({ meta }) => {
-      const { currentPage, totalPages } = meta;
-      if (currentPage >= totalPages) { 
-        return undefined;
-      }
-      if (currentPage === totalPages - 1) {
-        return undefined;
-      }
-      return currentPage + 1;
-    },
+    getNextPageParam: ({ meta }) =>
+      meta.currentPage < meta.totalPages ? meta.currentPage + 1 : undefined,
     getPreviousPageParam: ({ meta }) => {
       if (meta.currentPage <= 1) {
         return undefined;
