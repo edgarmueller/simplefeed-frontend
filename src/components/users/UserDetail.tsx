@@ -42,11 +42,6 @@ export const UserDetail = ({
               <Text pt="2" fontSize="sm">
                 Posts: {userProfile?.nrOfPosts}
               </Text>
-              {userProfile?.isBot ? null : (
-                <Text pt="2" fontSize="sm">
-                  Likes: {userProfile?.nrOfLikes}
-                </Text>
-              )}
               {isMyself ? (
                 <Text pt="2" fontSize="sm">
                   Subscriptions: {userProfile?.subscriptions?.length ?? 0}
