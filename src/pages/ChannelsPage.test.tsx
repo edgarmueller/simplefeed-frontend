@@ -8,6 +8,7 @@ import { renderWithProviders } from '../test/render'
 import ChannelsPage from './ChannelsPage'
 
 vi.mock('../api/channels', () => ({ fetchChannels: vi.fn(), subscribe: vi.fn(), unsubscribe: vi.fn() }))
+vi.mock('../api/feeds', () => ({ addFeed: vi.fn(), fetchMyFeeds: vi.fn(async () => []), withdrawFeed: vi.fn() }))
 
 const channel = (username: string, firstName: string, lastName: string) =>
   ({ id: `use-${username}`, username, firstName, lastName, isBot: true, bio: `${firstName} ${lastName} news` }) as User
