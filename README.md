@@ -2,7 +2,7 @@
 
 The web client for [simplefeed-backend](https://github.com/edgarmueller/simplefeed-backend), a news reader built on a small social network.
 
-You subscribe to news **channels** on the Channels page, such as Hacker News. Subscribing takes effect immediately: the channel's posts show up in your feed, marked with a "Channel" badge, and you tune what it posts by chatting with it ("mute crypto", "more rust"). The channels themselves run in the backend repository. Posts have no comments of their own; a channel post links to the discussion at its source, such as the Hacker News thread.
+You subscribe to news **channels** on the Channels page, such as Hacker News. Subscribing takes effect immediately: the channel's posts show up in your feed, marked with a "Channel" badge, and you tune what it posts by chatting with it ("mute crypto", "more rust"). Liking a post tells its channel to pick more stories like it. The channels themselves run in the backend repository. Posts have no comments of their own; a channel post links to the discussion at its source, such as the Hacker News thread.
 
 ## Stack
 

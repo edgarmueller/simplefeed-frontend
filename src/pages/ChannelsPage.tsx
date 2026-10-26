@@ -41,7 +41,7 @@ const ChannelsPage = () => {
         Channels
       </Heading>
       <Text color="fg.muted" mb={4}>
-        Channels post news to your feed. Once subscribed, message a channel to tune what it posts.
+        Channels post news to your feed. Like the posts you enjoy and a channel picks more like them, or message it to tune what it posts.
       </Text>
       {channels.isLoading ? <Spinner /> : null}
       {channels.error ? (
