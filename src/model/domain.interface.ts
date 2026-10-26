@@ -1,74 +1,87 @@
-
+/** The reader's account. */
 export interface User {
 	id: string
 	email: string
 	username: string
 	firstName: string
 	lastName: string
-	imageUrl: string
-	bio?: string
-	/** automated accounts, such as news channels */
-	isBot?: boolean
-	nrOfPosts: number
-	nrOfLikes: number
-	/** for channels: whether the current user subscribes */
-	subscribed?: boolean
-	/** for the current user: the channels they subscribe to */
-	subscriptions?: User[]
-}
-
-export interface Conversation {
-	id: string
-	userIds: string[]
-	// TODO: can we hide this? or rename to mostRecentMessages?
-	messages: Message[]
-}
-
-export interface Message {
-	id?: string
-	conversationId: string
-	content: string
-	authorId: string
-	recipientId?: string
-	createdAt?: string
-	isRead?: boolean
-}
-
-export interface Notification {
-	id: string
-	viewed: boolean
-	type: string
-	resourceId: string
-	link: string
-	message: string
-}
-export interface Post {
-	id: string;
-	body: string
-	createdAt: string;
-	postedTo: User
-	author: User
-	/** only the current user's like, if any */
-	likes: Like[]
-	attachments?: Attachment[]
-}
-
-export interface Like {
-	id: string
-	userId: string
-	unliked?: boolean
-}
-
-export type Attachment = { type: 'video' | 'image', url: string }
-
-/** A user as embedded in other resources */
-export interface UserSummary {
-	id: string
-	username: string
-	firstName: string
-	lastName: string
 	imageUrl?: string
-	isBot?: boolean
+}
+
+export type ChannelKind = 'hackernews' | 'feed'
+/** a feed is pending until it has been read, and failed if it couldn't be */
+export type ChannelStatus = 'pending' | 'active' | 'failed'
+
+/** A source of stories: Hacker News, or a feed someone added. */
+export interface Channel {
+	id: string
+	kind: ChannelKind
+	/** unknown until a feed has been read */
+	name?: string
+	description?: string
+	/** for feeds: the address as added */
+	url?: string
+	feedUrl?: string
+	siteUrl?: string
+	status: ChannelStatus
+	/** why a feed couldn't be read */
+	error?: string
+	subscribed?: boolean
+}
+
+/** What a reader wants from one channel, tuned in its chat. */
+export interface Preferences {
+	interests: string[]
+	muted: string[]
+	minScore: number
+	maxPostsPerDay: number
+	notes: string
+}
+
+export interface Subscription {
+	id: string
+	channel: Channel
+	preferences: Preferences
+	unread: number
+	/** when the channel last picked something for the reader */
+	lastPickedAt?: string
+	createdAt: string
+}
+
+/** A story from a channel. */
+export interface Item {
+	id: string
+	title: string
+	url: string
+	domain: string
+	excerpt?: string
+	score?: number
+	comments?: number
+	discussionUrl?: string
+	/** the publication, e.g. "SZ München" */
+	sourceName?: string
+	publishedAt: string
+}
+
+/** An item a channel picked for the reader, and what they did with it. */
+export interface Entry {
+	id: string
+	item: Item
+	channel: Pick<Channel, 'id' | 'kind' | 'name'>
+	/** the curator's one-sentence summary, if it wrote one */
+	summary?: string
+	pickedAt: string
+	readAt?: string
+	likedAt?: string
+	savedAt?: string
+}
+
+/** A message in the reader's chat with a channel. */
+export interface Message {
+	id: string
+	author: 'reader' | 'channel'
+	content: string
+	createdAt: string
 }
 
 export interface Pagination<T> {
@@ -79,16 +92,4 @@ export interface Pagination<T> {
 		itemCount: number
 		totalItems: number
 	}
-}
-
-/** A feed the user added, until it becomes a channel. */
-export interface FeedRequest {
-	id: string
-	url: string
-	feedUrl?: string
-	title?: string
-	status: 'pending' | 'active' | 'failed'
-	/** why the feed couldn't be read */
-	error?: string
-	channel?: Pick<User, 'id' | 'username' | 'firstName' | 'lastName'>
 }

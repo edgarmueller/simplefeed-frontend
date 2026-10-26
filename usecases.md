@@ -5,42 +5,23 @@
 - Login
 - (Logout)
 
-## User
-- Get user by username
+## Account
 - Get me
-- Update user info
-- Update Avatar 
-- Close Account
-- Reactivate Account
-- Search user
-
-## Posts
-
-- Get personal post feed
-- Get user activity post feed
-- Submit new post
-- Get individual post
-- Find liked posts by user 
-- Delete Post
-- Like a Post
-- Unlike a Post
-- Delete a Post (for owner only)
+- Update account info and avatar
+- Close account
+- Reactivate account
 
 ## Channels
-- List channels
-- Subscribe to a channel (immediately)
-- Unsubscribe from a channel
+- List channels, with whether the reader subscribes
+- Subscribe to a channel and unsubscribe, effective immediately
 - Add a feed by its URL or a website's; see pending and failed ones, dismiss failed ones
 
-## Chat
+## Feed
+- Get the feed: unread, all or saved, for all channels or one
+- Mark a story read or unread, like or unlike it, save it or not
+- Mark all as read, for all channels or one
+- Unread counts per channel
 
-Create conversation
-Add Message to conversation
-find Conversation by Id/User Id/User Ids/user id + unread messages
-mark message as read
-handle user closed
-handle user reactivated
-
-## Notifications
-- Find unread notifications
-- Mark notification as read
+## Tuning
+- Chat with a channel to change what it picks
+- See the channel's current settings

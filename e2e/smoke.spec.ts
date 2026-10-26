@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-test('sign up, sign in, post and like', async ({ page }) => {
+test('sign up, subscribe to a channel and tune it', async ({ page }) => {
   const username = `e2e${Date.now()}`
   const email = `${username}@example.com`
 
@@ -19,12 +19,17 @@ test('sign up, sign in, post and like', async ({ page }) => {
   await page.getByPlaceholder('Password').fill('secret')
   await page.getByPlaceholder('Password').press('Enter')
   await expect(page).toHaveURL(/\/feed$/)
+  await expect(page.getByText("You're all caught up.")).toBeVisible()
 
-  const message = `Hello from ${username}`
-  await page.getByPlaceholder("What's on your mind?").fill(message)
-  await page.getByRole('button', { name: 'Post' }).click()
-  await expect(page.getByText(message)).toBeVisible()
+  await page.getByRole('link', { name: 'Channels', exact: true }).click()
+  await page.getByRole('button', { name: 'Subscribe' }).first().click()
+  const channel = page.getByLabel('Your channels').getByRole('link', { name: /Hacker News/ })
+  await expect(channel).toBeVisible()
 
-  await page.getByRole('button', { name: 'Like', exact: true }).click()
-  await expect(page.getByRole('button', { name: 'Unlike' })).toBeVisible()
+  // the channels worker answers in the chat, so it has to run for this part
+  await channel.click()
+  await page.getByRole('tab', { name: 'Tune' }).click()
+  await page.getByPlaceholder('Type a message').fill('mute crypto')
+  await page.getByRole('button', { name: 'Send' }).click()
+  await expect(page.getByText('Leaving out: crypto').first()).toBeVisible({ timeout: 15_000 })
 })
