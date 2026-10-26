@@ -8,7 +8,7 @@ import { AddFeed } from './AddFeed'
 
 vi.mock('../../api/feeds', () => ({ addFeed: vi.fn(), fetchMyFeeds: vi.fn(), withdrawFeed: vi.fn() }))
 
-const pending: FeedRequest = { id: 'fee-1', url: 'https://sz.de/muenchen', status: 'pending' }
+const pending: FeedRequest = { id: 'fee-1', url: 'https://sz.de/muenchen', status: 'pending', createdAt: new Date().toISOString() }
 
 function renderForm(refresh = vi.fn()) {
   renderWithProviders(
@@ -74,7 +74,7 @@ describe('AddFeed', () => {
 
   it('explains why a feed failed and lets the user dismiss it', async () => {
     vi.mocked(fetchMyFeeds).mockResolvedValue([
-      { id: 'fee-2', url: 'https://example.com/', status: 'failed', error: 'no feed found at https://example.com/' },
+      { id: 'fee-2', url: 'https://example.com/', status: 'failed', error: 'no feed found at https://example.com/', createdAt: new Date().toISOString() },
     ])
     vi.mocked(withdrawFeed).mockResolvedValue()
     renderForm()
@@ -98,5 +98,16 @@ describe('AddFeed', () => {
     submit('foo')
 
     expect(await screen.findByText('"foo" is not a web address')).toBeInTheDocument()
+  })
+
+  it('says so when reading a feed takes unusually long, and lets the user cancel', async () => {
+    vi.mocked(fetchMyFeeds).mockResolvedValue([{ ...pending, createdAt: new Date(Date.now() - 5 * 60_000).toISOString() }])
+    vi.mocked(withdrawFeed).mockResolvedValue()
+    renderForm()
+
+    expect(await screen.findByText('Still reading https://sz.de/muenchen')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+
+    await waitFor(() => expect(withdrawFeed).toHaveBeenCalledWith('fee-1'))
   })
 })

@@ -9,6 +9,20 @@ import { notifyError, notifySuccess } from "../ui/toaster";
 
 /** how often to look whether pending feeds became channels */
 const PENDING_POLL_MS = 3000;
+/** reading a feed takes seconds; after this long, something is off */
+const SLOW_AFTER_MS = 60_000;
+
+/** Whether the feed has been pending for longer than reading usually takes. */
+function useIsSlow({ status, createdAt }: FeedRequest) {
+  const slowAt = new Date(createdAt).getTime() + SLOW_AFTER_MS;
+  const [isSlow, setSlow] = useState(() => Date.now() > slowAt);
+  useEffect(() => {
+    if (isSlow || status !== "pending") return;
+    const timeout = setTimeout(() => setSlow(true), slowAt - Date.now());
+    return () => clearTimeout(timeout);
+  }, [isSlow, status, slowAt]);
+  return isSlow && status === "pending";
+}
 
 const PendingFeed = ({ feed }: { feed: FeedRequest }) => {
   const queryClient = useQueryClient();
@@ -17,6 +31,23 @@ const PendingFeed = ({ feed }: { feed: FeedRequest }) => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["my-feeds"] }),
     onError: (error: Error) => notifyError("Removing the feed", error),
   });
+  const isSlow = useIsSlow(feed);
+  if (isSlow) {
+    return (
+      <Alert.Root status="info" size="sm">
+        <Alert.Indicator />
+        <Alert.Content>
+          <Alert.Title>Still reading {feed.url}</Alert.Title>
+          <Alert.Description>
+            This usually takes a few seconds. If it stays like this, the channels worker may not be running.
+          </Alert.Description>
+        </Alert.Content>
+        <Button size="xs" variant="ghost" onClick={() => dismiss.mutate()} loading={dismiss.isPending}>
+          Cancel
+        </Button>
+      </Alert.Root>
+    );
+  }
   return feed.status === "failed" ? (
     <Alert.Root status="warning" size="sm">
       <Alert.Indicator />
