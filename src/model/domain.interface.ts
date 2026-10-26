@@ -90,5 +90,7 @@ export interface FeedRequest {
 	status: 'pending' | 'active' | 'failed'
 	/** why the feed couldn't be read */
 	error?: string
+	/** when the feed was added */
+	createdAt: string
 	channel?: Pick<User, 'id' | 'username' | 'firstName' | 'lastName'>
 }
