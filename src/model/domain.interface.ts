@@ -80,3 +80,15 @@ export interface Pagination<T> {
 		totalItems: number
 	}
 }
+
+/** A feed the user added, until it becomes a channel. */
+export interface FeedRequest {
+	id: string
+	url: string
+	feedUrl?: string
+	title?: string
+	status: 'pending' | 'active' | 'failed'
+	/** why the feed couldn't be read */
+	error?: string
+	channel?: Pick<User, 'id' | 'username' | 'firstName' | 'lastName'>
+}
