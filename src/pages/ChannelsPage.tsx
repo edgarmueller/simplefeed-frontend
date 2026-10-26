@@ -1,7 +1,8 @@
-import { Alert, Button, Card, Heading, Spinner, Stack, Text } from "@chakra-ui/react";
+import { Alert, Box, Button, Card, Heading, Spinner, Stack, Text } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { Link as RouterLink } from "react-router";
 import { fetchChannels } from "../api/channels";
+import { AddFeed } from "../components/channels/AddFeed";
 import { Layout } from "../components/common/Layout";
 import { SubscribeButton } from "../components/users/SubscribeButton";
 import { useIsSubscribed } from "../hooks/useIsSubscribed";
@@ -43,6 +44,9 @@ const ChannelsPage = () => {
       <Text color="fg.muted" mb={4}>
         Channels post news to your feed. Like the posts you enjoy and a channel picks more like them, or message it to tune what it posts.
       </Text>
+      <Box mb={4}>
+        <AddFeed />
+      </Box>
       {channels.isLoading ? <Spinner /> : null}
       {channels.error ? (
         <Alert.Root status="error">

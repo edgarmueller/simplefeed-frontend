@@ -30,6 +30,7 @@
 - List channels
 - Subscribe to a channel (immediately)
 - Unsubscribe from a channel
+- Add a feed by its URL or a website's; see pending and failed ones, dismiss failed ones
 
 ## Chat
 
