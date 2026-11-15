@@ -1,0 +1,26 @@
+name: build
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build & push
+        run: |
+          IMAGE=forge:3000/${{ github.repository }}:latest
+          echo "${{ secrets.REGISTRY_TOKEN }}" | docker login forge:3000 -u ${{ github.repository_owner }} --password-stdin
+          docker build \
+            --build-arg VITE_API_URL=http://forge:3003/api \
+            --build-arg VITE_SOCKET_URL=http://forge:3003 \
+            -t $IMAGE .
+          docker push $IMAGE
+      - name: Deploy
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v /opt/stacks/simplefeed:/opt/stacks/simplefeed \
+            -w /opt/stacks/simplefeed \
+            docker:cli compose up -d web
